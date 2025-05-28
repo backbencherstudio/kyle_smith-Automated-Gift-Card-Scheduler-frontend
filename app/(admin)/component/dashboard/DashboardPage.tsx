@@ -1,7 +1,6 @@
 
 import { HomeBarChart } from '../Chart/BarChart'
 import { RevenueLineChart } from '../Chart/LineChart'
-import RecentOrderTable from './RecentOrderTable'
 import StatCards from './StatCards'
 
 function DashboardPage() {
@@ -14,7 +13,7 @@ function DashboardPage() {
         <HomeBarChart/>
       </div>
       <div className=' '>
-      <RecentOrderTable/>
+      {/* <RecentOrderTable/> */}
       </div>
     </div>
   )
