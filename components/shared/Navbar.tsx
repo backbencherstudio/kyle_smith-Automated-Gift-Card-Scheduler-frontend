@@ -4,9 +4,13 @@ import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import ButtonReuseable from "../reusable/ButtonReuseable";
-
+import { useState } from "react";
+import ResuseableModal from "../reusable/ResuseableModal";
+import LoginForm from "./LoginForm";
 
 export default function Navbar() {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
   return (
     <div className="container p-4 flex justify-between items-center">
       {/* Logo */}
@@ -25,7 +29,7 @@ export default function Navbar() {
         <ButtonReuseable
           title="Log In"
           className="border text-[#1D1F2C] border-[#1D1F2C] text-sm md:text-lg cursor-pointer px-10 hover:bg-[#FAD33E] transform duration-300 font-medium"
-          onClick={() => console.log('Login clicked')}
+          onClick={() => setIsLoginModalOpen(true)}
         />
         <ButtonReuseable
           title="Get Started"
@@ -58,7 +62,7 @@ export default function Navbar() {
                 <ButtonReuseable
                   title="Log In"
                   className="border py-3 border-[#1D1F2C] font-semibold text-md cursor-pointer px-10 hover:bg-[#FAD33E] transform duration-300"
-                  onClick={() => console.log('Login clicked')}
+                  onClick={() => setIsLoginModalOpen(true)}
                 />
                 <ButtonReuseable
                   title="Get Started"
@@ -70,6 +74,14 @@ export default function Navbar() {
           </SheetContent>
         </Sheet>
       </div>
+
+      <ResuseableModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        title=""
+      >
+        <LoginForm />
+      </ResuseableModal>
     </div>
   );
 }
