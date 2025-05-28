@@ -1,3 +1,4 @@
+import Footer from '@/components/shared/Footer';
 import Navbar from '@/components/shared/Navbar';
 import React from 'react';
 interface AdminLayoutProps {
@@ -8,6 +9,7 @@ const  FrotEndlayout:React.FC<AdminLayoutProps> = ({ children })=> {
     <div>
       <Navbar/>
       {children}
+      <Footer/>
     </div>
   )
 }
