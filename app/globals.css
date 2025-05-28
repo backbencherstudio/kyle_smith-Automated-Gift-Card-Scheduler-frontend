@@ -3,8 +3,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+body {
+  font-family: "Nunito", sans-serif;
+  font-weight: 400;
+}
 .container {
-  max-width: 1342px;
+  max-width: 1320px;
   padding: 0 16px;
   margin: 0 auto;
 }
@@ -64,7 +68,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 :root {
-  --primaryColor: #1141cb;
+  --primaryColor: #fad33e;
   --secondaryColor: #444950;
   --blackColor: #000;
   --whiteColor: #fff;
