@@ -8,6 +8,7 @@ export const giftInfoData = [
     amount: "$25",
     eventDate: "3 May 2025",
     status: "Completed",
+    issue: "Payment issue",
   },
   {
     id: 2,
@@ -18,6 +19,8 @@ export const giftInfoData = [
     amount: "$50",
     eventDate: "3 May 2025",
     status: "Schedule",
+
+    issue: "Payment issue",
   },
   {
     id: 3,
@@ -28,6 +31,7 @@ export const giftInfoData = [
     amount: "$100",
     eventDate: "3 May 2025",
     status: "Completed",
+    issue: "Payment issue",
   },
   {
     id: 4,
@@ -38,6 +42,8 @@ export const giftInfoData = [
     amount: "$120",
     eventDate: "3 May 2025",
     status: "Failed",
+
+    issue: "Payment issue",
   },
   {
     id: 5,
@@ -48,6 +54,8 @@ export const giftInfoData = [
     amount: "$130",
     eventDate: "3 May 2025",
     status: "Schedule",
+
+    issue: "Payment issue",
   },
   {
     id: 6,
@@ -58,6 +66,7 @@ export const giftInfoData = [
     amount: "$150",
     eventDate: "3 May 2025",
     status: "Completed",
+    issue: "Payment issue",
   },
   {
     id: 7,
@@ -68,6 +77,7 @@ export const giftInfoData = [
     amount: "$120",
     eventDate: "3 May 2025",
     status: "Completed",
+    issue: "Payment issue",
   },
   {
     id: 8,
@@ -78,6 +88,8 @@ export const giftInfoData = [
     amount: "$130",
     eventDate: "3 May 2025",
     status: "Failed",
+
+    issue: "Payment issue",
   },
   {
     id: 9,
@@ -88,6 +100,8 @@ export const giftInfoData = [
     amount: "$50",
     eventDate: "3 May 2025",
     status: "Schedule",
+
+    issue: "Payment issue",
   },
   {
     id: 10,
@@ -98,6 +112,7 @@ export const giftInfoData = [
     amount: "$130",
     eventDate: "3 May 2025",
     status: "Completed",
+    issue: "Payment issue",
   },
   {
     id: 11,
@@ -108,6 +123,8 @@ export const giftInfoData = [
     amount: "$60",
     eventDate: "3 May 2025",
     status: "Schedule",
+
+    issue: "Payment issue",
   },
   {
     id: 12,
@@ -118,6 +135,7 @@ export const giftInfoData = [
     amount: "$120",
     eventDate: "3 May 2025",
     status: "Completed",
+    issue: "Payment issue",
   },
   {
     id: 13,
@@ -128,6 +146,8 @@ export const giftInfoData = [
     amount: "$115",
     eventDate: "3 May 2025",
     status: "Failed",
+
+    issue: "Payment issue",
   },
   {
     id: 14,
@@ -138,6 +158,7 @@ export const giftInfoData = [
     amount: "$98",
     eventDate: "3 May 2025",
     status: "Completed",
+    issue: "Payment issue",
   },
   {
     id: 15,
@@ -148,6 +169,7 @@ export const giftInfoData = [
     amount: "$88",
     eventDate: "3 May 2025",
     status: "Completed",
+    issue: "Payment issue",
   },
   {
     id: 16,
@@ -158,6 +180,8 @@ export const giftInfoData = [
     amount: "$95",
     eventDate: "3 May 2025",
     status: "Failed",
+
+    issue: "Payment issue",
   },
   {
     id: 17,
@@ -168,6 +192,8 @@ export const giftInfoData = [
     amount: "$110",
     eventDate: "3 May 2025",
     status: "Schedule",
+
+    issue: "Payment issue",
   },
   {
     id: 18,
@@ -178,6 +204,7 @@ export const giftInfoData = [
     amount: "$100",
     eventDate: "3 May 2025",
     status: "Completed",
+    issue: "Payment issue",
   },
   {
     id: 19,
@@ -188,6 +215,8 @@ export const giftInfoData = [
     amount: "$140",
     eventDate: "3 May 2025",
     status: "Schedule",
+
+    issue: "Payment issue",
   },
   {
     id: 20,
@@ -198,5 +227,6 @@ export const giftInfoData = [
     amount: "$130",
     eventDate: "3 May 2025",
     status: "Completed",
+    issue: "Payment issue",
   },
 ];
