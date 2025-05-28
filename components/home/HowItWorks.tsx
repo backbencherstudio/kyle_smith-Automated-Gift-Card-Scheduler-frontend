@@ -38,7 +38,7 @@ const HowItWorks = () => {
     );
 
     return (
-        <section className="py-16 px-4 bg-[#FFFCF5] text-center">
+        <section className="py-16 px-4  text-center">
             <h2 className="text-4xl font-bold text-[#1D1F2C] mb-2">How It Works</h2>
             <p className="text-[#4A4C56] mb-16">
                 Simple, automated gift scheduling that keeps you on track for every special occasion

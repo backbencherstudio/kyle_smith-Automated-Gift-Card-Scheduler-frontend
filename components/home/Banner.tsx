@@ -37,7 +37,7 @@ function Banner() {
               Send Thoughtful Gifts in Seconds to Automate your Gifts
             </p>
 
-            <button className="bg-white text-gray-800 hover:bg-gray-100  duration-300 py-3 px-8 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-transform">
+            <button className="bg-white cursor-pointer text-gray-800 hover:bg-gray-100  duration-300 py-3 px-8 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-transform">
               Get Started
             </button>
           </div>
