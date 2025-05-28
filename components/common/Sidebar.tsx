@@ -53,12 +53,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
 
   const isActive = (href: string): boolean => {
-    if (href === "/") {
-      return pathname === "/";
+    if (href === "/dashboard") {
+      return pathname === "/dashboard";
     }
     return pathname.startsWith(href);
   };
-
   return (
     <div className="h-screen  ">
       {/* Overlay for mobile */}

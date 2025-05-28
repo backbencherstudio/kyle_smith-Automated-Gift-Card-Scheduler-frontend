@@ -1,9 +1,11 @@
 "use client"
 
 import { userGiftData } from "@/demoData/userGiftData";
+import Link from "next/link";
 import { useState } from "react";
+import { FiEye } from "react-icons/fi";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import DynamicTableTwo from "../../component/common/DynamicTableTwo";
-
 function Booking() {
       const [currentPage, setCurrentPage] = useState(1);
       const columns = [
@@ -37,36 +39,12 @@ function Booking() {
           accessor: "actions",
           width: "120px",
           formatter: (_value, row) => (
-            <div className="flex gap-2 justify-center items-center">
-              <button title="View">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-4 h-4 text-gray-700 hover:text-blue-600"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              </button>
-              <button title="Delete">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-4 h-4 text-red-600 hover:text-red-800"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="3 6 5 6 21 6" />
-                  <path d="M19 6l-2 14H7L5 6m5 0V4a2 2 0 012-2h0a2 2 0 012 2v2" />
-                </svg>
+            <div className="flex gap-4  items-center">
+              <Link href="/dashboard/user-management/view-all-information">
+              <FiEye className="text-[17px] hover:text-primaryColor transition-all" />
+              </Link>
+              <button title="Delete" className=" cursor-pointer">
+              <RiDeleteBin6Line className="text-[17px] hover:text-redColor transition-all" />
               </button>
             </div>
           ),
