@@ -40,7 +40,7 @@ const navItems: NavItem[] = [
   {
     icon: "/icon/setting.svg", // Replace this with the actual image path
     label: "Settings",
-    href: "/dashboard/settings",
+    href: "/dashboard/my-profile",
   },
   {
     icon: "/icon/logout.svg", // Replace this with the actual image path

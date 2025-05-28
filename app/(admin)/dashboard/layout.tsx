@@ -3,7 +3,8 @@ import React, { useState } from "react";
 
 import CustomToastContainer from "@/components/CustomToast/CustomToastContainer";
 import Header from "@/components/common/Header";
-import Sidebar from "@/components/common/Sidebar";
+import Sidebar from "../component/common/Sidebar";
+
 
 interface AdminLayoutProps {
   children: React.ReactNode;
