@@ -1,6 +1,7 @@
 
-import { HomeBarChart } from '../Chart/BarChart'
+
 import { RevenueLineChart } from '../Chart/LineChart'
+import UpcomingGift from '../Chart/UpcomingGift'
 import StatCards from './StatCards'
 
 function DashboardPage() {
@@ -11,7 +12,7 @@ function DashboardPage() {
 
       <div className=' grid grid-cols-1 gap-6 lg:grid-cols-2 my-4'>
         <RevenueLineChart/>
-        <HomeBarChart/>
+        <UpcomingGift/>
       </div>
       <div className=' '>
       {/* <RecentOrderTable/> */}

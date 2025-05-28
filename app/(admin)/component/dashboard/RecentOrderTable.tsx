@@ -1,5 +1,6 @@
 "use client"
-import { serviceRequests } from '@/demoData/serviceRequests';
+
+import { giftData } from '@/demoData/giftData';
 import Image from 'next/image';
 import { useState } from 'react';
 import DynamicTableTwo from '../common/DynamicTableTwo';
@@ -69,7 +70,7 @@ function RecentOrderTable() {
           </div>
       <DynamicTableTwo 
       columns={columns}
-              data={serviceRequests}
+              data={giftData}
               currentPage={currentPage}
               itemsPerPage={5}
               onPageChange={(page) => setCurrentPage(page)}/>

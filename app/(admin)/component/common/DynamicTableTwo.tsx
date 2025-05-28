@@ -78,7 +78,7 @@ export default function DynamicTableTwo({
                 )}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-white">
               {paginatedData.length > 0 ? (
                 paginatedData.map((row, i) => (
                   <tr key={i} className="border-t border-gray-100">
