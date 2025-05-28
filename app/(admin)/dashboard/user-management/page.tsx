@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { FiEye } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import DynamicTableTwo from "../../component/common/DynamicTableTwo";
+import DynamicTableTwo from "../../_component/common/DynamicTableTwo";
 function Booking() {
       const [currentPage, setCurrentPage] = useState(1);
       const columns = [
