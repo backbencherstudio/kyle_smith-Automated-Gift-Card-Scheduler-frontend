@@ -52,6 +52,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
           {/* Scrollable content area */}
           <main className="flex-1 overflow-y-auto bg-[#FAFAFC] p-0x p-4 lg:pl-6 lg:pt-6">
+             <h2 className='lg:text-2xl text-lg md:text-xl font-bold text-black mb-4 lg:mb-6'>Dashboard</h2>
             {children}
             <CustomToastContainer />
           </main>
