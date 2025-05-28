@@ -3,7 +3,8 @@ import React, { useState } from "react";
 
 import CustomToastContainer from "@/components/CustomToast/CustomToastContainer";
 import Header from "@/components/common/Header";
-import Sidebar from "@/components/common/Sidebar";
+import Sidebar from "../component/common/Sidebar";
+
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -22,11 +23,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         {/* Sidebar */}
         <div
           className={`
-            fixed top-0 left-1/2 -translate-x-1/2 lg:translate-x-0
-            h-screen w-[300px] z-30 bg-white border-r border-borderColor
+            fixed top-0 left-1/2 -translate-x-1/2 xl:translate-x-0
+            h-screen w-[300px] z-30 bg-white
             transition-transform duration-300 ease-in-out
             ${sidebarOpen ? "translate-x-[0%]" : "-translate-x-[150%]"}
-            lg:static lg:translate-x-0 z-50
+            xl:static xl:translate-x-0 z-50
           `} 
           style={{
             left: "0px", // Only relevant for mobile now
@@ -51,7 +52,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           </div>
 
           {/* Scrollable content area */}
-          <main className="flex-1 overflow-y-auto p-0x p-4 lg:pl-6 lg:pt-6">
+          <main className="flex-1 overflow-y-auto bg-[#FAFAFC] p-0x p-4 lg:pl-6 lg:pt-6">
+             <h2 className='lg:text-2xl text-lg md:text-xl font-bold text-black mb-4 lg:mb-6'>Dashboard</h2>
             {children}
             <CustomToastContainer />
           </main>
