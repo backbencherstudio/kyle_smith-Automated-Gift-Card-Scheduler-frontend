@@ -28,6 +28,7 @@ body {
   --color-ratingColor: #ffc52e;
   --color-borderColor: #e9e9e9;
   --color-pragaraphColor: #62676c;
+  --color-borderColor: #c1c1c1;
   --color-bgColor: var(--bgColor);
   --color-descriptionColor: var(--descriptionColor);
   /* ======== */

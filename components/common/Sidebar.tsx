@@ -18,32 +18,32 @@ interface SidebarProps {
 
 const navItems: NavItem[] = [
   {
-    icon: "/icon/grid-alt.svg",  // Replace this with the actual image path
+    icon: "/icon/grid-alt.svg", // Replace this with the actual image path
     label: "Dashboard",
     href: "/dashboard",
   },
   {
-    icon: "/icon/note.svg",  // Replace this with the actual image path
+    icon: "/icon/note.svg", // Replace this with the actual image path
     label: "User Management",
     href: "/dashboard/user-management",
   },
   {
-    icon: "/icon/giftlog.svg",  // Replace this with the actual image path
+    icon: "/icon/giftlog.svg", // Replace this with the actual image path
     label: "Gift Log",
     href: "/dashboard/gift-log",
   },
   {
-    icon: "/icon/payment.svg",  // Replace this with the actual image path
+    icon: "/icon/payment.svg", // Replace this with the actual image path
     label: "Payment Settings",
     href: "/dashboard/payment-settings",
   },
   {
-    icon: "/icon/setting.svg",  // Replace this with the actual image path
+    icon: "/icon/setting.svg", // Replace this with the actual image path
     label: "Settings",
     href: "/dashboard/settings",
   },
   {
-    icon: "/icon/logout.svg",  // Replace this with the actual image path
+    icon: "/icon/logout.svg", // Replace this with the actual image path
     label: "Log Out",
     href: "/login",
   },
@@ -94,71 +94,61 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         {/* Account Section */}
         <div className="my-4 ">
-          <div
-            
-            className="text-white pl-2 pb-5 text-xl lg:text-3xl font-semibold "
-          >
+          <div className="text-white pl-2 pb-5 text-xl lg:text-3xl font-semibold ">
             <Link href={"/dashboard"}>
-            <Image
-              src="/icon/logo.svg"
-              alt="main logo "
-              width={177}
-              height={29}
-            />
+              <Image
+                src="/icon/logo.svg"
+                alt="main logo "
+                width={177}
+                height={29}
+              />
             </Link>
-           
           </div>
-          <div className=" space-y-2"> 
-
-          {navItems.map((item, idx) => {
-            const active = isActive(item.href);
-            return (
-              <Link
-                key={idx}
-                href={item.href}
-                onClick={onClose}
-                className={`
-        flex items-center justify-between group gap-3 px-3 py-2.5 lg:py-3 rounded-lg  hover:bg-primaryColor
+          <div className=" space-y-2">
+            {navItems.map((item, idx) => {
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={idx}
+                  href={item.href}
+                  onClick={onClose}
+                  className={`
+        flex items-center justify-between group gap-3 px-3 py-2.5 lg:py-3 rounded-lg  hover:bg-[#FDCB48]
         transition-colors duration-200
-        ${active ? "bg-primaryColor" : ""}
+        ${active ? "bg-[#FDCB48]" : ""}
       `}
-              >
-                <div className="flex gap-2 items-center">
-                  <div
-                    className={`
+                >
+                  <div className="flex gap-2 items-center">
+                    <div
+                      className={`
             w-[30px] h-[30px] flex justify-center items-center flex-shrink-0 rounded-full
             text-xl font-medium
-            ${
-              active
-                ? "text-primaryColor"
-                : "text-descriptionColor "
-            }
+            ${active ? "text-primaryColor" : "text-descriptionColor "}
           `}
-                  >
-                   <div>
-                    <Image src={item?.icon} alt={item?.label} width={18} height={18}/>
-                   </div>
-                  </div>
-                  <span
-                    className={`
+                    >
+                      <div>
+                        <Image
+                          src={item?.icon}
+                          alt={item?.label}
+                          width={18}
+                          height={18}
+                        />
+                      </div>
+                    </div>
+                    <span
+                      className={`
             text-base font-semibold 
-            ${
-              active
-                ? "text-descriptionColor"
-                : "text-descriptionColor "
-            }
+            ${active ? "text-descriptionColor" : "text-descriptionColor "}
           `}
-                  >
-                    {item.label}
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
-
-      
       </div>
     </div>
   );
