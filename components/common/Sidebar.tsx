@@ -107,7 +107,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 key={idx}
                 href={item.href}
                 onClick={onClose}
-                className={`
+                className={` 
         flex items-center justify-between group gap-3 px-3 py-2.5 lg:py-3 rounded-lg  hover:bg-primaryColor/10
         transition-colors duration-200
         ${active ? "bg-primaryColor/10" : ""}
