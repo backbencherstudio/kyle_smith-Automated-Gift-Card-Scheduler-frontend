@@ -99,18 +99,30 @@ export default function LoginForm() {
                 </div>
 
                 {/* Terms & Conditions */}
-                <div className="flex items-center space-x-2">
-                    <Checkbox
-                        id="terms"
-                        className="border border-gray-500"
-                        {...register('terms', { required: 'You must agree to the terms and conditions' })}
-                    />
-                    <Label htmlFor="terms" className="text-sm text-gray-500">
-                        I have read and agreed to the{' '}
-                        <span className="text-[#1D1F2C]">Terms and Conditions</span>
-                    </Label>
-                    {errors.terms && <span className="text-red-500 text-xs">{errors.terms.message as string}</span>}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1">
+                    {/* Line 1: Checkbox + sentence */}
+                    <div className="flex items-center space-x-2">
+                        <Checkbox
+                            id="terms"
+                            className="border border-gray-500"
+                            {...register('terms', { required: 'You must agree to the terms and conditions' })}
+                        />
+                        <Label htmlFor="terms" className="text-sm text-gray-500">
+                            I have read and agreed to
+                        </Label>
+                    </div>
+
+                    {/* Line 2: Terms and Conditions */}
+                    <span className="pl-6 sm:pl-0 text-sm text-[#1D1F2C]">
+                        Terms and Conditions
+                    </span>
+
+                    {/* Error Message */}
+                    {errors.terms && (
+                        <span className="text-red-500 text-xs sm:ml-2">{errors.terms.message as string}</span>
+                    )}
                 </div>
+
 
                 {/* Submit Button */}
                 <ButtonReuseable
@@ -126,25 +138,26 @@ export default function LoginForm() {
                         <div className="flex-grow h-px bg-gray-300" />
                     </div>
 
-                    <div className="flex justify-center gap-4">
+                    <div className="flex gap-3">
                         <button
                             type="button"
                             onClick={() => console.log('Sign up with Google')}
-                            className="flex cursor-pointer  items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                            className="flex w-1/2 md:w-auto justify-center items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
                         >
                             <FcGoogle className="text-xl" />
-                            <span className="text-sm font-medium text-gray-700">Sign up with Google</span>
+                            <span className="text-sm font-medium text-gray-700 hidden sm:block">Sign up with Google</span>
                         </button>
 
                         <button
                             type="button"
                             onClick={() => console.log('Sign up with Facebook')}
-                            className="flex cursor-pointer items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                            className="flex w-1/2 md:w-auto justify-center items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
                         >
                             <FaFacebook className="text-blue-600 text-xl" />
-                            <span className="text-sm font-medium text-gray-700">Sign up with Facebook</span>
+                            <span className="text-sm font-medium text-gray-700 hidden sm:block">Sign up with Facebook</span>
                         </button>
                     </div>
+
                 </div>
             </form>
         </div>
