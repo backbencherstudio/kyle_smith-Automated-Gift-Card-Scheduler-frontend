@@ -86,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           p-5 w-full overflow-y-auto
         `}
       >
-        <div className="flex justify-end lg:hidden cursor-pointer">
+        <div className="flex justify-end xl:hidden cursor-pointer">
           <button onClick={onClose}>
             <X />
           </button>
@@ -137,7 +137,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     </div>
                     <span
                       className={`
-            text-base font-semibold 
+            text-base font-semibold  whitespace-nowrap
             ${active ? "text-descriptionColor" : "text-descriptionColor "}
           `}
                     >
