@@ -7,11 +7,12 @@ body {
   font-family: "Nunito", sans-serif;
   font-weight: 400;
 }
+
 .container {
-  max-width: 1320px;
-  padding: 0 16px;
+  max-width: 1280px;
   margin: 0 auto;
 }
+
 @theme inline {
   --color-primaryColor: var(--primaryColor);
   --color-secondaryColor: var(--secondaryColor);
@@ -67,6 +68,7 @@ body {
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
+
 :root {
   --primaryColor: #fad33e;
   --secondaryColor: #444950;
@@ -151,17 +153,19 @@ body {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
+
 .pointer-events-none {
   pointer-events: none;
   display: block !important;
   opacity: 1 !important;
 }
 
-input:checked ~ .checkmark {
+input:checked~.checkmark {
   background-color: var(--color-green-600);
 }
 
@@ -169,6 +173,7 @@ input:checked ~ .checkmark {
   opacity: 1;
   cursor: pointer;
 }
+
 .close .\[\&_svg\]\:pointer-events-none svg {
   pointer-events: none;
   background-color: var(--secondaryColor);
@@ -221,6 +226,7 @@ table {
 .fc .fc-day-today {
   background-color: transparent !important;
 }
+
 .fc-event {
   background-color: transparent !important;
   border: none !important;
@@ -232,6 +238,7 @@ table {
   padding: 15px 2px !important;
   background-color: #eef3f8 !important;
 }
+
 .fc-custom-header {
   display: flex;
   flex-direction: column;
@@ -246,5 +253,6 @@ table {
 
 .fc-day-name {
   font-size: 12px;
-  color: #4b5563; /* optional softer text */
+  color: #4b5563;
+  /* optional softer text */
 }

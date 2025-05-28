@@ -1,12 +1,11 @@
 import Loader from '@/components/reusable/Loader'
 import React from 'react'
 
-function loagin() {
+export default function loading() {
   return (
     <div>
-      <Loader/>
+      <Loader />
     </div>
   )
 }
-
-export default loagin
+ 
