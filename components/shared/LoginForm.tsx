@@ -138,7 +138,7 @@ export default function LoginForm() {
                         <div className="flex-grow h-px bg-gray-300" />
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="flex justify-center gap-3">
                         <button
                             type="button"
                             onClick={() => console.log('Sign up with Google')}
