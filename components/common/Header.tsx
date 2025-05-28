@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({
     console.log("logout");
   };
   return (
-    <nav className=" text-blackColor border-b border-borderColor  py-3">
+    <nav className=" text-blackColor   py-3">
       <div className=" container !px-3   relative flex justify-between mb-1 z-50">
         {/* Mobile menu button */}
         <div>

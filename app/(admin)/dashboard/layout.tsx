@@ -23,7 +23,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         <div
           className={`
             fixed top-0 left-1/2 -translate-x-1/2 lg:translate-x-0
-            h-screen w-[300px] z-30 bg-white border-r border-borderColor
+            h-screen w-[250px] xl:w-[300px] z-30 bg-white
             transition-transform duration-300 ease-in-out
             ${sidebarOpen ? "translate-x-[0%]" : "-translate-x-[150%]"}
             lg:static lg:translate-x-0 z-50
@@ -51,7 +51,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           </div>
 
           {/* Scrollable content area */}
-          <main className="flex-1 overflow-y-auto p-0x p-4 lg:pl-6 lg:pt-6">
+          <main className="flex-1 overflow-y-auto bg-[#FAFAFC] p-0x p-4 lg:pl-6 lg:pt-6">
             {children}
             <CustomToastContainer />
           </main>
