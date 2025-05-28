@@ -41,7 +41,7 @@ export default function ChoseUsCardfst({
                 <p className="text-sm text-gray-600">{description}</p>
                 <button
                     onClick={onClick}
-                    className="bg-yellow-400 hover:bg-yellow-500 text-black px-7 py-2 rounded font-medium transition"
+                    className="bg-[#FAD33E] cursor-pointer hover:bg-[#fad43ec9] text-black px-7 py-2 rounded font-medium transition"
                 >
                     {buttonText}
                 </button>

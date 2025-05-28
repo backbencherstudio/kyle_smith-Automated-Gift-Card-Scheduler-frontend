@@ -10,7 +10,7 @@ import image5 from '@/public/image/choose/img5.png'
 export default function WhyChooseUs() {
     return (
         <div className="container p-4 ">
-            <h2 className="text-3xl font-bold mb-14 text-center">Why Choose Us</h2>
+            <h2 className="text-3xl font-bold mb-14 text-center mt-10">Why Choose Us</h2>
             <div className='space-y-20 md:space-y-10'>
                 <ChoseUsCardfst
                     imageWidth={1000}
@@ -64,7 +64,7 @@ export default function WhyChooseUs() {
                     description="Effortlessly sync birthdays and important events directly from Facebook, keeping your contact list updated automatically. "
                     buttonText="Sign Up"
                 // onClick={() => alert("Redirect to sign up!")}
-                />s
+                />
             </div>
         </div>
     );
