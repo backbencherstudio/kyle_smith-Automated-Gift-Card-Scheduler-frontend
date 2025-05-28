@@ -5,9 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { BiCar } from "react-icons/bi";
-import { MdOutlineAccessTime, MdOutlineEventAvailable } from "react-icons/md";
-import { RiHome6Line } from "react-icons/ri";
 interface NavItem {
   icon: any;
   label: string;
@@ -21,24 +18,34 @@ interface SidebarProps {
 
 const navItems: NavItem[] = [
   {
-    icon: <RiHome6Line />,
+    icon: "/icon/grid-alt.svg", // Replace this with the actual image path
     label: "Dashboard",
-    href: "/",
+    href: "/dashboard",
   },
   {
-    icon: <BiCar />,
-    label: "Services",
-    href: "/dashboard/services",
+    icon: "/icon/note.svg", // Replace this with the actual image path
+    label: "User Management",
+    href: "/dashboard/user-management",
   },
   {
-    icon: <MdOutlineEventAvailable />,
-    label: "Manage bookings",
-    href: "/dashboard/bookings",
+    icon: "/icon/giftlog.svg", // Replace this with the actual image path
+    label: "Gift Log",
+    href: "/dashboard/gift-log",
   },
   {
-    icon: <MdOutlineAccessTime />,
-    label: "Schedule Calendar",
-    href: "/dashboard/schedule-calendar",
+    icon: "/icon/payment.svg", // Replace this with the actual image path
+    label: "Payment Settings",
+    href: "/dashboard/payment-settings",
+  },
+  {
+    icon: "/icon/setting.svg", // Replace this with the actual image path
+    label: "Settings",
+    href: "/dashboard/settings",
+  },
+  {
+    icon: "/icon/logout.svg", // Replace this with the actual image path
+    label: "Log Out",
+    href: "/login",
   },
 ];
 
@@ -46,12 +53,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
 
   const isActive = (href: string): boolean => {
-    if (href === "/") {
-      return pathname === "/";
+    if (href === "/dashboard") {
+      return pathname === "/dashboard";
     }
     return pathname.startsWith(href);
   };
-
   return (
     <div className="h-screen  ">
       {/* Overlay for mobile */}
@@ -79,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           p-5 w-full overflow-y-auto
         `}
       >
-        <div className="flex justify-end lg:hidden cursor-pointer">
+        <div className="flex justify-end xl:hidden cursor-pointer">
           <button onClick={onClose}>
             <X />
           </button>
@@ -110,61 +116,39 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 className={` 
         flex items-center justify-between group gap-3 px-3 py-2.5 lg:py-3 rounded-lg  hover:bg-primaryColor/10
         transition-colors duration-200
-        ${active ? "bg-primaryColor/10" : ""}
+        ${active ? "bg-[#FDCB48]" : ""}
       `}
-              >
-                <div className="flex gap-2 items-center">
-                  <div
-                    className={`
+                >
+                  <div className="flex gap-2 items-center">
+                    <div
+                      className={`
             w-[30px] h-[30px] flex justify-center items-center flex-shrink-0 rounded-full
             text-xl font-medium
-            ${
-              active
-                ? "text-primaryColor"
-                : "text-descriptionColor group-hover:text-primaryColor"
-            }
+            ${active ? "text-primaryColor" : "text-descriptionColor "}
           `}
-                  >
-                    {item.icon}
+                    >
+                      <div>
+                        <Image
+                          src={item?.icon}
+                          alt={item?.label}
+                          width={18}
+                          height={18}
+                        />
+                      </div>
+                    </div>
+                    <span
+                      className={`
+            text-base font-semibold  whitespace-nowrap
+            ${active ? "text-descriptionColor" : "text-descriptionColor "}
+          `}
+                    >
+                      {item.label}
+                    </span>
                   </div>
-                  <span
-                    className={`
-            text-base font-medium 
-            ${
-              active
-                ? "text-primaryColor"
-                : "text-descriptionColor group-hover:text-primaryColor"
-            }
-          `}
-                  >
-                    {item.label}
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
+                </Link>
+              );
+            })}
           </div>
-        </div>
-
-        {/* Log out section */}
-        <div className="mt-auto pt-4">
-          <Link
-            href="/login"
-            onClick={onClose}
-            className="flex items-center gap-3 px-3 py-3  transition-colors duration-200 "
-          >
-            <div className="w-[30px] h-[30px] flex justify-center items-center flex-shrink-0 ">
-              <Image
-                src="/icon/logout.svg"
-                alt="Log out"
-                width={20}
-                height={20}
-              />
-            </div>
-            <span className="text-base font-normal text-[#111111]">
-              Log out account
-            </span>
-          </Link>
         </div>
       </div>
     </div>
