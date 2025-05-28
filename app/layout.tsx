@@ -1,10 +1,21 @@
 import { AppConfig } from "@/config/app.config";
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Inter, Nunito } from "next/font/google";
 import "./globals.css";
  
-// If loading a variable font, you don't need to specify the font weight
-const roboto = Roboto({ subsets: ['latin'] })
+const nunito = Nunito({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  style: ['normal'],
+  variable: '--font-nunito', // Custom variable name
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  style: ['normal'],
+  variable: '--font-inter', // Custom variable name
+});
 export const metadata: Metadata = {
   title: AppConfig().app.name,
   description: AppConfig().app.slogan,
@@ -17,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${roboto.className}`}>{children}</body>
+      <body className={` ${inter.variable} ${nunito.variable} `}>{children}</body>
     </html>
   );
 }

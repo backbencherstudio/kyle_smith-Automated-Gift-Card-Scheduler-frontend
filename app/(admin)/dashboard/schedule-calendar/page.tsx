@@ -1,4 +1,4 @@
-import DemoApp from "@/components/Time/SchedulerTime"
+import DemoApp from "../../component/Time/SchedulerTime"
 
 
 function CalendarPage() {
