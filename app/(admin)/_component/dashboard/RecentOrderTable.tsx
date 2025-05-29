@@ -2,8 +2,8 @@
 
 import { giftData } from '@/demoData/giftData';
 import { useState } from 'react';
-import DynamicTable from '../common/DynamicTable';
 import { IoIosArrowDown } from 'react-icons/io';
+import DynamicTableTwo from '../common/DynamicTableTwo';
 
 function RecentOrderTable() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -66,12 +66,13 @@ function RecentOrderTable() {
             View All <IoIosArrowDown /></button>
          </div>
           </div>
-      <DynamicTable
-     range="min-w-[1000px]"
+      <DynamicTableTwo
+
+      
       columns={columns}
               data={giftData}
               currentPage={currentPage}
-              itemsPerPage={5}
+              itemsPerPage={7}
               onPageChange={(page) => setCurrentPage(page)}/>
       </div>
     </section>

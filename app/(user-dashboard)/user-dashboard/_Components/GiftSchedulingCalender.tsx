@@ -307,13 +307,13 @@ export default function WeeklyGiftCalendar() {
 
 .calendar-container :global(.fc-prev-button):before {
     content: "‹" !important;
-    font-size: 20px !important;
+    font-size: 30px !important;
     font-weight: bold !important;
 }
 
 .calendar-container :global(.fc-next-button):before {
     content: "›" !important;
-    font-size: 20px !important;
+    font-size: 30px !important;
     font-weight: bold !important;
 }
 
