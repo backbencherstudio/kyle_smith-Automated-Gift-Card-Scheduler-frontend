@@ -100,10 +100,8 @@ export default function WeeklyGiftCalendar() {
         const { events, isMultiple } = clickInfo.event.extendedProps;
 
         if (isMultiple) {
-            // Show user list modal if multiple events
             setUserListModal({ date: clickInfo.event.start, events });
         } else {
-            // Directly open gift modal for single event
             setSelectedUser(events[0].extendedProps);
         }
     };
@@ -122,13 +120,11 @@ export default function WeeklyGiftCalendar() {
         const startDate = new Date(dateInfo.start);
         const endDate = new Date(dateInfo.end);
 
-        // Adjust end date to show the last day of the visible month
         endDate.setDate(endDate.getDate() - 1);
 
         const formatDate = (date) => {
             const day = String(date.getDate()).padStart(2, '0');
             const month = date.toLocaleDateString('en-US', { month: 'short' });
-            const year = date.getFullYear();
             return `${day} ${month}`;
         };
 
@@ -158,27 +154,29 @@ export default function WeeklyGiftCalendar() {
                 <h2 className="text-xl font-bold">Gift Scheduling</h2>
                 {dateRange && <span className="text-sm text-gray-600">{dateRange}</span>}
             </div>
-            <div className="calendar-container">
-                <FullCalendar
-                    plugins={[dayGridPlugin, interactionPlugin]}
-                    initialView="dayGridMonth"
-                    events={calendarEvents.map((event) => ({
-                        ...event,
-                        display: 'block',
-                        backgroundColor: event.extendedProps.isMultiple ? '#F3F4F6' : event.extendedProps.events[0].extendedProps.color,
-                        borderColor: event.extendedProps.isMultiple ? '#9CA3AF' : event.extendedProps.events[0].extendedProps.color,
-                        textColor: '#000',
-                    }))}
-                    eventContent={renderEventContent}
-                    eventClick={handleEventClick}
-                    height="auto"
-                    headerToolbar={{
-                        left: "prev title next",
-                        center: "",
-                        right: "",
-                    }}
-                    datesSet={handleDatesSet}
-                />
+            <div className="overflow-x-auto">
+                <div className="calendar-container w-full">
+                    <FullCalendar
+                        plugins={[dayGridPlugin, interactionPlugin]}
+                        initialView="dayGridMonth"
+                        events={calendarEvents.map((event) => ({
+                            ...event,
+                            display: 'block',
+                            backgroundColor: event.extendedProps.isMultiple ? '#F3F4F6' : event.extendedProps.events[0].extendedProps.color,
+                            borderColor: event.extendedProps.isMultiple ? '#9CA3AF' : event.extendedProps.events[0].extendedProps.color,
+                            textColor: '#000',
+                        }))}
+                        eventContent={renderEventContent}
+                        eventClick={handleEventClick}
+                        height="auto"
+                        headerToolbar={{
+                            left: "prev title next",
+                            center: "",
+                            right: "",
+                        }}
+                        datesSet={handleDatesSet}
+                    />
+                </div>
             </div>
 
             {/* User List Modal */}
@@ -384,6 +382,21 @@ export default function WeeklyGiftCalendar() {
 
 .calendar-container :global(.fc-daygrid-day-frame) {
     min-height: 80px !important;
+}
+
+.calendar-container :global(.fc) {
+    width: 100% !important;
+    min-width: 600px !important;
+}
+
+.calendar-container :global(.fc-view-harness) {
+    width: 100% !important;
+}
+
+@media (max-width: 1024px) {
+    .calendar-container :global(.fc) {
+        min-width: 500px !important;
+    }
 }
 `}</style>
         </div>

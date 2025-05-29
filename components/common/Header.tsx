@@ -201,9 +201,7 @@ const Header: React.FC<HeaderProps> = ({
                     <div className="whitespace-nowrap">
                       <h4 className="sm:text-sm text-[13px] font-medium text-blackColor">Esther Howard</h4>
                     </div>
-                    <button className="cursor-pointer">
-                      <IoIosArrowDown size={16} className="text-grayColor1" />
-                    </button>
+                    <IoIosArrowDown size={16} className="text-grayColor1" />
                   </div>
                 </PopoverTrigger>
                 <PopoverContent className="w-[150px] space-y-6 mt-6" style={{ boxShadow: "2px 2px 7px 2px rgba(0, 0, 0, 0.08)" }}>
