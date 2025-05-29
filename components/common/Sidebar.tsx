@@ -75,9 +75,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           lg:rounded-[12px] p-5 overflow-y-auto
         `}
       >
-        <div className="flex justify-end lg:hidden cursor-pointer">
-          <button onClick={onClose}><X /></button>
-        </div>
+        <button 
+          onClick={onClose} 
+          className="flex justify-end lg:hidden cursor-pointer mb-4"
+        >
+          <X />
+        </button>
 
         <div className="my-4">
           <Link href="/" className="text-white flex justify-center pb-5 text-xl lg:text-3xl font-semibold tracking-wide">

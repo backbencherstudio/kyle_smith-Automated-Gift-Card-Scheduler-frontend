@@ -11,6 +11,10 @@ interface LayoutProps {
 const DashboardLayout = ({ children }: LayoutProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const handleMenuToggle = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
     <div className="flex h-screen overflow-hidden bg-[#F7F7F9] font-commissioner">
       <Sidebar
@@ -19,10 +23,7 @@ const DashboardLayout = ({ children }: LayoutProps) => {
       />
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header
-          sidebarOpen={isMobileMenuOpen}
-          onMenuClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        />
+        <Header onMenuClick={handleMenuToggle} sidebarOpen={isMobileMenuOpen} />
         <div className="flex-1 overflow-y-auto px-6 py-5">
           {children}
         </div>

@@ -1,8 +1,8 @@
-// app/components/Dashboard.tsx
+
 import React from "react";
-import { FaPlus } from "react-icons/fa";
-import GiftSchedulingCalender from "./_Components/GiftSchedulingCalender";
+import { FaChevronDown } from "react-icons/fa";
 import ContactList from "./_Components/ContactList";
+import GiftSchedulingDashboard from "./_Components/GiftSchedulingDashboard";
 
 const stats = [
     { title: "Total contact", value: 100 },
@@ -10,9 +10,8 @@ const stats = [
     { title: "Gift card Send", value: 5 },
 ];
 
-
-
 export default function Dashboard() {
+
     return (
         <div className="flex flex-col lg:flex-row gap-6">
             {/* Left side (Stats + Calendar) */}
@@ -28,11 +27,20 @@ export default function Dashboard() {
                         </div>
                     ))}
                 </div>
-                {/* Calendar Section */}
-                <GiftSchedulingCalender />
-            </div>
+                <div className="p-4 bg-white rounded-lg">
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-bold">Gift Scheduling</h2>
+                        </div>
 
-            {/* Right side: Contact List */}
+                        <button className="text-[#1E1E1E] border  px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
+                            <span>View all</span>
+                            <FaChevronDown />
+                        </button>
+                    </div>
+                    <GiftSchedulingDashboard />
+                </div>
+            </div>
             <ContactList />
         </div>
     );

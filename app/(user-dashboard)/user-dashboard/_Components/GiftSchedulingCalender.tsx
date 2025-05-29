@@ -3,72 +3,98 @@ import React, { useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import Image from "next/image";
 
-const mockEvents = [
-    {
-        id: "1",
-        title: "Eleanor Pena - Birthday",
-        start: "2025-05-02",
-        extendedProps: {
-            name: "Eleanor Pena",
-            type: "Birthday",
-            avatar: "https://i.pravatar.cc/150?u=eleanor",
-            color: "#FEE2E2",
-        },
-    },
-    {
-        id: "2",
-        title: "Jenny Wilson - Birthday",
-        start: "2025-05-02",
-        extendedProps: {
-            name: "Jenny Wilson",
-            type: "Birthday",
-            avatar: "https://i.pravatar.cc/150?u=jenny",
-            color: "#FEE2E2",
-        },
-    },
-    {
-        id: "3",
-        title: "Esther Howard - Christmas",
-        start: "2025-05-08",
-        extendedProps: {
-            name: "Esther Howard",
-            type: "Christmas",
-            avatar: "https://i.pravatar.cc/150?u=esther",
-            color: "#DCFCE7",
-        },
-    },
-    {
-        id: "4",
-        title: "Wade Warren - Marriage Ceremony",
-        start: "2025-05-10",
-        extendedProps: {
-            name: "Wade Warren",
-            type: "Marriage Ceremony",
-            avatar: "https://i.pravatar.cc/150?u=wade",
-            color: "#EDE9FE",
-        },
-    },
-    {
-        id: "5",
-        title: "Marvin McKinney - Birthday",
-        start: "2025-05-10",
-        extendedProps: {
-            name: "Marvin McKinney",
-            type: "Birthday",
-            avatar: "https://i.pravatar.cc/150?u=marvin",
-            color: "#FEE2E2",
-        },
-    },
-];
+interface CalendarEvent {
+    id: string;
+    title: string;
+    start: string;
+    extendedProps: {
+        name: string;
+        type: string;
+        avatar: string;
+        color?: string;
+    };
+}
 
-export default function WeeklyGiftCalendar() {
+interface CalendarConfig {
+    visibleWeeks?: number;
+    eventDisplay?: {
+        showAvatar?: boolean;
+        showEventType?: boolean;
+        compactView?: boolean;
+    };
+    height?: string | number;
+    contentHeight?: number;
+    dayMaxEvents?: number;
+    view?: {
+        type: string;
+        duration: { weeks: number }
+    };
+    visibleRange?: (currentDate: Date) => { start: Date; end: Date };
+}
+
+interface GiftSchedulingCalenderProps {
+    config?: CalendarConfig;
+    events: CalendarEvent[];
+}
+
+const EVENT_TYPE_COLORS = {
+    'Sunday': {
+        background: '#fef2f2',
+        border: '#fca5a5'
+    },
+    'Monday': {
+        background: '#f0fdf4',
+        border: '#86efac'
+    },
+    'Tuesday': {
+        background: '#f5f3ff',
+        border: '#c4b5fd'
+    },
+    'Wednesday': {
+        background: '#fff7ed',
+        border: '#fdba74'
+    },
+    'Thursday': {
+        background: '#fdf2f8',
+        border: '#f9a8d4'
+    },
+    'Friday': {
+        background: '#f0f9ff',
+        border: '#7dd3fc'
+    },
+    'Saturday': {
+        background: '#fefce8',
+        border: '#fde047'
+    }
+};
+
+export default function GiftSchedulingCalender({ config = {}, events }: GiftSchedulingCalenderProps) {
+    const {
+        visibleWeeks = 6,
+        eventDisplay = {
+            showAvatar: true,
+            showEventType: true,
+            compactView: false
+        },
+        height = "auto",
+        contentHeight = 800,
+        dayMaxEvents = 3,
+        view = {
+            type: "dayGridMonth",
+            duration: { weeks: 6 }
+        },
+        visibleRange
+    } = config;
+
     const [selectedUser, setSelectedUser] = useState(null);
     const [userListModal, setUserListModal] = useState(null);
     const [dateRange, setDateRange] = useState("");
+    const [calendarApi, setCalendarApi] = useState(null);
 
     // Group events by date
-    const eventsByDate = mockEvents.reduce((acc, event) => {
+    const eventsByDate = events.reduce((acc, event) => {
         const date = event.start;
         if (!acc[date]) {
             acc[date] = [];
@@ -140,25 +166,129 @@ export default function WeeklyGiftCalendar() {
             eventDates.forEach(dateStr => {
                 const dateEl = document.querySelector(`[data-date="${dateStr}"]`);
                 if (dateEl) {
-                    const dayOfWeek = new Date(dateStr).getDay();
+                    const date = new Date(dateStr);
+                    const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
                     dateEl.classList.add('has-events');
-                    dateEl.classList.add(`day-${dayOfWeek}`);
+                    dateEl.setAttribute('data-day-name', dayName);
                 }
             });
         }, 100);
+
+        // Limit visible weeks if specified
+        if (visibleWeeks < 6) {
+            const calendarEl = document.querySelector('.fc-view-harness');
+            if (calendarEl) {
+                const rows = calendarEl.querySelectorAll('.fc-row');
+                rows.forEach((row, index) => {
+                    if (index >= visibleWeeks) {
+                        (row as HTMLElement).style.display = 'none';
+                    }
+                });
+            }
+        }
+    };
+
+    const customRenderEventContent = (eventInfo) => {
+        const { events, isMultiple } = eventInfo.event.extendedProps;
+
+        if (isMultiple) {
+            const visibleEvents = events.slice(0, 2);
+            const remainingCount = events.length - 2;
+
+            return (
+                <div className="flex flex-col 2xl:flex-row space-x-1 p-1 cursor-pointer">
+                    {eventDisplay.showAvatar && (
+                        <div className="flex -space-x-1">
+                            {visibleEvents.map((event, index) => (
+                                <Image
+                                    width={24}
+                                    height={24}
+                                    key={event.id}
+                                    src={event.extendedProps.avatar}
+                                    alt={event.extendedProps.name}
+                                    className="w-6 h-6 rounded-full border-2 border-white"
+                                    style={{ zIndex: visibleEvents.length - index }}
+                                />
+                            ))}
+                            {remainingCount > 0 && (
+                                <div className="w-6 h-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium text-gray-600">
+                                    +{remainingCount}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    <div className="text-xs">
+                        <p className="font-medium leading-4">{events.length} Events</p>
+                    </div>
+                </div>
+            );
+        }
+
+        const event = events[0];
+        const { name, type, avatar } = event.extendedProps;
+
+        return (
+            <div className={`flex ${eventDisplay.compactView ? 'flex-row' : 'flex-col 2xl:flex-row'} items-center space-x-2 p-1 cursor-pointer`}>
+                {eventDisplay.showAvatar && (
+                    <img src={avatar} alt={name} className="w-6 h-6 rounded-full" />
+                )}
+                <div className="text-xs text-wrap">
+                    <p className="font-medium leading-4">{name}</p>
+                    {eventDisplay.showEventType && (
+                        <p className="text-gray-500 leading-4">{type}</p>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
+    const handlePrevClick = () => {
+        if (calendarApi) {
+            calendarApi.prev();
+        }
+    };
+
+    const handleNextClick = () => {
+        if (calendarApi) {
+            calendarApi.next();
+        }
     };
 
     return (
-        <div className="p-4">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Gift Scheduling</h2>
-                {dateRange && <span className="text-sm text-gray-600">{dateRange}</span>}
-            </div>
+        <div >
+
             <div className="overflow-x-auto">
                 <div className="calendar-container w-full">
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="inline-flex items-center gap-4 px-4 py-2 rounded-lg">
+                            <button
+                                onClick={handlePrevClick}
+                                className="text-gray-600 hover:text-gray-900"
+                            >
+                                ‹
+                            </button>
+                            <span className="text-sm font-medium">May 2025</span>
+                            <button
+                                onClick={handleNextClick}
+                                className="text-gray-600 hover:text-gray-900"
+                            >
+                                ›
+                            </button>
+                        </div>
+                        {dateRange && <span className="text-sm text-gray-600">{dateRange}</span>}
+                    </div>
                     <FullCalendar
+                        ref={(el) => setCalendarApi(el?.getApi())}
                         plugins={[dayGridPlugin, interactionPlugin]}
-                        initialView="dayGridMonth"
+                        initialView={view.type}
+                        views={{
+                            customThreeWeeks: {
+                                type: "dayGrid",
+                                duration: view.duration,
+                                buttonText: `${view.duration.weeks} Weeks`
+                            }
+                        }}
+                        visibleRange={visibleRange}
                         events={calendarEvents.map((event) => ({
                             ...event,
                             display: 'block',
@@ -166,15 +296,13 @@ export default function WeeklyGiftCalendar() {
                             borderColor: event.extendedProps.isMultiple ? '#9CA3AF' : event.extendedProps.events[0].extendedProps.color,
                             textColor: '#000',
                         }))}
-                        eventContent={renderEventContent}
+                        eventContent={customRenderEventContent}
                         eventClick={handleEventClick}
-                        height="auto"
-                        headerToolbar={{
-                            left: "prev title next",
-                            center: "",
-                            right: "",
-                        }}
+                        height={height}
+                        contentHeight={contentHeight}
+                        headerToolbar={false}
                         datesSet={handleDatesSet}
+                        dayMaxEvents={dayMaxEvents}
                     />
                 </div>
             </div>
@@ -260,6 +388,49 @@ export default function WeeklyGiftCalendar() {
             )}
 
             <style jsx>{`
+.calendar-container button {
+    font-size: 24px;
+    padding: 0 8px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    outline: none;
+}
+
+.calendar-container button:hover {
+    color: #000;
+}
+
+.calendar-container .fc-button {
+    background: none !important;
+    border: none !important;
+    color: #374151 !important;
+    font-size: 18px !important;
+    padding: 8px !important;
+    cursor: pointer !important;
+    border-radius: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+}
+
+.calendar-container .fc-button:hover {
+    background-color: #f3f4f6 !important;
+    color: #111827 !important;
+}
+
+.calendar-container .fc-prev-button .fc-icon {
+    font-size: 30px !important;
+    font-weight: bold !important;
+}
+
+.calendar-container .fc-next-button .fc-icon {
+    font-size: 30px !important;
+    font-weight: bold !important;
+}
+
 .calendar-container :global(.fc-toolbar) {
     display: flex !important;
     justify-content: space-between !important;
@@ -279,87 +450,77 @@ export default function WeeklyGiftCalendar() {
     gap: 15px !important;
 }
 
-.calendar-container :global(.fc-button) {
-    background: none !important;
-    border: none !important;
-    color: #374151 !important;
-    font-size: 18px !important;
-    padding: 8px !important;
-    cursor: pointer !important;
-    border-radius: 4px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 32px !important;
-    height: 32px !important;
-}
-
-.calendar-container :global(.fc-button:hover) {
-    background-color: #f3f4f6 !important;
-    color: #111827 !important;
-}
-
 .calendar-container :global(.fc-button-primary) {
     background: none !important;
     border: none !important;
     box-shadow: none !important;
 }
 
-.calendar-container :global(.fc-prev-button):before {
-    content: "‹" !important;
-    font-size: 30px !important;
-    font-weight: bold !important;
-}
-
-.calendar-container :global(.fc-next-button):before {
-    content: "›" !important;
-    font-size: 30px !important;
-    font-weight: bold !important;
-}
-
-.calendar-container :global(.fc-button .fc-icon) {
-    display: none !important;
-}
-
 .calendar-container :global(.fc-daygrid-day) {
     border: 1px solid #e5e7eb !important;
-    background-color: white !important;
-    position: relative;
+    position: relative !important;
+    padding: 0 !important;
 }
 
-.calendar-container :global(.fc-daygrid-day.has-events.day-0) {
+/* Make sure these styles have higher specificity */
+.calendar-container :global(.fc-daygrid-day.has-events[data-day-name="Sunday"]) {
     background-color: #fef2f2 !important;
-    border: 2px solid #fecaca !important;
+    outline: 2px solid #fca5a5 !important;
+    outline-offset: -2px !important;
+    border: none !important;
 }
 
-.calendar-container :global(.fc-daygrid-day.has-events.day-1) {
-    background-color: #eff6ff !important;
-    border: 2px solid #bfdbfe !important;
-}
-
-.calendar-container :global(.fc-daygrid-day.has-events.day-2) {
+.calendar-container :global(.fc-daygrid-day.has-events[data-day-name="Monday"]) {
     background-color: #f0fdf4 !important;
-    border: 2px solid #bbf7d0 !important;
+    outline: 2px solid #86efac !important;
+    outline-offset: -2px !important;
+    border: none !important;
 }
 
-.calendar-container :global(.fc-daygrid-day.has-events.day-3) {
-    background-color: #fefce8 !important;
-    border: 2px solid #fde047 !important;
+.calendar-container :global(.fc-daygrid-day.has-events[data-day-name="Tuesday"]) {
+    background-color: #f5f3ff !important;
+    outline: 2px solid #c4b5fd !important;
+    outline-offset: -2px !important;
+    border: none !important;
 }
 
-.calendar-container :global(.fc-daygrid-day.has-events.day-4) {
-    background-color: #faf5ff !important;
-    border: 2px solid #d8b4fe !important;
-}
-
-.calendar-container :global(.fc-daygrid-day.has-events.day-5) {
-    background-color: #fdf2f8 !important;
-    border: 2px solid #f9a8d4 !important;
-}
-
-.calendar-container :global(.fc-daygrid-day.has-events.day-6) {
+.calendar-container :global(.fc-daygrid-day.has-events[data-day-name="Wednesday"]) {
     background-color: #fff7ed !important;
-    border: 2px solid #fed7aa !important;
+    outline: 2px solid #fdba74 !important;
+    outline-offset: -2px !important;
+    border: none !important;
+}
+
+.calendar-container :global(.fc-daygrid-day.has-events[data-day-name="Thursday"]) {
+    background-color: #fdf2f8 !important;
+    outline: 2px solid #f9a8d4 !important;
+    outline-offset: -2px !important;
+    border: none !important;
+}
+
+.calendar-container :global(.fc-daygrid-day.has-events[data-day-name="Friday"]) {
+    background-color: #f0f9ff !important;
+    outline: 2px solid #7dd3fc !important;
+    outline-offset: -2px !important;
+    border: none !important;
+}
+
+.calendar-container :global(.fc-daygrid-day.has-events[data-day-name="Saturday"]) {
+    background-color: #fefce8 !important;
+    outline: 2px solid #fde047 !important;
+    outline-offset: -2px !important;
+    border: none !important;
+}
+
+/* Add z-index to ensure proper layering */
+.calendar-container :global(.fc-daygrid-day-frame) {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.calendar-container :global(.fc-daygrid-day-events) {
+    position: relative !important;
+    z-index: 2 !important;
 }
 
 .calendar-container :global(.fc-daygrid-day-number) {
@@ -378,10 +539,8 @@ export default function WeeklyGiftCalendar() {
 .calendar-container :global(.fc-event) {
     border-radius: 6px !important;
     margin: 2px !important;
-}
-
-.calendar-container :global(.fc-daygrid-day-frame) {
-    min-height: 80px !important;
+    position: relative !important;
+    z-index: 1 !important;
 }
 
 .calendar-container :global(.fc) {
@@ -398,53 +557,17 @@ export default function WeeklyGiftCalendar() {
         min-width: 500px !important;
     }
 }
+
+${Object.entries(EVENT_TYPE_COLORS).map(([day, colors]) => `
+.calendar-container :global(.fc-daygrid-day.has-events[data-day-name="${day}"]) {
+    background-color: ${colors.background} !important;
+    outline: 2px solid ${colors.border} !important;
+    outline-offset: -2px !important;
+    border: none !important;
+    z-index: 2 !important;
+}
+`).join('\n')}
 `}</style>
         </div>
     );
-}
-
-function renderEventContent(eventInfo) {
-    const { events, isMultiple } = eventInfo.event.extendedProps;
-
-    if (isMultiple) {
-        const visibleEvents = events.slice(0, 2);
-        const remainingCount = events.length - 2;
-
-        return (
-            <div className="flex items-center space-x-1 p-1 cursor-pointer">
-                <div className="flex -space-x-1">
-                    {visibleEvents.map((event, index) => (
-                        <img
-                            key={event.id}
-                            src={event.extendedProps.avatar}
-                            alt={event.extendedProps.name}
-                            className="w-6 h-6 rounded-full border-2 border-white"
-                            style={{ zIndex: visibleEvents.length - index }}
-                        />
-                    ))}
-                    {remainingCount > 0 && (
-                        <div className="w-6 h-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium text-gray-600">
-                            +{remainingCount}
-                        </div>
-                    )}
-                </div>
-                <div className="text-xs">
-                    <p className="font-medium leading-4">{events.length} Events</p>
-                </div>
-            </div>
-        );
-    } else {
-        const event = events[0];
-        const { name, type, avatar } = event.extendedProps;
-
-        return (
-            <div className="flex items-center space-x-2 p-4 cursor-pointer">
-                <img src={avatar} alt={name} className="w-6 h-6 rounded-full" />
-                <div className="text-xs">
-                    <p className="font-medium leading-4">{name}</p>
-                    <p className="text-gray-500 leading-4">{type}</p>
-                </div>
-            </div>
-        );
-    }
 }

@@ -18,7 +18,6 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({
   onMenuClick,
-  sidebarOpen,
 }: HeaderProps) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [profilePopoverOpen, setProfilePopoverOpen] = useState(false);
@@ -97,24 +96,19 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <nav className="text-blackColor shadow !w-full py-3">
-      <div className="px-5 relative flex justify-between mb-1 z-50">
+      <div className="px-5 relative flex justify-end mb-1">
         {/* Mobile menu button */}
-        <div>
-          <div className="xl:hidden flex items-center">
-            <button
-              onClick={onMenuClick}
-              className="pr-2 py-2 text-[#4A4C56]"
-            >
-              {sidebarOpen ? <X className="z-50" /> : <Menu />}
-            </button>
-            <Link href="/" className="text-white text-xl hidden sm:block lg:text-3xl font-semibold tracking-wide">
-              <Image src="/logo/mainLogo.png" alt="main logo" width={40} height={29} />
-            </Link>
-          </div>
+        <div className="xl:hidden absolute left-5 top-1/2 -translate-y-1/2">
+          <button
+            onClick={onMenuClick}
+            className="pr-2 py-2 text-[#4A4C56]"
+          >
+            <Menu />
+          </button>
         </div>
 
         {/* Notification and Profile */}
-        <div className="flex items-center gap-2 lg:gap-5 justify-end">
+        <div className="flex items-center gap-2 lg:gap-5">
           {/* Search */}
           <div className="relative w-[140px] md:w-[221px]">
             <input type="text" className="w-full py-1.5 text-sm sm:text-base focus-visible:border-0 md:py-2.5 border md:rounded-[12px] rounded-md pl-7 pr-2" placeholder="Search" />
@@ -138,52 +132,52 @@ const Header: React.FC<HeaderProps> = ({
             </PopoverTrigger>
 
             <PopoverContent className="w-80 md:w-[467px] mt-4 p-0 max-h-[550px] flex flex-col">
-  {/* Header */}
-  <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
-    <h4 className="text-base font-bold md:text-lg text-headerColor">Notifications</h4>
-    {notifications.length > 0 && (
-      <button onClick={clearNotifications} className="text-base font-semibold underline cursor-pointer text-headerColor">
-        Clear All
-      </button>
-    )}
-  </div>
+              {/* Header */}
+              <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
+                <h4 className="text-base font-bold md:text-lg text-headerColor">Notifications</h4>
+                {notifications.length > 0 && (
+                  <button onClick={clearNotifications} className="text-base font-semibold underline cursor-pointer text-headerColor">
+                    Clear All
+                  </button>
+                )}
+              </div>
 
-  {/* Scrollable Notification Body */}
-  <div className="overflow-y-auto px-4 py-3 flex-1">
-    {notifications.length > 0 ? (
-      <div className="flex flex-col space-y-6">
-        {displayedNotifications.map((notification) => (
-          <div key={notification.id} className="flex items-center space-x-3">
-            <div className="w-8 h-8 lg:w-12 lg:h-12 rounded-full">
-              <Image src={notification.img} alt="notification" width={50} height={50} className="w-8 h-8 lg:w-12 lg:h-12 rounded-full" />
-            </div>
-            <div className="flex-1">
-              <p className="font-bold text-base text-headerColor">Carl Steadham</p>
-              <p className="text-sm font-normal text-descriptionColor mt-1">{notification.message}</p>
-            </div>
-            <div className="flex items-start">
-              <p className="text-xs text-gray-500">{notification.timeAgo}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <p className="text-center text-sm text-gray-500 py-6">No notifications available</p>
-    )}
-  </div>
+              {/* Scrollable Notification Body */}
+              <div className="overflow-y-auto px-4 py-3 flex-1">
+                {notifications.length > 0 ? (
+                  <div className="flex flex-col space-y-6">
+                    {displayedNotifications.map((notification) => (
+                      <div key={notification.id} className="flex items-center space-x-3">
+                        <div className="w-8 h-8 lg:w-12 lg:h-12 rounded-full">
+                          <Image src={notification.img} alt="notification" width={50} height={50} className="w-8 h-8 lg:w-12 lg:h-12 rounded-full" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-bold text-base text-headerColor">Carl Steadham</p>
+                          <p className="text-sm font-normal text-descriptionColor mt-1">{notification.message}</p>
+                        </div>
+                        <div className="flex items-start">
+                          <p className="text-xs text-gray-500">{notification.timeAgo}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-sm text-gray-500 py-6">No notifications available</p>
+                )}
+              </div>
 
-  {/* Sticky Footer */}
-  {notifications.length > 5 && !showAllNotifications && (
-    <div className="border-t p-4 sticky bottom-0 bg-white z-10">
-      <button
-        onClick={() => setShowAllNotifications(true)}
-        className="text-headerColor font-bold flex gap-2 cursor-pointer items-center justify-center w-full"
-      >
-        View All <FaArrowRightLong />
-      </button>
-    </div>
-  )}
-</PopoverContent>
+              {/* Sticky Footer */}
+              {notifications.length > 5 && !showAllNotifications && (
+                <div className="border-t p-4 sticky bottom-0 bg-white z-10">
+                  <button
+                    onClick={() => setShowAllNotifications(true)}
+                    className="text-headerColor font-bold flex gap-2 cursor-pointer items-center justify-center w-full"
+                  >
+                    View All <FaArrowRightLong />
+                  </button>
+                </div>
+              )}
+            </PopoverContent>
 
 
           </Popover>
