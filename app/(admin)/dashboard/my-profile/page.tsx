@@ -26,9 +26,9 @@ function MyProfile() {
                 <div className="">
                   <button
                     onClick={() => setIsEdite(true)}
-                    className="flex items-center gap-1 bg-primaryColor cursor-pointer text-headerColor  px-3 py-3  rounded-md text-sm font-semibold"
+                    className="flex items-center gap-1 bg-primaryColor cursor-pointer text-headerColor px-2 py-2  md:px-3 md:py-3  rounded-md text-sm font-semibold"
                   >
-                   <BiEdit size={17} /> Edit Profile
+                   <BiEdit className="lg:w-4.5 lg:h-4.5 w-3.5 h-3.5"  /> Edit Profile
                   </button>
                 </div>
               </div>
@@ -43,8 +43,8 @@ function MyProfile() {
                   />
                   <div className=" absolute top-0 left-0 bg-blackColor/80 w-full h-full  rounded-lg">
 
-                  <div className=" md:flex h-full md:ml-15 items-center gap-5">
-                    <div className=" w-[100px] h-[100px] md:w-[120px] md:h-[120px] rounded-full overflow-hidden border-2 border-whiteColor">
+                  <div className=" flex flex-col md:flex-row h-full md:ml-15 justify-center md:items-center gap-3 md:gap-5 ml-6" >
+                    <div className="  relative w-[80px] h-[80px] md:w-[10px] md:h-[10px] lg:w-[120px] lg:h-[120px]  rounded-full overflow-hidden border-2 border-whiteColor">
                       <Image
                         src="/image/proimag.jpg"
                         alt="profilebg"
@@ -60,9 +60,9 @@ function MyProfile() {
                       <p className="text-base  text-[#D2D2D5] md:my-1">
                       Owner Of Timely
                       </p>
-                      <div>
-                        <p className="flex items-center gap-2 text-[#D2D2D5]"><span><GrLocation /></span> 4319 Wakefield Street, Philadelphia, PA 19126</p>
-                        <p className="flex items-center gap-2 text-[#D2D2D5]"><span><IoMailOutline />
+                      <div className="mt-2 md:mt-0">
+                        <p className="flex items-center gap-2 text-sm md:text-base text-[#D2D2D5]"><span><GrLocation /></span> 4319 Wakefield Street, Philadelphia, PA 19126</p>
+                        <p className="flex items-center gap-2 text-sm md:text-base text-[#D2D2D5]"><span><IoMailOutline />
                         </span> esther@gmail.com</p>
                         
                       </div>
