@@ -4,12 +4,12 @@ import React from 'react';
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
-const  FrotEndlayout:React.FC<AdminLayoutProps> = ({ children })=> {
+const FrotEndlayout: React.FC<AdminLayoutProps> = ({ children }) => {
   return (
     <div>
-      <Navbar/>
+      <Navbar />
       {children}
-      <Footer/>
+      <Footer />
     </div>
   )
 }
