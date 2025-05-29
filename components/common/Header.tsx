@@ -129,7 +129,7 @@ const Header: React.FC<HeaderProps> = ({
               onClick={() => setPopoverOpen(!popoverOpen)}
             >
               {notifications.length > 0 && (
-                <span className="absolute -top-0.5 right-0 w-3 h-3 rounded-full bg-redColor" >
+                <span className="absolute -top-1.5 -right-1.5 flex justify-center items-center text-sm w-6 h-6 text-whiteColor rounded-full bg-redColor" >
                   {notifications.length}
                 </span>
 
