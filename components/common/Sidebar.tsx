@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const user = {
     name: "John Doe",
     email: "test@gmail.com",
-    role: "user"
+    role: "admin"
   };
 
   const isActive = (href: string): boolean => {
