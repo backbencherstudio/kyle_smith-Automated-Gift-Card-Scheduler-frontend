@@ -1,5 +1,6 @@
 import React from 'react'
 import GiftSchedulingCalender from './GiftSchedulingCalender';
+import { FaChevronDown } from 'react-icons/fa';
 const mockEvents = [
     {
         id: "1",
@@ -77,7 +78,17 @@ export default function GiftSchedulingDashboard() {
     };
 
     return (
-        <div>
+        <div className="bg-white rounded-lg p-4">
+            <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold">Gift Scheduling</h2>
+                </div>
+
+                <button className="text-[#1E1E1E] border  px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
+                    <span>View all</span>
+                    <FaChevronDown />
+                </button>
+            </div>
             <GiftSchedulingCalender
                 config={calendarConfig}
                 events={mockEvents}

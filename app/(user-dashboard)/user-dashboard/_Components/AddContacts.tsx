@@ -1,0 +1,183 @@
+"use client"
+import { useForm, Controller } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { FaFacebook, FaInstagram } from 'react-icons/fa';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import CustomModal from "@/components/ui/custom-modal";
+
+interface AddContactsProps {
+    isOpen: boolean;
+    onClose: () => void;
+}
+
+export default function AddContacts({ isOpen, onClose }: AddContactsProps) {
+    const {
+        register,
+        handleSubmit,
+        control,
+        formState: { errors },
+    } = useForm();
+
+    const onSubmit = (data: any) => {
+        console.log(data);
+        onClose();
+    };
+
+    return (
+        <CustomModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Add Contact"
+        >
+            <div className="space-y-6 border-t border-gray-200 pt-6">
+                <p className="text-center text-md text-[#1D1F2C]">Contact with social media</p>
+
+                <div className="flex justify-center gap-3">
+                    <button
+                        className="flex cursor-pointer items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-md hover:bg-gray-50"
+                        onClick={() => console.log("Sync Facebook")}
+                    >
+                        <FaFacebook className="text-blue-600" />
+                        <span className="text-sm">Sync From Facebook</span>
+                    </button>
+                    <button
+                        className="flex cursor-pointer items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-md hover:bg-gray-50"
+                        onClick={() => console.log("Connect Instagram")}
+                    >
+                        <FaInstagram className="text-pink-600" />
+                        <span className="text-sm">Connect Instagram</span>
+                    </button>
+                </div>
+
+                <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                        <span className="px-4 bg-white text-gray-400">or</span>
+                    </div>
+                </div>
+
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium">Name</label>
+                            <Input
+                                placeholder="Enter Contact Name"
+                                className="border-gray-200 bg-gray-50/50"
+                                {...register("name", { required: "Name is required" })}
+                            />
+                            {errors.name && (
+                                <p className="text-red-500 text-xs">{errors.name.message as string}</p>
+                            )}
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium">Address</label>
+                            <Input
+                                placeholder="Enter Address"
+                                className="border-gray-200 bg-gray-50/50"
+                                {...register("address", { required: "Address is required" })}
+                            />
+                            {errors.address && (
+                                <p className="text-red-500 text-xs">{errors.address.message as string}</p>
+                            )}
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium">Email</label>
+                            <Input
+                                type="email"
+                                placeholder="Enter Email"
+                                className="border-gray-200 bg-gray-50/50"
+                                {...register("email", {
+                                    required: "Email is required",
+                                    pattern: {
+                                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                        message: "Invalid email address"
+                                    }
+                                })}
+                            />
+                            {errors.email && (
+                                <p className="text-red-500 text-xs">{errors.email.message as string}</p>
+                            )}
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium">Birthday</label>
+                            <Controller
+                                name="birthday"
+                                control={control}
+                                rules={{ required: "Birthday is required" }}
+                                render={({ field }) => (
+                                    <Popover modal={true}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                className={cn(
+                                                    "w-full justify-start text-left font-normal",
+                                                    !field.value && "text-muted-foreground"
+                                                )}
+                                            >
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {field.value ? format(new Date(field.value), "PPP") : "Select birthday"}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent
+                                            className="w-auto p-0"
+                                            align="start"
+                                            side="bottom"
+                                            sideOffset={4}
+                                        >
+                                            <div className="calendar-wrapper" onClick={(e) => e.stopPropagation()}>
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value ? new Date(field.value) : undefined}
+                                                    onSelect={(date) => {
+                                                        field.onChange(date);
+                                                        if (date) {
+                                                            // Force the value update
+                                                            field.onChange(new Date(date));
+                                                        }
+                                                    }}
+                                                    disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                                                    initialFocus
+                                                    className="rounded-md border"
+                                                />
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
+                                )}
+                            />
+                            {errors.birthday && (
+                                <p className="text-red-500 text-xs">{errors.birthday.message as string}</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-4 border-t border-gray-200 mt-6">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={onClose}
+                            className="text-gray-600 bg-[#F6F6F7] cursor-pointer hover:text-gray-800"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            className="bg-[#FBDE6E] cursor-pointer hover:bg-yellow-400 text-gray-900 px-6"
+                        >
+                            Add Contact
+                        </Button>
+                    </div>
+                </form>
+            </div>
+        </CustomModal>
+    );
+}

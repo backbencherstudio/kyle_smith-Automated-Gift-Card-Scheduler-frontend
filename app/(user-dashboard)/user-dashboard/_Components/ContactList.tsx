@@ -1,6 +1,9 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { FaPlus } from 'react-icons/fa6'
+import CustomModal from '@/components/ui/custom-modal'
+
+import AddContacts from './AddContacts'
 
 const contacts = [
     {
@@ -41,13 +44,20 @@ const contacts = [
 ]
 
 export default function ContactList() {
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
+
+
     return (
         <div className="w-full lg:w-80 shrink-0">
             <div className="bg-white rounded-lg p-4 h-full flex flex-col">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-semibold">Contact</h2>
-                    <button className="bg-[#FBDE6E] text-[#1D1F2C] cursor-pointer transform duration-300 hover:bg-yellow-500 px-3 py-2 text-sm rounded flex items-center gap-1 font-medium">
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="bg-[#FBDE6E] text-[#1D1F2C] cursor-pointer transform duration-300 hover:bg-yellow-500 px-3 py-2 text-sm rounded flex items-center gap-1 font-medium"
+                    >
                         <FaPlus size={12} />
                         Add New
                     </button>
@@ -73,6 +83,17 @@ export default function ContactList() {
                     ))}
                 </div>
             </div>
+
+            <CustomModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title="Add Contact"
+            >
+                <AddContacts
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                />
+            </CustomModal>
         </div>
     )
 }
