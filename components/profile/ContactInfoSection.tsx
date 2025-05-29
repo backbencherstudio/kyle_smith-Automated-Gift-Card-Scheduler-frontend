@@ -19,7 +19,7 @@ export default function ContactInfoSection() {
             <p className=" text-base text-pragaraphColor"><span className="font-semibold text-base text-descriptionColor">Phone:</span> 183454389</p>
           </div>
           <div className="flex gap-2 items-start">
-            <HiOutlineLocationMarker className="text-primaryColor text-lg mt-[2px]" />
+            <HiOutlineLocationMarker className="text-primaryColor text-2xl sm:text-lg mt-[2px]" />
             <p className=" text-base text-pragaraphColor"><span className="font-semibold text-base text-descriptionColor">Address:</span> 4319 Wakefield Street, Philadelphia, PA 19126</p>
           </div>
         </div>
