@@ -43,7 +43,7 @@ const contacts = [
 export default function ContactList() {
     return (
         <div className="w-full lg:w-80 shrink-0">
-            <div className="bg-white rounded-xl shadow p-4 h-full flex flex-col">
+            <div className="bg-white rounded-lg p-4 h-full flex flex-col">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-semibold">Contact</h2>

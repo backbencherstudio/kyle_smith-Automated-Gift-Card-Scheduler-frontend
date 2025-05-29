@@ -24,7 +24,7 @@ export default function Dashboard() {
                                 key={index}
                                 className="bg-white py-8 rounded-lg px-4"
                             >
-                                <p className="text-[#4A4C56] text-sm">{item.title}</p>
+                                <p className="text-[#4A4C56] text-sm font-medium">{item.title}</p>
                                 <p className="text-2xl text-[#1D1F2C] font-bold mt-1">{item.value}</p>
                             </div>
                         ))}
