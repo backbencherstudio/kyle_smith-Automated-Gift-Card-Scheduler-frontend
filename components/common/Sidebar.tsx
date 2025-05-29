@@ -32,6 +32,7 @@ const navItems: NavItem[] = [
   { icon: "/icon/note.svg", label: "Contacts", href: "/user-dashboard/contacts", role: "user" },
   { icon: "/icon/giftlog.svg", label: "Gift Scheduling", href: "/user-dashboard/gift-scheduling", role: "user" },
   { icon: "/icon/payment.svg", label: "Payment Settings", href: "/user-dashboard/payment-settings", role: "user" },
+  { icon: "/icon/payment.svg", label: "Order History", href: "/user-dashboard/order-history", role: "user" },
   { icon: "/icon/setting.svg", label: "Settings", href: "/user-dashboard/settings", role: "user" },
   { icon: "/icon/logout.svg", label: "Log Out", href: "/login", role: "user" }
 ];

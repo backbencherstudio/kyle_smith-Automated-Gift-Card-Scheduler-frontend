@@ -46,7 +46,7 @@ export default function PaymentSettings() {
 
     return (
         <div className="">
-            <h1 className="text-2xl font-semibold mb-6">Payment Settings</h1>
+            <h1 className='text-3xl font-bold text-[#232323] mb-6'>Payment Settings</h1>
 
 
             <div className='bg-white rounded-lg p-5'>
