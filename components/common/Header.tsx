@@ -97,7 +97,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <nav className="text-blackColor shadow !w-full py-3">
-      <div className="container !px-3 !w-full relative flex justify-between mb-1 z-50">
+      <div className="px-5 relative flex justify-between mb-1 z-50">
         {/* Mobile menu button */}
         <div>
           <div className="xl:hidden flex items-center">
@@ -129,7 +129,10 @@ const Header: React.FC<HeaderProps> = ({
               onClick={() => setPopoverOpen(!popoverOpen)}
             >
               {notifications.length > 0 && (
-                <span className="absolute -top-0.5 right-0 w-3 h-3 rounded-full bg-redColor" />
+                <span className="absolute -top-0.5 right-0 w-3 h-3 rounded-full bg-redColor" >
+                  {notifications.length}
+                </span>
+
               )}
               <Image src="/icon/notification.svg" alt="notification" width={18} height={18} />
             </PopoverTrigger>
