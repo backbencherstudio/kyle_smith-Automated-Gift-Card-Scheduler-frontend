@@ -5,7 +5,6 @@ import CustomToastContainer from "@/components/CustomToast/CustomToastContainer"
 import Header from "@/components/common/Header";
 import Sidebar from "../_component/common/Sidebar";
 
-
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
@@ -18,8 +17,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
   return (
     <div className="w-full h-screen overflow-hidden relative">
-      {/* Centered layout container */}
-      <div className="relative max-w-[1440px] mx-auto flex h-full">
+      {/* Fixed container for layout */}
+      <div className="relative  flex h-full">
         {/* Sidebar */}
         <div
           className={`
@@ -27,16 +26,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             h-screen w-[300px] z-30 bg-white
             transition-transform duration-300 ease-in-out
             ${sidebarOpen ? "translate-x-[0%]" : "-translate-x-[150%]"}
-            xl:static xl:translate-x-0 z-50
-          `} 
-          style={{
-            left: "0px", // Only relevant for mobile now
-          }}
+            xl:static xl:translate-x-0
+          `}
+          style={{ left: "0px" }}
         >
           <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
         </div>
 
-        {/* Overlay for mobile */}
+        {/* Overlay */}
         {sidebarOpen && (
           <div
             className="fixed inset-0 bg-black/50 lg:hidden z-20"
@@ -44,16 +41,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           />
         )}
 
-        {/* Main Content Area */}
-        <div className="flex-1 w-full h-full  flex flex-col">
+        {/* Main Content Layout */}
+        <div className="flex flex-col h-full w-full">
           {/* Header */}
-          <div className="w-full sticky top-0 left-0 z-10">
+          <div  className="w-full sticky top-0 left-0 z-10">
             <Header onMenuClick={openSidebar} sidebarOpen={sidebarOpen} />
           </div>
 
-          {/* Scrollable content area */}
-          <main className="flex-1 overflow-y-auto bg-[#FAFAFC] p-0x p-4 lg:pl-6 lg:pt-6">
-             <h2 className='lg:text-2xl text-lg md:text-xl font-bold text-black mb-4 lg:mb-6'>Dashboard</h2>
+          {/* Scrollable content */}
+          <main className="flex-1 overflow-y-auto bg-[#FAFAFC] p-4 lg:pl-6 lg:pt-6">
+            <h2 className='lg:text-2xl text-lg md:text-xl font-bold text-black mb-4 lg:mb-6'>Dashboard</h2>
             {children}
             <CustomToastContainer />
           </main>

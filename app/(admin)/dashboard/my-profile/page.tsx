@@ -16,7 +16,7 @@ function MyProfile() {
             <ProfileForm setIsEdite={setIsEdite} />
           ) : (
             <div className=" ">
-              <div className="bg-whiteColor p-6 rounded-2xl ">
+              <div className="bg-whiteColor p-4 md:p-6 rounded-2xl ">
               <div className=" flex justify-between items-center pb-2 mb-6 ">
                 <h2 className="text-headerColor text-lg lg:text-lg font-bold  ">
                   {" "}
@@ -33,7 +33,7 @@ function MyProfile() {
                 </div>
               </div>
               <div className="flex justify-between ">
-                <div className=" relative">
+                <div className=" relative w-full">
                   <Image
                     src="/image/profile-cover-img.jpg"
                     alt="profilebg"
@@ -43,8 +43,8 @@ function MyProfile() {
                   />
                   <div className=" absolute top-0 left-0 bg-blackColor/80 w-full h-full  rounded-lg">
 
-                  <div className=" flex flex-col md:flex-row h-full md:ml-15 justify-center md:justify-start md:items-center gap-3 md:gap-5 ml-6" >
-                    <div className="  relative w-[80px] h-[80px] md:w-[10px] md:h-[10px] lg:w-[120px] lg:h-[120px]  rounded-full overflow-hidden border-2 border-whiteColor">
+                  <div className=" flex flex-col md:flex-row h-full  md:ml-15 justify-center md:justify-start md:items-center gap-3 md:gap-5 ml-6" >
+                    <div className=" ml-5  relative w-[80px] h-[80px] md:w-[100px] md:h-[100px] lg:w-[120px] lg:h-[120px]  rounded-full overflow-hidden border-2 border-whiteColor">
                       <Image
                         src="/image/proimag.jpg"
                         alt="profilebg"

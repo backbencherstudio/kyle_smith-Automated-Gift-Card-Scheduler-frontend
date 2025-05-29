@@ -83,7 +83,7 @@ export default function ProfileForm({ setIsEdite }: any) {
         </button>
             <div className=" absolute top-0 left-0 bg-blackColor/80 w-full h-full  rounded-lg">
               <div className=" flex  flex-col md:flex-row  md:items-center h-full gap-3 md:gap-5 pl-6 md:ml-0">
-                <div className="md:flex flex-col md:flex-row ml-5 lg:ml-15 items-center gap-5">
+                <div className="md:flex flex-col md:flex-row ml-5 lg:ml-15 md:items-center gap-5">
                   <div className="relative w-[80px] h-[80px] md:w-[100px] md:h-[100px] lg:w-[120px] lg:h-[120px] rounded-full border-2 lg:border-4 border-white shadow md:mb-4 mt-4 shrink-0">
                     <Image
                       src={profileImg}
