@@ -4,6 +4,33 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import Image from "next/image";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import { Calendar } from "@/components/ui/calendar"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { useForm, Controller } from "react-hook-form";
 
 interface CalendarEvent {
     id: string;
@@ -92,6 +119,12 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
     const [userListModal, setUserListModal] = useState(null);
     const [dateRange, setDateRange] = useState("");
     const [calendarApi, setCalendarApi] = useState(null);
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+
+    const {
+        control,
+        formState: { errors },
+    } = useForm();
 
     // Group events by date
     const eventsByDate = events.reduce((acc, event) => {
@@ -132,9 +165,12 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
         }
     };
 
-    const handleUserSelect = (user) => {
+    const handleUserSelect = (user, event) => {
         setUserListModal(null);
-        setSelectedUser(user);
+        setSelectedUser({
+            ...user,
+            start: event.start
+        });
     };
 
     const handleSubmit = (e) => {
@@ -230,7 +266,7 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
         return (
             <div className={`flex ${eventDisplay.compactView ? 'flex-row' : 'flex-col 2xl:flex-row'} items-center space-x-2 p-1 cursor-pointer`}>
                 {eventDisplay.showAvatar && (
-                    <img src={avatar} alt={name} className="w-6 h-6 rounded-full" />
+                    <Image width={24} height={24} src={avatar} alt={name} className="w-6 h-6 rounded-full" />
                 )}
                 <div className="text-xs text-wrap">
                     <p className="font-medium leading-4">{name}</p>
@@ -319,9 +355,11 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
                                 <div
                                     key={event.id}
                                     className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
-                                    onClick={() => handleUserSelect(event.extendedProps)}
+                                    onClick={() => handleUserSelect(event.extendedProps, event)}
                                 >
-                                    <img
+                                    <Image
+                                        width={48}
+                                        height={48}
                                         src={event.extendedProps.avatar}
                                         alt={event.extendedProps.name}
                                         className="w-12 h-12 rounded-full"
@@ -347,44 +385,146 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
 
             {/* Gift Setting Modal */}
             {selectedUser && (
-                <div className="fixed inset-0 bg-black/70 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                        <div className="mb-4">
-                            <h3 className="text-lg font-semibold">Set Gift for {selectedUser.name}</h3>
-                        </div>
-                        <div className="space-y-3">
-                            <div className="grid grid-cols-2 gap-2">
-                                <input disabled value={selectedUser.name} className="border p-2 rounded bg-gray-50" />
-                                <input placeholder="Address" className="border p-2 rounded" />
-                                <input type="email" placeholder="Email" className="border p-2 rounded" />
-                                <input type="date" className="border p-2 rounded" />
+                <Dialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
+                    <DialogContent className="sm:max-w-xl">
+                        <DialogHeader>
+                            <DialogTitle>Set Gift</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 border-t border-gray-200 pt-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-sm text-gray-600">Name</label>
+                                    <Input
+                                        disabled
+                                        value={selectedUser.name}
+                                        className="bg-gray-50"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm text-gray-600">Address</label>
+                                    <Input placeholder="Enter address" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm text-gray-600">Email</label>
+                                    <Input
+                                        type="email"
+                                        placeholder="Enter email"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm text-gray-600">Birthday</label>
+                                    <Input
+                                        type="date"
+                                        value={selectedUser.start}
+                                        disabled
+                                        className="bg-gray-50"
+                                    />
+                                </div>
+                                <div className="space-y-2 w-full">
+                                    <label className="text-sm text-gray-600">Select Gift Card</label>
+                                    <Select>
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select a gift card" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="amazon">Amazon Gift Card - $50</SelectItem>
+                                            <SelectItem value="steam">Steam Wallet - $25</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2 w-full">
+                                    <label className="text-sm font-medium">Gift Send Date</label>
+                                    <Controller
+                                        name="giftSendDate"
+                                        control={control}
+                                        rules={{ required: "Gift send date is required" }}
+                                        render={({ field }) => (
+                                            <Popover modal={true}>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        className={cn(
+                                                            "w-full justify-start text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.value ?
+                                                            format(typeof field.value === 'string' ? new Date(field.value) : field.value, "dd/MM/yyyy")
+                                                            : "Select gift send date"}
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent
+                                                    className="w-auto p-0"
+                                                    align="start"
+                                                    side="bottom"
+                                                    sideOffset={4}
+                                                >
+                                                    <div className="calendar-wrapper" onClick={(e) => e.stopPropagation()}>
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={field.value ?
+                                                                (typeof field.value === 'string' ? new Date(field.value) : field.value)
+                                                                : undefined}
+                                                            onSelect={(date) => {
+                                                                if (date) {
+                                                                    field.onChange(date);
+                                                                }
+                                                            }}
+                                                            disabled={(date) => {
+                                                                const today = new Date();
+                                                                today.setHours(0, 0, 0, 0);
+                                                                return date < today;
+                                                            }}
+                                                            initialFocus
+                                                            className="rounded-md border"
+                                                            fromDate={new Date()}
+                                                        />
+                                                    </div>
+                                                </PopoverContent>
+                                            </Popover>
+                                        )}
+                                    />
+                                    {errors.giftSendDate && (
+                                        <p className="text-red-500 text-xs">{errors.giftSendDate.message as string}</p>
+                                    )}
+                                </div>
                             </div>
-                            <select className="w-full border p-2 rounded">
-                                <option>Amazon Gift Card - $50</option>
-                                <option>Steam Wallet - $25</option>
-                            </select>
-                            <textarea placeholder="Message (Optional)" className="w-full border p-2 rounded" rows={3} />
-                            <div className="flex items-center gap-2">
-                                <input type="checkbox" id="notify" />
-                                <label htmlFor="notify">Notify me on delivery</label>
+                            <div className="space-y-2">
+                                <label className="text-sm text-gray-600">Message (Optional)</label>
+                                <Textarea
+                                    placeholder="Enter your message"
+                                    rows={3}
+                                />
                             </div>
-                            <div className="flex justify-end gap-2">
-                                <button
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="notify" />
+                                <label
+                                    htmlFor="notify"
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                    Notify me on delivery
+                                </label>
+                            </div>
+                            <div className="flex justify-between space-x-2 pt-4">
+                                <Button
+                                    variant="outline"
                                     onClick={() => setSelectedUser(null)}
-                                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+                                    className="cursor-pointer"
                                 >
                                     Cancel
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                     onClick={handleSubmit}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                    className="bg-[#FBDE6E ] cursor-pointer text-gray-900 hover:bg-yellow-500"
                                 >
                                     Set Gift
-                                </button>
+                                </Button>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </DialogContent>
+                </Dialog>
             )}
 
             <style jsx>{`

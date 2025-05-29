@@ -147,7 +147,7 @@ export default function DynamicTableTwo({
               key={i}
               onClick={() => typeof page === "number" && onPageChange(page)}
               disabled={page === "..."}
-              className={`px-2 rounded border text-sm ${
+              className={`px-2 rounded border text-sm cursor-pointer ${
                 page === currentPage
                   ? "text-primaryColor border-primaryColor bg-primaryColor/10  font-medium"
                   : "text-grayColor1"

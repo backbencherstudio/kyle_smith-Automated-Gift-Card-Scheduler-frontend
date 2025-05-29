@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const user = {
     name: "John Doe",
     email: "test@gmail.com",
-    role: "admin"
+    role: "user"
   };
 
   const isActive = (href: string): boolean => {
@@ -75,16 +75,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           lg:rounded-[12px] p-5 overflow-y-auto
         `}
       >
-        <button 
-          onClick={onClose} 
+        <button
+          onClick={onClose}
           className="flex justify-end lg:hidden cursor-pointer mb-4"
         >
           <X />
         </button>
 
         <div className="my-4">
-          <Link href="/" className="text-white flex justify-center pb-5 text-xl lg:text-3xl font-semibold tracking-wide">
-            <Image src="/logo/Logo.png" alt="main logo" width={138} height={29} />
+          <Link href="/" className="text-white flex justify-start  pb-5">
+            <Image src="/image/logo/homelogo.png" alt="main logo" width={138} height={29} />
           </Link>
 
           <div className="space-y-2">

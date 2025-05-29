@@ -4,6 +4,7 @@ import { FaPlus } from 'react-icons/fa6'
 import CustomModal from '@/components/ui/custom-modal'
 
 import AddContacts from './AddContacts'
+import Image from 'next/image'
 
 const contacts = [
     {
@@ -70,7 +71,9 @@ export default function ContactList() {
                             key={i}
                             className="flex gap-3 items-center py-3 border-b last:border-b-0"
                         >
-                            <img
+                            <Image
+                                width={40}
+                                height={40}
                                 src={c.img}
                                 alt={c.name}
                                 className="w-10 h-10 rounded-full object-cover"
