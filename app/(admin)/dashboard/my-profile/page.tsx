@@ -43,7 +43,7 @@ function MyProfile() {
                   />
                   <div className=" absolute top-0 left-0 bg-blackColor/80 w-full h-full  rounded-lg">
 
-                  <div className=" flex flex-col md:flex-row h-full md:ml-15 justify-center md:items-center gap-3 md:gap-5 ml-6" >
+                  <div className=" flex flex-col md:flex-row h-full md:ml-15 justify-center md:justify-start md:items-center gap-3 md:gap-5 ml-6" >
                     <div className="  relative w-[80px] h-[80px] md:w-[10px] md:h-[10px] lg:w-[120px] lg:h-[120px]  rounded-full overflow-hidden border-2 border-whiteColor">
                       <Image
                         src="/image/proimag.jpg"

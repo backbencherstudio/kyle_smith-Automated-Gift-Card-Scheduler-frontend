@@ -5,10 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { FaArrowRightLong } from "react-icons/fa6";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { FaArrowRightLong } from "react-icons/fa6";
 
 interface HeaderProps {
   onNotificationClick?: () => void;
@@ -23,6 +23,7 @@ const Header: React.FC<HeaderProps> = ({
 }: HeaderProps) => {
   const [isShow, setIsShow] = useState<boolean>(false);
   const [popoverOpen, setPopoverOpen] = useState(false); // State to control popover visibility
+  const [profilePopoverOpen, setProfilePopoverOpen] = useState(false);
   const router = useRouter();
 
   const notifications = [
@@ -60,7 +61,7 @@ const Header: React.FC<HeaderProps> = ({
 
 
   return (
-    <nav className=" text-blackColor   py-3">
+    <nav className=" text-blackColor shadow   py-3">
       <div className=" container !px-3   relative flex justify-between mb-1 z-50">
         {/* Mobile menu button */}
         <div>
@@ -148,14 +149,15 @@ const Header: React.FC<HeaderProps> = ({
           </Popover>
          
           <div className="  relative sm:ml-0">
-            <Link href="/dashboard/my-profile"
+            <div 
               className="flex items-center md:gap-3 gap-2 p-1.5 sm:p-2 rounded-md"
               style={{
                 boxShadow: "2px 2px 7px 2px rgba(0, 0, 0, 0.1)", // uniform shadow all sides
               }}
             >
-              <div
-            
+              <Popover open={profilePopoverOpen} onOpenChange={setProfilePopoverOpen}>
+                <PopoverTrigger onClick={()=>setProfilePopoverOpen(!profilePopoverOpen)}>
+                <div
                 className="flex justify-start items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-90"
               >
                 <div className=" w-6 h-6 lg:w-10 lg:h-10 rounded-full overflow-hidden">
@@ -176,7 +178,23 @@ const Header: React.FC<HeaderProps> = ({
                   <IoIosArrowDown size={16} className="text-grayColor1" />
                 </button>
               </div>
-            </Link>
+                </PopoverTrigger>
+                <PopoverContent className=" w-[150px] space-y-6 mt-6 "
+                  style={{
+                    boxShadow: "2px 2px 7px 2px rgba(0, 0, 0, 0.08)", // uniform shadow all sides
+                  }}>
+                  <Link href="/dashboard/my-profile"  onClick={() => setProfilePopoverOpen(false)} className=" flex items-center gap-3 ">
+                    <Image src="/icon/setting.svg" alt="setting" width={17} height={17} className=""/>
+                    <p className="text-base font-medium text-descriptionColor">Settings</p>
+                  </Link>
+                  <button  onClick={() => setProfilePopoverOpen(false)} className=" cursor-pointer flex items-center gap-3 ">
+                    <Image src="/icon/logout.svg" alt="setting" width={17} height={17} className=""/>
+                    <p className="text-base font-medium text-descriptionColor">Log Out</p>
+                  </button>
+                </PopoverContent>
+              </Popover>
+              
+            </div>
           </div>
         </div>
       </div>
