@@ -23,11 +23,12 @@ export default function CustomModal({
 }: CustomModalProps) {
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className={`sm:max-w-[500px] p-6 ${className}`}>
-                <DialogHeader>
-                    <DialogTitle className="text-lg font-semibold">
+            <DialogContent className="sm:max-w-[600px] p-6">
+                <DialogHeader className="relative">
+                    <DialogTitle className="text-xl font-semibold">
                         {title}
                     </DialogTitle>
+                
                 </DialogHeader>
                 {children}
             </DialogContent>
