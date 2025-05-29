@@ -1,6 +1,6 @@
 "use client"
 
-import DynamicTableTwo from "@/app/(admin)/component/common/DynamicTableTwo";
+import DynamicTableTwo from "@/app/(admin)/_component/common/DynamicTableTwo";
 import {
     Select,
     SelectContent,

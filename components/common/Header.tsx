@@ -4,12 +4,11 @@ import avatar from "@/public/profile.png";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { FaArrowRightLong } from "react-icons/fa6";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { FaArrowRightLong } from "react-icons/fa6";
 
 interface HeaderProps {
   onNotificationClick?: () => void;
@@ -23,9 +22,10 @@ const Header: React.FC<HeaderProps> = ({
   sidebarOpen,
 }: HeaderProps) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const router = useRouter();
+  const [profilePopoverOpen, setProfilePopoverOpen] = useState(false);
+  const [showAllNotifications, setShowAllNotifications] = useState(false);
 
-  const notifications = [
+  const [notifications, setNotifications] = useState([
     {
       id: 1,
       message: "3 gifts scheduled for delivery tomorrow.",
@@ -35,66 +35,94 @@ const Header: React.FC<HeaderProps> = ({
     {
       id: 2,
       message: "Today is Emma Watson's birthday. User has not confirmed gift send.",
-      timeAgo: "10 min ago",
+      timeAgo: "7 min ago",
       img: "/image/notification/n3.png",
     },
     {
       id: 3,
       message: "New user james@example.com signed up at 10:35 AM.",
-      timeAgo: "15 min ago",
+      timeAgo: "10 min ago",
       img: "/image/notification/n1.png",
     },
     {
       id: 4,
-      message: "Your order has been completed.",
+      message: "Your order has been complete now.",
+      timeAgo: "15 min ago",
+      img: "/image/notification/n2.png",
+    },
+    {
+      id: 5,
+      message: "System backup completed successfully.",
       timeAgo: "30 min ago",
       img: "/image/notification/n4.png",
     },
     {
-      id: 5,
-      message: "Welcome bonus has been credited to your account.",
+      id: 6,
+      message: "Reminder: Update your profile information.",
       timeAgo: "1 hour ago",
+      img: "/image/notification/n3.png",
+    },
+    {
+      id: 7,
+      message: "Esther Howard has scheduled a call.",
+      timeAgo: "1 hour ago",
+      img: "/image/notification/n1.png",
+    },
+    {
+      id: 8,
+      message: "Server rebooted due to scheduled maintenance.",
+      timeAgo: "2 hours ago",
+      img: "/image/notification/n4.png",
+    },
+    {
+      id: 9,
+      message: "New comment on your last update.",
+      timeAgo: "3 hours ago",
       img: "/image/notification/n2.png",
     },
     {
-      id: 6,
-      message: "This is the 6th notification, should be hidden.",
-      timeAgo: "2 hours ago",
+      id: 10,
+      message: "User michael@example.com has upgraded plan.",
+      timeAgo: "4 hours ago",
       img: "/image/notification/n1.png",
     },
-  ];
+  ]);
+
+  const displayedNotifications = showAllNotifications
+    ? notifications
+    : notifications.slice(0, 5);
+
+  const clearNotifications = () => {
+    setNotifications([]);
+  };
 
   return (
-    <nav className="text-blackColor py-3 bg-white">
-      <div className="px-5 relative flex justify-between items-center mb-1 z-30">
-        {/* Left side: menu button (keeps space on large screens) */}
-        <div className="w-10">
-          <button
-            onClick={onMenuClick}
-            className="p-2 focus:outline-none lg:invisible"
-            aria-label="Toggle menu"
-          >
-            {sidebarOpen ? (
-              <X className="h-6 w-6 text-[#4A4C56]" />
-            ) : (
-              <Menu className="h-6 w-6 text-blackColor" />
-            )}
-          </button>
+    <nav className="text-blackColor shadow !w-full py-3">
+      <div className="container !px-3 !w-full relative flex justify-between mb-1 z-50">
+        {/* Mobile menu button */}
+        <div>
+          <div className="xl:hidden flex items-center">
+            <button
+              onClick={onMenuClick}
+              className="pr-2 py-2 text-[#4A4C56]"
+            >
+              {sidebarOpen ? <X className="z-50" /> : <Menu />}
+            </button>
+            <Link href="/" className="text-white text-xl hidden sm:block lg:text-3xl font-semibold tracking-wide">
+              <Image src="/logo/mainLogo.png" alt="main logo" width={40} height={29} />
+            </Link>
+          </div>
         </div>
 
-        {/* Right side: search, notifications, profile */}
-        <div className="flex items-center gap-2 lg:gap-5">
+        {/* Notification and Profile */}
+        <div className="flex items-center gap-2 lg:gap-5 justify-end">
           {/* Search */}
           <div className="relative w-[140px] md:w-[221px]">
-            <input
-              type="text"
-              className="w-full py-1.5 text-sm sm:text-base focus-visible:border-0 md:py-2.5 border md:rounded-[12px] rounded-md pl-7 pr-2"
-              placeholder="Search"
-            />
+            <input type="text" className="w-full py-1.5 text-sm sm:text-base focus-visible:border-0 md:py-2.5 border md:rounded-[12px] rounded-md pl-7 pr-2" placeholder="Search" />
             <IoSearch className="text-borderColor text-base absolute left-2 top-1/2 -translate-y-1/2" />
           </div>
 
-          {/* Notifications */}
+          {/* Notification Popover */}
           <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
             <PopoverTrigger
               className="cursor-pointer relative flex justify-center items-center lg:p-3 p-2 rounded-full"
@@ -102,89 +130,91 @@ const Header: React.FC<HeaderProps> = ({
               onClick={() => setPopoverOpen(!popoverOpen)}
             >
               {notifications.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                  {notifications.length}
-                </span>
+                <span className="absolute -top-0.5 right-0 w-3 h-3 rounded-full bg-redColor" />
               )}
-              <Image
-                src="/icon/notification.svg"
-                alt="notification"
-                width={18}
-                height={18}
-                className="w-[15px] md:w-[18px] md:h-[18px] h-[15px]"
-              />
+              <Image src="/icon/notification.svg" alt="notification" width={18} height={18} />
             </PopoverTrigger>
 
-            <PopoverContent className="w-80 md:w-[467px] mt-4 p-4">
-              <div className="flex justify-between items-center pb-5 border-b">
-                <h4 className="text-base font-bold md:text-lg text-headerColor">
-                  Notifications
-                </h4>
-                <button className="text-base font-semibold underline cursor-pointer text-headerColor">
-                  Clear All
-                </button>
+            <PopoverContent className="w-80 md:w-[467px] mt-4 p-0 max-h-[550px] flex flex-col">
+              {/* Header */}
+              <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
+                <h4 className="text-base font-bold md:text-lg text-headerColor">Notifications</h4>
+                {notifications.length > 0 && (
+                  <button onClick={clearNotifications} className="text-base font-semibold underline cursor-pointer text-headerColor">
+                    Clear All
+                  </button>
+                )}
               </div>
 
-              <div className="flex flex-col space-y-6 mt-3">
-                {notifications.slice(0, 5).map((notification) => (
-                  <div key={notification.id} className="flex items-center space-x-3">
-                    <div className="w-8 h-8 lg:w-12 lg:h-12 rounded-full flex items-center justify-center">
-                      <Image
-                        src={notification.img}
-                        alt="notification"
-                        width={50}
-                        height={50}
-                        className="w-8 h-8 lg:w-12 lg:h-12 rounded-full"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-bold text-base text-headerColor">Carl Steadham</p>
-                      <p className="text-sm font-normal text-descriptionColor mt-1">
-                        {notification.message}
-                      </p>
-                    </div>
-                    <div className="flex items-start">
-                      <p className="text-xs text-gray-500">{notification.timeAgo}</p>
-                    </div>
+              {/* Scrollable Notification Body */}
+              <div className="overflow-y-auto px-4 py-3 flex-1">
+                {notifications.length > 0 ? (
+                  <div className="flex flex-col space-y-6">
+                    {displayedNotifications.map((notification) => (
+                      <div key={notification.id} className="flex items-center space-x-3">
+                        <div className="w-8 h-8 lg:w-12 lg:h-12 rounded-full">
+                          <Image src={notification.img} alt="notification" width={50} height={50} className="w-8 h-8 lg:w-12 lg:h-12 rounded-full" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-bold text-base text-headerColor">Carl Steadham</p>
+                          <p className="text-sm font-normal text-descriptionColor mt-1">{notification.message}</p>
+                        </div>
+                        <div className="flex items-start">
+                          <p className="text-xs text-gray-500">{notification.timeAgo}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  <p className="text-center text-sm text-gray-500 py-6">No notifications available</p>
+                )}
               </div>
 
-              <div className="pt-4">
-                <button className="text-headerColor font-bold flex gap-2 items-center justify-center cursor-pointer pt-4 border-t text-center w-full">
-                  View All <FaArrowRightLong />
-                </button>
-              </div>
+              {/* Sticky Footer */}
+              {notifications.length > 5 && !showAllNotifications && (
+                <div className="border-t p-4 sticky bottom-0 bg-white z-10">
+                  <button
+                    onClick={() => setShowAllNotifications(true)}
+                    className="text-headerColor font-bold flex gap-2 cursor-pointer items-center justify-center w-full"
+                  >
+                    View All <FaArrowRightLong />
+                  </button>
+                </div>
+              )}
             </PopoverContent>
+
+
           </Popover>
 
-          {/* Profile */}
+          {/* Profile Popover */}
           <div className="relative sm:ml-0">
-            <Link
-              href="/dashboard/my-profile"
-              className="flex items-center md:gap-3 gap-2 p-1.5 sm:p-2 rounded-md"
-              style={{ boxShadow: "2px 2px 7px 2px rgba(0, 0, 0, 0.1)" }}
-            >
-              <div className="flex justify-start items-center gap-1 sm:gap-2 hover:opacity-90">
-                <div className="w-6 h-6 lg:w-10 lg:h-10 rounded-full overflow-hidden">
-                  <Image
-                    src={avatar}
-                    alt="Admin Avatar"
-                    width={40}
-                    height={40}
-                    className="rounded-full w-full h-full"
-                  />
-                </div>
-                <div className="whitespace-nowrap">
-                  <h4 className="sm:text-sm text-[13px] font-medium text-blackColor">
-                    Esther Howard
-                  </h4>
-                </div>
-                <button className="cursor-pointer">
-                  <IoIosArrowDown size={16} className="text-grayColor1" />
-                </button>
-              </div>
-            </Link>
+            <div className="flex items-center md:gap-3 gap-2 p-1.5 sm:p-2 rounded-md" style={{ boxShadow: "2px 2px 7px 2px rgba(0, 0, 0, 0.1)" }}>
+              <Popover open={profilePopoverOpen} onOpenChange={setProfilePopoverOpen}>
+                <PopoverTrigger onClick={() => setProfilePopoverOpen(!profilePopoverOpen)}>
+                  <div className="flex justify-start items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-90">
+                    <div className="w-6 h-6 lg:w-10 lg:h-10 rounded-full overflow-hidden">
+                      <Image src={avatar} alt="Admin Avatar" width={40} height={40} className="rounded-full w-full h-full" />
+                    </div>
+                    <div className="whitespace-nowrap">
+                      <h4 className="sm:text-sm text-[13px] font-medium text-blackColor">Esther Howard</h4>
+                    </div>
+                    <button className="cursor-pointer">
+                      <IoIosArrowDown size={16} className="text-grayColor1" />
+                    </button>
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent className="w-[150px] space-y-6 mt-6" style={{ boxShadow: "2px 2px 7px 2px rgba(0, 0, 0, 0.08)" }}>
+                  <Link href="/dashboard/my-profile" onClick={() => setProfilePopoverOpen(false)} className="flex items-center gap-3">
+                    <Image src="/icon/setting.svg" alt="setting" width={17} height={17} />
+                    <p className="text-base font-medium text-descriptionColor">Settings</p>
+                  </Link>
+                  <button onClick={() => setProfilePopoverOpen(false)} className="cursor-pointer flex items-center gap-3">
+                    <Image src="/icon/logout.svg" alt="logout" width={17} height={17} />
+                    <p className="text-base font-medium text-descriptionColor">Log Out</p>
+                  </button>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
         </div>
       </div>
@@ -193,3 +223,4 @@ const Header: React.FC<HeaderProps> = ({
 };
 
 export default Header;
+

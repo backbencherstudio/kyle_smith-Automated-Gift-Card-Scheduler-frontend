@@ -2,7 +2,7 @@
 
 import { giftInfoData } from "@/demoData/giftInfoData";
 import { useState } from "react";
-import DynamicTableTwo from "../../component/common/DynamicTableTwo";
+import DynamicTableTwo from "../../_component/common/DynamicTableTwo";
 
 function GiftLogPage() {
   const [currentPage, setCurrentPage] = useState(1);

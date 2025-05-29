@@ -73,15 +73,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         className={`
           ${
             isOpen
-              ? "z-50 h-full overflow-hidden absolute top-0 left-0"
+              ? "z-50 h-full overflow-hidden  shadow-[0px_-0.8px_20.8px_0.0px_rgba(0,0,0,0.5)] absolute top-0 left-0"
               : "h-full"
           }
           flex flex-col
           min-h-[calc(100vh-100px)] 
           bg-white 
-         
-          shadow-[0px_-0.3px_5.5px_0px_rgba(0,0,0,0.02)]
-          lg:rounded-[12px] 
+          shadow-[0px_-0.3px_5.5px_0px_rgba(0,0,0,0.05)]
+          
           p-5 w-full overflow-y-auto
         `}
       >

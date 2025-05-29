@@ -48,11 +48,11 @@ export default function UpcomingGift() {
         <h4 className="text-lg text-headerColor font-bold">Upcoming Gift</h4>
         <div>
           <Select onValueChange={setFilterOption} value={filterOption}>
-            <SelectTrigger className="cursor-pointer  !text-headerColor border font-medium rounded-md text-sm px-[14px] py-2">
+            <SelectTrigger className="cursor-pointer  focus-visible:right-0 !text-headerColor border font-medium rounded-md text-sm px-[14px] py-2">
               <SelectValue placeholder="weekly" className="!text-blackColor"/>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">all</SelectItem>
+              <SelectItem value="all">weekly</SelectItem>
               <SelectItem value="weekends">All Weekends</SelectItem>
             </SelectContent>
           </Select>
