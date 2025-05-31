@@ -14,6 +14,7 @@ export default function Dashboard() {
 
     return (
         <>
+            <h1 className="text-3xl font-bold text-[#232323] mb-6">Dashboard</h1>
             <div className="flex flex-col lg:flex-row gap-6">
                 {/* Left side (Stats + Calendar) */}
                 <div className="flex-1 min-w-0 flex flex-col gap-6">
@@ -32,7 +33,7 @@ export default function Dashboard() {
                     {/* Gift Scheduling */}
                     <GiftSchedulingDashboard />
                 </div>
-                <ContactList />
+                <ContactList /> 
             </div>
             <UpcomingBirthday />
         </>

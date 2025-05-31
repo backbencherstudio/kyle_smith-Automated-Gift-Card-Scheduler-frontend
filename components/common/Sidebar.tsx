@@ -84,9 +84,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </button>
 
         <div className="my-4">
-          <Link href="/" className="text-white flex justify-start  pb-5">
-            <Image src="/image/logo/homelogo.png" alt="main logo" width={138} height={29} />
-          </Link>
+          <div className="text-white pl-2 pb-5 text-xl lg:text-3xl font-semibold ">
+            <Link href={"/user-dashboard"}>
+              <Image
+                src="/icon/logo.svg"
+                alt="main logo "
+                width={177}
+                height={29}
+              />
+            </Link>
+          </div>
 
           <div className="space-y-2">
             {navItems

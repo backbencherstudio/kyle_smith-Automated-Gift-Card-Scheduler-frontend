@@ -184,7 +184,7 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* Profile Popover */}
           <div className="relative sm:ml-0">
-            <div className="flex items-center md:gap-3 gap-2 p-1.5 sm:p-2 rounded-md" style={{ boxShadow: "2px 2px 7px 2px rgba(0, 0, 0, 0.1)" }}>
+            <div className="flex items-center md:gap-3 gap-2 p-1.5 sm:p-2 rounded-md">
               <Popover open={profilePopoverOpen} onOpenChange={setProfilePopoverOpen}>
                 <PopoverTrigger onClick={() => setProfilePopoverOpen(!profilePopoverOpen)}>
                   <div className="flex justify-start items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-90">
@@ -198,7 +198,7 @@ const Header: React.FC<HeaderProps> = ({
                   </div>
                 </PopoverTrigger>
                 <PopoverContent className="w-[150px] space-y-6 mt-6" style={{ boxShadow: "2px 2px 7px 2px rgba(0, 0, 0, 0.08)" }}>
-                  <Link href="/dashboard/my-profile" onClick={() => setProfilePopoverOpen(false)} className="flex items-center gap-3">
+                  <Link href="/user-dashboard/settings" onClick={() => setProfilePopoverOpen(false)} className="flex items-center gap-3">
                     <Image src="/icon/setting.svg" alt="setting" width={17} height={17} />
                     <p className="text-base font-medium text-descriptionColor">Settings</p>
                   </Link>

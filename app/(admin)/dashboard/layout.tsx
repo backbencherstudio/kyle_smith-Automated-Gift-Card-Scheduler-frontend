@@ -1,9 +1,8 @@
 "use client";
 import React, { useState } from "react";
-
-import CustomToastContainer from "@/components/CustomToast/CustomToastContainer";
-import Header from "@/components/common/Header";
+// import Header from "@/components/common/Header";
 import Sidebar from "../_component/common/Sidebar";
+import Header from "../_component/common/Header";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -52,7 +51,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <main className="flex-1 overflow-y-auto bg-[#FAFAFC] p-4 lg:pl-6 lg:pt-6">
             <h2 className='lg:text-2xl text-lg md:text-xl font-bold text-black mb-4 lg:mb-6'>Dashboard</h2>
             {children}
-            <CustomToastContainer />
           </main>
         </div>
       </div>
