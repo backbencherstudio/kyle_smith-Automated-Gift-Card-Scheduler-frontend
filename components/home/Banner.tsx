@@ -15,7 +15,7 @@ function Banner() {
 
           {/* Left Image */}
           <div className="w-full lg:w-[45%] h-[300px] lg:h-full flex justify-center lg:justify-start order-2 lg:order-1">
-            <div className="relative w-full h-full mt-8 max-w-[350px] lg:max-w-[500px]">
+            <div className="relative w-full h-full mt-12 lg:mt-8 max-w-[350px] lg:max-w-[500px]">
               <Image
                 src={leftImg}
                 alt="Gift Cards and Presents"
@@ -28,7 +28,7 @@ function Banner() {
 
           {/* Right Content */}
           <div className="w-full lg:w-[50%] max-w-[500px] text-center lg:text-left order-1 lg:order-2 flex-shrink-0">
-            <h1 className="text-4xl sm:text-4xl lg:text-5xl font-bold mb-4 text-[#1D1F2C] leading-tight">
+            <h1 className="text-xl sm:text-4xl lg:text-5xl font-bold mb-4 text-[#1D1F2C] leading-tight">
               Never Miss a Birthday Again – Let's Take Care of Your Gift Cards,
               <span > Effortlessly</span>
             </h1>

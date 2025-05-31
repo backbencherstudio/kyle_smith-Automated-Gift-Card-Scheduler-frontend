@@ -50,7 +50,7 @@ export default function Navbar() {
               {/* Logo in Sidebar */}
               <div className="flex justify-start mb-8  py-2 px-4">
                 <Image
-                  src="/logo/homelogo.png"
+                  src="/image/logo/homelogo.png"
                   alt="logo"
                   width={200}
                   height={52}
