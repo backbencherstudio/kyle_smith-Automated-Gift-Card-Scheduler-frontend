@@ -6,6 +6,7 @@ interface ProfileDetailsProps {
     phone: string;
     location: string;
     aboutUs: string;
+    name: string;
   };
 }
 

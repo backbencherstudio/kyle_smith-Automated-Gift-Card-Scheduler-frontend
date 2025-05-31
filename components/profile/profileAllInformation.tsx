@@ -1,8 +1,21 @@
 import React from 'react'
 import UserNID from "@/components/profile/UserNID"
 import Image from "next/image"
-import ProfileDetails from './ProfileDetails'
-function profileAllInformation() {
+import ProfileDetails from './ProfileDetails' 
+interface dataTypes {
+  name: string;
+  email: string;
+  location: string;
+  phone: string;
+  profileImage: string;
+  coverImage: string;
+  aboutUs: string;
+  dob: Date;
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+function profileAllInformation({ userData }: { userData: dataTypes }) {
   return (
     <div>
        <div>
@@ -24,7 +37,7 @@ function profileAllInformation() {
            </div>
         </div>
       <div className="py-6">
-        <ProfileDetails/>
+        <ProfileDetails userData={userData} />
       </div>
       <div>
      <UserNID/>
