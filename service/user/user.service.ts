@@ -65,7 +65,6 @@ addVendore: async (data, token) => {
       Authorization: `Bearer ${token}`,
     },
   };
-
   try {
     const response = await Fetch.get(endpoint, _config);
     return response?.data; 
@@ -74,6 +73,36 @@ addVendore: async (data, token) => {
     throw error; 
   }
 },
+
+// common delete data==============
+ deletePotectedData : async (token: string, endpoint: string) => {
+  const _config = {
+    headers: {
+      "Content-Type": "multipart/form-data;",
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  try {
+    const response = await Fetch.delete(endpoint, _config);
+    return response?.data; 
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error; 
+  }
+},
+
+ updateProtectedData: async (token: string, endpoint: string,data:any) => {
+    const _config = {
+      headers: {
+         "Content-Type": "multipart/form-data;",
+        Authorization: "Bearer " + token,
+      },
+    };
+
+    
+
+    return await Fetch.patch(endpoint, data, _config);
+  },
 
 
   getUserDetails: async ({ token = "", context = null }) => {

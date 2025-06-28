@@ -10,14 +10,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToken } from "@/hooks/useToken";
 import { UserService } from "@/service/user/user.service";
 
+import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 
-export default function VenderAddForm({ open, onClose }: { open: boolean; onClose: any }) {
+export default function VenderAddForm({ open, onClose, initialData,onfetch }: { open: boolean; onClose: any; initialData?: any,onfetch?:any }) {
   const {
     register,
     handleSubmit,
@@ -27,31 +28,57 @@ export default function VenderAddForm({ open, onClose }: { open: boolean; onClos
     setValue,
   } = useForm({
     defaultValues: {
-      name: "",
-      description: "",
-      website: "",
+      name: initialData?.name || "",
+      description: initialData?.description || "",
+      website: initialData?.website || "",
       logo: null,
+      isActive: initialData?.is_active ?? true,
     },
   });
   const [loading, setLoding] = useState(false)
-  const [logoName, setLogoName] = useState("");
+  const [logoName, setLogoName] = useState(initialData?.logo ? initialData.logo : "");
   const { token } = useToken();
   const router = useRouter()
+
+  useEffect(() => {
+    if (initialData) {
+      reset({
+        name: initialData.name || "",
+        description: initialData.description || "",
+        website: initialData.website || "",
+        logo: null,
+        isActive: initialData.is_active ?? true,
+      });
+      setLogoName(initialData.logo || "");
+    } else {
+      reset({ name: "", description: "", website: "", logo: null, isActive: true });
+      setLogoName("");
+    }
+  }, [initialData, reset]);
+
   const onSubmit = async (data: any) => {
     setLoding(true)
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("website", data.website);
-    if (logoName) {
+    formData.append("is_active", data.isActive);
+    if (logoName && data.logo) {
       formData.append("logo", data.logo);
     }
     try {
-      const response = await UserService.addVendore(formData, token);
+      let response;
+      if (initialData?.id) {
+        const endpoint = `/admin/vendor/${initialData.id}`;
+        response = await UserService.updateProtectedData(token, endpoint, formData);
+      } else {
+        response = await UserService.addVendore(formData, token);
+      }
       if (response?.data?.success == true) {
-        toast.success("Successfully Add New Vendor")
+        toast.success(initialData?.id ? "Vendor updated successfully" : "Successfully Add New Vendor");
         reset();
         router.replace("/dashboard/add-vendor")
+        onfetch()
         setLogoName("");
         onClose(false)
         setLoding(false)
@@ -65,7 +92,7 @@ export default function VenderAddForm({ open, onClose }: { open: boolean; onClos
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="lg:!max-w-[800px] !max-w-[90vw] h-[90vh] md:h-auto overflow-y-auto  px-6 py-6">
         <DialogHeader>
-          <DialogTitle className="text-xl lg:text-2xl font-medium text-headerColor">Add New Vendor</DialogTitle>
+          <DialogTitle className="text-xl lg:text-2xl font-medium text-headerColor">{initialData?.id ? "Update Vendor" : "Add New Vendor"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="md:grid space-y-4 md:space-y-0 grid-cols-1 md:grid-cols-2 gap-5 items-center mt-4">
           <div className="space-y-2">
@@ -87,7 +114,6 @@ export default function VenderAddForm({ open, onClose }: { open: boolean; onClos
                 <Input
                   id="logo-upload"
                   type="file"
-                  required
                   className="hidden"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
@@ -98,7 +124,16 @@ export default function VenderAddForm({ open, onClose }: { open: boolean; onClos
                   }}
                 />
                 {logoName ? (
-                  <p className="text-sm font-medium text-gray-700">{logoName}</p>
+                  typeof logoName === "string" && logoName.endsWith(".png") ? (
+                    <div className="flex flex-col items-center">
+                      <div className="w-10 h-10 flex justify-center items-center rounded-full bg-whiteColor">
+                        <Image src={typeof logoName === "string" ? `/uploads/${logoName}` : "/icon/image.svg"} alt="logo" width={40} height={32} className="object-contain" />
+                      </div>
+                      <p className="text-sm">{logoName}</p>
+                    </div>
+                  ) : (
+                    <p className="text-sm font-medium text-gray-700">{logoName}</p>
+                  )
                 ) : (
                   <div className="flex flex-col items-center">
                     <div className="w-10 h-10 flex justify-center items-center rounded-full bg-whiteColor">
@@ -110,13 +145,38 @@ export default function VenderAddForm({ open, onClose }: { open: boolean; onClos
               </label>
             </div>
           </div>
+          <div className="space-y-2 md:col-span-2">
+            <Label className="text-[16px] font-medium text-headerColor"> Vendor Status</Label>
+            <div className="flex items-center gap-3">
+              <Controller
+                control={control}
+                name="isActive"
+                render={({ field: { value, onChange } }) => (
+                  <>
+                    <Switch
+                      checked={value}
+                      onCheckedChange={onChange}
+                      id="isActive"
+                      className={value ? '!bg-green-600' : 'bg-red-500'}
+                    />
+                    <label
+                      htmlFor="isActive"
+                      className={`text-[18px] font-bold ${value ? 'text-green-600' : 'text-red-600'}`}
+                    >
+                      {value ? 'Is Active' : 'In Active'}
+                    </label>
+                  </>
+                )}
+              />
+            </div>
+          </div>
           {/* Save and Cancel Buttons */}
           <div className="col-span-2 flex justify-between gap-3 mt-6">
-            <button type="button" onClick={() => onClose(false)} className="flex items-center gap-1 bg-grayColor1/20 cursor-pointer text-descriptionColor px-4 py-2 lg:py-3 lg:px-6 rounded-md text-sm font-medium">
+            <button type="button" onClick={() => onClose(false)} className="flex items-center gap-1 bg-grayColor1/20 cursor-pointer text-descriptionColor hover:scale-105 transition-all duration-200 px-4 py-2 lg:py-3 lg:px-6 rounded-md text-sm font-medium">
               Cancel
             </button>
-            <button disabled={loading == true} type="submit" className="flex disabled:cursor-not-allowed items-center disabled:bg-primary/50  gap-1 bg-primaryColor cursor-pointer text-white px-4 py-2 lg:py-3 lg:px-6 rounded-md text-sm font-medium">
-              {loading ? "Sending..." : "Save"}
+            <button disabled={loading == true} type="submit" className="text-base cursor-pointer shadow-sm hover:scale-105 transition-all duration-200 font-medium text-descriptionColor px-8 py-2 rounded-sm bg-primaryColor">
+              {loading ? (initialData?.id ? "Updating..." : "Sending...") : (initialData?.id ? "Update" : "Save")}
             </button>
           </div>
         </form>
