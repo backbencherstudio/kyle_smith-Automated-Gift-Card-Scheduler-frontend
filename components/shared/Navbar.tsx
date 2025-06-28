@@ -2,24 +2,26 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, User, LogOut } from "lucide-react";
 import ButtonReuseable from "../reusable/ButtonReuseable";
 import { useState, useEffect } from "react";
 import ResuseableModal from "../reusable/ResuseableModal";
 import RegisterForm from "./RegisterForm";
 import { useRouter, useSearchParams } from "next/navigation";
 import LoginPage from "./LoginPage";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Navbar() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user, userType, isAuthenticated, logoutUser } = useAuth();
 
   useEffect(() => {
     const registerParam = searchParams.get('register');
     const loginParam = searchParams.get('login');
-    
+
     if (registerParam === 'true') {
       setIsRegisterModalOpen(true);
       setIsLoginModalOpen(false);
@@ -31,6 +33,14 @@ export default function Navbar() {
       setIsLoginModalOpen(false);
     }
   }, [searchParams]);
+
+  // Close modals when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      setIsLoginModalOpen(false);
+      setIsRegisterModalOpen(false);
+    }
+  }, [isAuthenticated]);
 
   const handleRegisterClick = () => {
     setIsRegisterModalOpen(true);
@@ -50,6 +60,19 @@ export default function Navbar() {
     router.push('/');
   };
 
+  const handleLogout = () => {
+    logoutUser();
+    router.push('/');
+  };
+
+  const handleDashboardClick = () => {
+    if (userType === 'user') {
+      router.push('/user-dashboard');
+    } else if (userType === 'admin') {
+      router.push('/admin/dashboard');
+    }
+  };
+
   return (
     <div className="sticky top-0 z-50 bg-white shadow-sm">
       <div className="flex justify-between items-center container px-4 py-4">
@@ -66,16 +89,33 @@ export default function Navbar() {
 
         {/* Desktop Buttons */}
         <div className="hidden md:flex gap-3 items-center">
-          <ButtonReuseable
-            title="Login"
-            className="border text-[#1D1F2C] border-[#1D1F2C] text-sm md:text-lg cursor-pointer px-10 hover:bg-[#FAD33E] transform duration-300 font-medium"
-            onClick={handleLoginClick}
-          />
-          <ButtonReuseable
-            title="Get Started"
-            className="bg-[#FAD33E] text-[#1D1F2C] border border-[#FAD33E] hover:bg-white transform duration-300 px-7 py-2 text-sm md:text-lg cursor-pointer font-medium"
-            onClick={handleRegisterClick}
-          />
+          {!isAuthenticated ? (
+            <>
+              <ButtonReuseable
+                title="Login"
+                className="border text-[#1D1F2C] border-[#1D1F2C] text-sm md:text-lg cursor-pointer px-10 hover:bg-[#FAD33E] transform duration-300 font-medium"
+                onClick={handleLoginClick}
+              />
+              <ButtonReuseable
+                title="Get Started"
+                className="bg-[#FAD33E] text-[#1D1F2C] border border-[#FAD33E] hover:bg-white transform duration-300 px-7 py-2 text-sm md:text-lg cursor-pointer font-medium"
+                onClick={handleRegisterClick}
+              />
+            </>
+          ) : (
+            <>
+              <ButtonReuseable
+                title="Dashboard"
+                className="border text-[#1D1F2C] border-[#1D1F2C] text-sm md:text-lg cursor-pointer px-6 hover:bg-[#FAD33E] transform duration-300 font-medium"
+                onClick={handleDashboardClick}
+              />
+              <ButtonReuseable
+                title="Logout"
+                className="bg-red-500 text-white border border-red-500 hover:bg-red-600 transform duration-300 px-6 py-2 text-sm md:text-lg cursor-pointer font-medium"
+                onClick={handleLogout}
+              />
+            </>
+          )}
         </div>
 
         {/* Mobile Menu */}
@@ -99,22 +139,38 @@ export default function Navbar() {
 
               <div className="flex flex-col space-y-6 px-5">
                 <div className="flex flex-col space-y-4 mt-8">
-                  <ButtonReuseable
-                    title="Login"
-                    className="border py-3 border-[#1D1F2C] font-semibold text-md cursor-pointer px-10 hover:bg-[#FAD33E] transform duration-300"
-                    onClick={handleLoginClick}
-                  />
-                  <ButtonReuseable
-                    title="Get Started"
-                    className="bg-[#FAD33E] border border-[#FAD33E] hover:bg-white transform duration-300 px-7 py-3 text-md cursor-pointer font-semibold"
-                    onClick={handleRegisterClick}
-                  />
+                  {!isAuthenticated ? (
+                    <>
+                      <ButtonReuseable
+                        title="Login"
+                        className="border py-3 border-[#1D1F2C] font-semibold text-md cursor-pointer px-10 hover:bg-[#FAD33E] transform duration-300"
+                        onClick={handleLoginClick}
+                      />
+                      <ButtonReuseable
+                        title="Get Started"
+                        className="bg-[#FAD33E] border border-[#FAD33E] hover:bg-white transform duration-300 px-7 py-3 text-md cursor-pointer font-semibold"
+                        onClick={handleRegisterClick}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <ButtonReuseable
+                        title="Dashboard"
+                        className="border py-3 border-[#1D1F2C] font-semibold text-md cursor-pointer px-6 hover:bg-[#FAD33E] transform duration-300"
+                        onClick={handleDashboardClick}
+                      />
+                      <ButtonReuseable
+                        title="Logout"
+                        className="bg-red-500 text-white border border-red-500 hover:bg-red-600 transform duration-300 px-6 py-3 text-md cursor-pointer font-semibold"
+                        onClick={handleLogout}
+                      />
+                    </>
+                  )}
                 </div>
               </div>
             </SheetContent>
           </Sheet>
         </div>
-
 
         {/* Register Modal */}
         <ResuseableModal

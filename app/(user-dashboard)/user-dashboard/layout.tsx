@@ -1,10 +1,13 @@
 import DashboardLayout from '@/components/MainLayout/DashboardLayout'
+import UserProtectedWrapper from '@/components/common/UserProtectedWrapper'
 import React from 'react'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <DashboardLayout>
-      {children}
-    </DashboardLayout>
+    <UserProtectedWrapper>
+      <DashboardLayout>
+        {children}
+      </DashboardLayout>
+    </UserProtectedWrapper>
   )
 }

@@ -10,6 +10,8 @@ import OtpVerification from './OtpVerification';
 import { login } from '@/apis/authApis';
 import { CustomToast } from '@/lib/Toast/CustomToast';
 import { useRouter } from 'next/navigation';
+import ForgotPassword from './ForgotPassword';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +21,10 @@ export default function LoginPage() {
     const [showOtpModal, setShowOtpModal] = useState(false);
     const [unverifiedEmail, setUnverifiedEmail] = useState<string>('');
     const [expiredAt, setExpiredAt] = useState<number>(5);
+    const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
     const router = useRouter();
+    const { login: authLogin } = useAuth();
+    
     const {
         register,
         handleSubmit,
@@ -39,18 +44,22 @@ export default function LoginPage() {
             const response = await login(credentials);
 
             if (response.success) {
+                await authLogin(response.authorization.token, response.type);
                 CustomToast.show(response.message || 'Login successful!');
+                setTimeout(() => {
+                    if (response.type === 'user') {
+                        router.push('/user-dashboard');
+                    } else if (response.type === 'admin') {
+                        router.push('/admin/dashboard');
+                    } else {
+                        router.push('/user-dashboard');
+                    }
+                }, 200);
 
-                if (response.data?.token) {
-                    localStorage.setItem('token', response.data.token);
-                }
-
-                // console.log('Login successful:', response);
             } else {
                 setError(response.message || 'Login failed. Please try again.');
             }
         } catch (error: any) {
-            // console.error('Login error:', error);
             if (error.response?.data?.message?.code === 'EMAIL_NOT_VERIFIED') {
                 const email = error.response.data.message.email;
                 setUnverifiedEmail(email);
@@ -69,24 +78,15 @@ export default function LoginPage() {
         setShowPassword(!showPassword);
     };
 
-    const handleForgotPassword = () => {
-        CustomToast.show('Forgot password functionality coming soon!');
-    };
-
     const handleRegisterClick = () => {
         setIsRegisterModalOpen(true);
         router.push('?register=true');
     };
 
-    // const handleRegisterModalClose = () => {
-    //     setIsRegisterModalOpen(false);
-    //     router.push('/');
-    // };
-
-    const handleOtpSuccess = () => {
+    const handleOtpSuccess = (response?: any) => {
         setShowOtpModal(false);
         setUnverifiedEmail('');
-        CustomToast.show('Email verified successfully! You can now login.');
+        CustomToast.show(response?.message || 'Email verified successfully! You can now login.');
     };
 
     const handleOtpBack = () => {
@@ -156,8 +156,8 @@ export default function LoginPage() {
                 <div className="flex justify-end">
                     <button
                         type="button"
-                        onClick={handleForgotPassword}
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                        onClick={() => setShowForgotPasswordModal(true)}
+                        className="text-sm text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
                         disabled={isLoading}
                     >
                         Forgot Password?
@@ -219,8 +219,6 @@ export default function LoginPage() {
                 </div>
             </form>
 
-
-
             {/* OTP Verification Modal */}
             <ResuseableModal
                 isOpen={showOtpModal}
@@ -234,6 +232,15 @@ export default function LoginPage() {
                     onBack={handleOtpBack}
                     isLoginVerification={true}
                 />
+            </ResuseableModal>
+
+            {/* Forgot Password Modal */}
+            <ResuseableModal
+                isOpen={showForgotPasswordModal}
+                onClose={() => setShowForgotPasswordModal(false)}
+                title="Forgot Password"
+            >
+                <ForgotPassword onClose={() => setShowForgotPasswordModal(false)} />
             </ResuseableModal>
         </div>
     );

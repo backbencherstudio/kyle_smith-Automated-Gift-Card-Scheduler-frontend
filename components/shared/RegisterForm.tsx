@@ -73,10 +73,11 @@ export default function RegisterForm({ onLoginClick }: { onLoginClick?: () => vo
         setShowPassword(!showPassword);
     };
 
-    const handleOtpSuccess = () => {
+    const handleOtpSuccess = (response?: any) => {
         setShowOtpForm(false);
         setUserEmail('');
         setSuccess('');
+        CustomToast.show(response?.message || 'Email verified successfully!');
     };
 
     const handleOtpBack = () => {

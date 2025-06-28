@@ -14,7 +14,6 @@ interface LoginRequest {
     password: string;
 }
 
-
 interface User {
     id: string;
     name: string;
@@ -34,10 +33,15 @@ interface RegisterResponse extends ApiResponse<{
     expired_at: number;
 }> { }
 
-interface LoginResponse extends ApiResponse<{
-    user: User;
-    token: string;
-}> { }
+interface LoginResponse {
+    success: boolean;
+    message: string;
+    authorization: {
+        token: string;
+        type: string;
+    };
+    type: string;
+}
 
 interface OtpVerificationResponse extends ApiResponse<{
     user: User;
@@ -49,12 +53,36 @@ interface ResendOtpResponse extends ApiResponse<{
     message: string;
 }> { }
 
+interface ForgotPasswordResponse extends ApiResponse<{
+    email: string;
+    message: string;
+    expired_at: number;
+}> { }
+
+interface ChangePasswordResponse extends ApiResponse<{
+    email: string;
+    password: string;
+    token: string;
+}> { }
+
+interface MeResponse extends ApiResponse<{
+    id: string;
+    name: string;
+    email: string;
+    phone_number: string;
+    avatar: string | null;
+    address: string;
+    type: string;
+    gender: string | null;
+    date_of_birth: string | null;
+    created_at: string;
+}> { }
+
 export const register = async (userData: RegisterRequest): Promise<RegisterResponse> => {
     try {
         const response = await axiosClient.post<RegisterResponse>("/api/auth/register", userData);
         return response.data;
     } catch (error) {
-        // console.log(error);
         throw error;
     }
 };
@@ -65,7 +93,6 @@ export const otpVerification = async (email: string, token: string): Promise<Otp
         const response = await axiosClient.post<OtpVerificationResponse>("/api/auth/verify-email", { email, token });
         return response.data;
     } catch (error) {
-        // console.log(error);
         throw error;
     }
 };
@@ -81,16 +108,58 @@ export const resendOtp = async (email: string): Promise<ResendOtpResponse> => {
     }
 };
 
+// forgot password
+export const forgotPassword = async (email: string): Promise<ForgotPasswordResponse> => {
+    try {
+        const response = await axiosClient.post<ForgotPasswordResponse>("/api/auth/forgot-password", { email });
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
 
+// change password
+export const ResetPassword = async (email: string, password: string, token: string): Promise<ChangePasswordResponse> => {
+    try {
+        const response = await axiosClient.post<ChangePasswordResponse>("/api/auth/reset-password", { email, password, token });
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
     try {
         const response = await axiosClient.post<LoginResponse>("/api/auth/login", credentials);
+        
+        // Set localStorage if login is successful
+        if (response.data.success && response.data.authorization?.token) {
+            localStorage.setItem('token', response.data.authorization.token);
+            localStorage.setItem('userType', response.data.type);
+        }
+        
         return response.data;
     } catch (error) {
-        // console.log(error);
         throw error;
     }
+};
+
+// getMe api
+export const getMe = async (): Promise<MeResponse> => {
+    try {
+        const response = await axiosClient.get<MeResponse>("/api/auth/me");
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// logout function
+export const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userType');
 };
 
 

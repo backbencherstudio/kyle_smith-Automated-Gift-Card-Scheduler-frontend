@@ -8,12 +8,13 @@ import { otpVerification, resendOtp } from '@/apis/authApis'
 interface OtpVerificationProps {
     email: string;
     expiredAt: number;
-    onSuccess: () => void;
+    onSuccess: (response?: any) => void;
     onBack: () => void;
     isLoginVerification?: boolean;
+    isForgotPasswordVerification?: boolean;
 }
 
-export default function OtpVerification({ email, expiredAt, onSuccess, isLoginVerification = false }: OtpVerificationProps) {
+export default function OtpVerification({ email, expiredAt, onSuccess,  isLoginVerification = false, isForgotPasswordVerification = false }: OtpVerificationProps) {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [isLoading, setIsLoading] = useState(false);
     const [timeLeft, setTimeLeft] = useState(expiredAt * 60);
@@ -28,11 +29,11 @@ export default function OtpVerification({ email, expiredAt, onSuccess, isLoginVe
     }, []);
 
     useEffect(() => {
-        if (isLoginVerification && email && !hasAutoResent.current) {
+        if (isLoginVerification && !isForgotPasswordVerification && email && !hasAutoResent.current) {
             hasAutoResent.current = true;
             handleAutoResendOtp();
         }
-    }, [isLoginVerification, email]);
+    }, [isLoginVerification, isForgotPasswordVerification, email]);
 
     useEffect(() => {
         if (timeLeft > 0) {
@@ -101,7 +102,7 @@ export default function OtpVerification({ email, expiredAt, onSuccess, isLoginVe
                 if (!isLoginVerification) {
                     CustomToast.show(response.message || 'OTP verified successfully!');
                 }
-                onSuccess();
+                onSuccess({ ...response, otpCode: otpString });
             } else {
                 CustomToast.show(response.message || 'Invalid OTP. Please try again.');
             }
@@ -145,7 +146,10 @@ export default function OtpVerification({ email, expiredAt, onSuccess, isLoginVe
             const response = await resendOtp(email);
 
             if (response.success) {
-                CustomToast.show(response.message || 'OTP sent successfully!');
+                // Don't show toast for forgot password verification to avoid duplicate messages
+                if (!isForgotPasswordVerification) {
+                    CustomToast.show(response.message || 'OTP sent successfully!');
+                }
                 setTimeLeft(expiredAt * 60);
                 setCanResend(false);
             } else {
