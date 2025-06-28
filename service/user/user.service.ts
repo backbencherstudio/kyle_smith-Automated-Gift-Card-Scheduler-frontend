@@ -33,6 +33,16 @@ export const UserService = {
     return await Fetch.post("/auth/register", data, config);
   },
 
+addVendore: async (data, token) => {
+    const _config = {
+      headers: {
+        "Content-Type": "multipart/form-data;",
+        Authorization: "Bearer " + token,
+      },
+    };
+    return await Fetch.post("/admin/vendor", data, _config);
+  },
+
   logout: (context = null) => {
     CookieHelper.destroy({ key: "token", context });
   },

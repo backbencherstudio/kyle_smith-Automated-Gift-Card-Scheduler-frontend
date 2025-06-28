@@ -28,6 +28,16 @@ const navItems: NavItem[] = [
     href: "/dashboard/user-management",
   },
   {
+    icon: "/icon/vedor.svg", // Replace this with the actual image path
+    label: "Vendor",
+    href: "/dashboard/add-vendor",
+  },
+  {
+    icon: "/icon/servicecard.svg", // Replace this with the actual image path
+    label: "Add Service",
+    href: "/dashboard/add-service",
+  },
+  {
     icon: "/icon/giftlog.svg", // Replace this with the actual image path
     label: "Gift Log",
     href: "/dashboard/gift-log",

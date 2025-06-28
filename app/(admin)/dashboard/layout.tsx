@@ -3,6 +3,7 @@ import React, { useState } from "react";
 
 import CustomToastContainer from "@/components/CustomToast/CustomToastContainer";
 import Header from "@/components/common/Header";
+import { TokenProvider } from "@/hooks/useToken";
 import ProtectedPageWrapper from "../_component/common/ProtectedPageWrapper";
 import Sidebar from "../_component/common/Sidebar";
 
@@ -17,6 +18,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
+    <TokenProvider>
     <ProtectedPageWrapper>
     <div className="w-full h-screen overflow-hidden relative">
       {/* Fixed container for layout */}
@@ -60,6 +62,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       </div>
     </div>
     </ProtectedPageWrapper>
+    </TokenProvider>
   );
 };
 
