@@ -20,6 +20,7 @@ interface DynamicTableProps {
   onView?: (row: any) => void;
   onDelete?: (id: any) => void;
   noDataMessage?: string;
+  totalPages?: number;
 }
 
 export default function DynamicTableTwo({
@@ -31,13 +32,11 @@ export default function DynamicTableTwo({
   onView,
   onDelete,
   noDataMessage = "No data found.",
+  totalPages: totalPagesProp,
 }: DynamicTableProps) {
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  const paginatedData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
+  const totalPages = totalPagesProp || Math.ceil(data.length / itemsPerPage);
+  const paginatedData = data; 
+  
   const getPagination = () => {
     let pages: (number | string)[] = [];
     if (totalPages <= 4) {

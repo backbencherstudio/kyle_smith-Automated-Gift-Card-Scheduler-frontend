@@ -46,7 +46,36 @@ addVendore: async (data, token) => {
   logout: (context = null) => {
     CookieHelper.destroy({ key: "token", context });
   },
-  // get user details
+
+  getAllVendor: async (token = "") => {
+    const userToken = token;
+    const _config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + userToken,
+      },
+    };
+    return await Fetch.get(`/admin/vendor`, _config);
+  },
+// Create a common function for making GET requests
+ getData : async (token: string, endpoint: string) => {
+  const _config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  try {
+    const response = await Fetch.get(endpoint, _config);
+    return response?.data; 
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error; 
+  }
+},
+
+
   getUserDetails: async ({ token = "", context = null }) => {
     // const userToken = CookieHelper.get({ key: "token", context });
     const userToken = token;

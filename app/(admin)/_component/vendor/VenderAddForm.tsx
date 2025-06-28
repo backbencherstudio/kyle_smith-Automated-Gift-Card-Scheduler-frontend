@@ -51,7 +51,7 @@ export default function VenderAddForm({ open, onClose }: { open: boolean; onClos
       if (response?.data?.success == true) {
         toast.success("Successfully Add New Vendor")
         reset();
-        router.replace("/dashboard/vendor")
+        router.replace("/dashboard/add-vendor")
         setLogoName("");
         onClose(false)
         setLoding(false)
