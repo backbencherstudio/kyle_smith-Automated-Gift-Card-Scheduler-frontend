@@ -20,8 +20,14 @@ export default function ResuseableModal({
     children
 }: ResuseableModalProps) {
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent>
+        <Dialog open={isOpen} onOpenChange={(open) => {
+            if (!open) {
+                onClose();
+            }
+        }}>
+            <DialogContent onPointerDownOutside={(e) => {
+                e.preventDefault();
+            }}>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>
