@@ -67,8 +67,6 @@ function RecentOrderTable() {
          </div>
           </div>
       <DynamicTableTwo
-
-      
       columns={columns}
               data={giftData}
               currentPage={currentPage}

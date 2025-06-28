@@ -3,6 +3,7 @@ import React, { useState } from "react";
 
 import CustomToastContainer from "@/components/CustomToast/CustomToastContainer";
 import Header from "@/components/common/Header";
+import ProtectedPageWrapper from "../_component/common/ProtectedPageWrapper";
 import Sidebar from "../_component/common/Sidebar";
 
 interface AdminLayoutProps {
@@ -16,6 +17,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
+    <ProtectedPageWrapper>
     <div className="w-full h-screen overflow-hidden relative">
       {/* Fixed container for layout */}
       <div className="relative  flex h-full">
@@ -44,7 +46,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         {/* Main Content Layout */}
         <div className="flex flex-col h-full w-full">
           {/* Header */}
-          <div  className="w-full sticky top-0 left-0 z-10">
+          <div className="w-full sticky top-0 left-0 z-10">
             <Header onMenuClick={openSidebar} sidebarOpen={sidebarOpen} />
           </div>
 
@@ -57,6 +59,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </div>
       </div>
     </div>
+    </ProtectedPageWrapper>
   );
 };
 

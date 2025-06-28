@@ -1,9 +1,9 @@
 "use client";
-
+import Cookies from "js-cookie";
 import { X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 interface NavItem {
   icon: any;
@@ -42,22 +42,25 @@ const navItems: NavItem[] = [
     label: "Settings",
     href: "/dashboard/my-profile",
   },
-  {
-    icon: "/icon/logout.svg", // Replace this with the actual image path
-    label: "Log Out",
-    href: "/login",
-  },
+ 
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
-
+const router = useRouter()
   const isActive = (href: string): boolean => {
     if (href === "/dashboard") {
       return pathname === "/dashboard";
     }
     return pathname.startsWith(href);
   };
+
+  const handleLogout = ()=>{
+  Cookies.remove("token");
+  router.push("/admin/login")
+
+}
+
   return (
     <div className="h-screen  ">
       {/* Overlay for mobile */}
@@ -145,6 +148,42 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 </Link>
               );
             })}
+
+              <button
+                  onClick={handleLogout}
+                  className={`
+        flex items-center justify-between w-full cursor-pointer group gap-3 px-3 py-2.5 lg:py-3 rounded-lg 
+        transition-colors duration-200
+        hover:bg-[#FDCB48]
+      `}
+                >
+                  <div className="flex gap-2 items-center">
+                    <div
+                      className={`
+            w-[30px] h-[30px] flex justify-center items-center flex-shrink-0 rounded-full
+            text-xl font-medium
+            hover:text-primaryColor text-descriptionColor 
+          `}
+                    >
+                      <div>
+                        <Image
+                          src="/icon/logout.svg"
+                          alt={"logout"}
+                          width={18}
+                          height={18}
+                        />
+                      </div>
+                    </div>
+                    <span
+                      className={`
+            text-base font-semibold  whitespace-nowrap
+             text-descriptionColor 
+          `}
+                    >
+                     Log Out
+                    </span>
+                  </div>
+                </button>
           </div>
         </div>
       </div>
