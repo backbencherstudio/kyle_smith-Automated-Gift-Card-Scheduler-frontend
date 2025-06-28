@@ -98,7 +98,6 @@ export default function OtpVerification({ email, expiredAt, onSuccess,  isLoginV
             const response = await otpVerification(email, otpString);
 
             if (response.success) {
-                // Only show toast if not login verification (for register flow)
                 if (!isLoginVerification) {
                     CustomToast.show(response.message || 'OTP verified successfully!');
                 }
@@ -146,7 +145,6 @@ export default function OtpVerification({ email, expiredAt, onSuccess,  isLoginV
             const response = await resendOtp(email);
 
             if (response.success) {
-                // Don't show toast for forgot password verification to avoid duplicate messages
                 if (!isForgotPasswordVerification) {
                     CustomToast.show(response.message || 'OTP sent successfully!');
                 }

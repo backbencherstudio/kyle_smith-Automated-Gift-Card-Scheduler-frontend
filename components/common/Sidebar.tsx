@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import UserAvatar from "../ui/UserAvatar";
 
 interface NavItem {
   icon: any;
@@ -25,7 +27,7 @@ const navItems: NavItem[] = [
   { icon: "/icon/giftlog.svg", label: "Gift Log", href: "/dashboard/gift-log", role: "admin" },
   { icon: "/icon/payment.svg", label: "Payment Settings", href: "/dashboard/payment-settings", role: "admin" },
   { icon: "/icon/setting.svg", label: "Settings", href: "/dashboard/settings", role: "admin" },
-  { icon: "/icon/logout.svg", label: "Log Out", href: "/login", role: "admin" },
+  // { icon: "/icon/logout.svg", label: "Log Out", href: "/login", role: "admin" },
 
   // User routes
   { icon: "/icon/grid-alt.svg", label: "Dashboard", href: "/user-dashboard", role: "user" },
@@ -34,18 +36,12 @@ const navItems: NavItem[] = [
   { icon: "/icon/payment.svg", label: "Payment Settings", href: "/user-dashboard/payment-settings", role: "user" },
   { icon: "/icon/payment.svg", label: "Order History", href: "/user-dashboard/order-history", role: "user" },
   { icon: "/icon/setting.svg", label: "Settings", href: "/user-dashboard/settings", role: "user" },
-  { icon: "/icon/logout.svg", label: "Log Out", href: "/login", role: "user" }
+  // { icon: "/icon/logout.svg", label: "Log Out", href: "/login", role: "user" }
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
-
-  // Demo user (static)
-  const user = {
-    name: "John Doe",
-    email: "test@gmail.com",
-    role: "user"
-  };
+  const { user, userType, logoutUser } = useAuth();
 
   const isActive = (href: string): boolean => {
     if (href === "/user-dashboard" || href === "/dashboard") {
@@ -53,6 +49,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     }
     return pathname.startsWith(href);
   };
+
+  const handleLogout = () => {
+    logoutUser(true);
+    onClose();
+  };
+
+  // Show loading if user data is not available
+  if (!user || !userType) {
+    return (
+      <div className="h-screen">
+        <div className="fixed top-0 left-0 h-full bg-white z-50 w-[280px] lg:w-full lg:relative flex flex-col min-h-[calc(100vh-100px)] shadow-[0px_-0.3px_5.5px_0px_rgba(0,0,0,0.02)] lg:rounded-[12px] p-5 overflow-y-auto">
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FAD33E]"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen">
@@ -83,9 +97,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <X />
         </button>
 
+
         <div className="my-4">
           <div className="text-white pl-2 pb-5 text-xl lg:text-3xl font-semibold ">
-            <Link href={"/user-dashboard"}>
+            <Link href={userType === 'user' ? "/user-dashboard" : "/dashboard"}>
               <Image
                 src="/icon/logo.svg"
                 alt="main logo "
@@ -97,7 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
           <div className="space-y-2">
             {navItems
-              .filter((item) => item.role === user.role)
+              .filter((item) => item.role === userType)
               .map((item, idx) => {
                 const active = isActive(item.href);
                 const isLogout = item.label.toLowerCase() === "log out";
@@ -105,10 +120,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 return isLogout ? (
                   <button
                     key={idx}
-                    onClick={() => {
-                      console.log("🔒 Logging out...");
-                      alert("This is a demo logout. Replace with real logic later.");
-                    }}
+                    onClick={handleLogout}
                     className={`
                       w-full text-left
                       flex items-center cursor-pointer justify-between group gap-3 px-3 py-2.5 lg:py-3 rounded-lg hover:bg-primaryColor/10

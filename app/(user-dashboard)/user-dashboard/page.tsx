@@ -1,8 +1,10 @@
+"use client";
 
 import React from "react";
 import ContactList from "./_Components/ContactList";
 import GiftSchedulingDashboard from "./_Components/GiftSchedulingDashboard";
 import UpcomingBirthday from "./upcoming-birthday/page";
+import { useAuth } from "@/contexts/AuthContext";
 
 const stats = [
     { title: "Total contact", value: 100 },
@@ -11,10 +13,19 @@ const stats = [
 ];
 
 export default function Dashboard() {
+    const { user } = useAuth();
 
     return (
         <>
-            <h1 className="text-3xl font-bold text-[#232323] mb-6">Dashboard</h1>
+            <div className="mb-6">
+                <h1 className="text-3xl font-bold text-[#232323] mb-2">Dashboard</h1>
+                {user && (
+                    <p className="text-lg text-[#4A4C56]">
+                        Welcome back, <span className="font-semibold text-[#1D1F2C]">{user.name}</span>! 👋
+                    </p>
+                )}
+            </div>
+            
             <div className="flex flex-col lg:flex-row gap-6">
                 {/* Left side (Stats + Calendar) */}
                 <div className="flex-1 min-w-0 flex flex-col gap-6">
@@ -37,6 +48,5 @@ export default function Dashboard() {
             </div>
             <UpcomingBirthday />
         </>
-
     );
 }

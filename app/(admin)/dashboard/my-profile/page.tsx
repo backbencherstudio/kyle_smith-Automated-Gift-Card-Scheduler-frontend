@@ -1,6 +1,6 @@
 "use client";
 import ProfileDetails from "@/components/profile/ProfileDetails";
-import ProfileEdit from "@/components/profile/ProfileEdit";
+import ProfileEdit from "@/components/profile/UserProfile";
 import Image from "next/image";
 import { useState } from "react";
 import { BiEdit } from "react-icons/bi";

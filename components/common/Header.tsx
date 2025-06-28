@@ -8,6 +8,9 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import UserAvatar from "../ui/UserAvatar";
 
 interface HeaderProps {
   onNotificationClick?: () => void;
@@ -22,6 +25,8 @@ const Header: React.FC<HeaderProps> = ({
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [profilePopoverOpen, setProfilePopoverOpen] = useState(false);
   const [showAllNotifications, setShowAllNotifications] = useState(false);
+  const { user, logoutUser } = useAuth();
+  const router = useRouter();
 
   const [notifications, setNotifications] = useState([
     {
@@ -92,6 +97,15 @@ const Header: React.FC<HeaderProps> = ({
 
   const clearNotifications = () => {
     setNotifications([]);
+  };
+
+  const handleLogout = () => {
+    logoutUser(true);
+    setProfilePopoverOpen(false);
+    
+    setTimeout(() => {
+      router.push('/?login=true');
+    }, 100);
   };
 
   return (
@@ -189,10 +203,16 @@ const Header: React.FC<HeaderProps> = ({
                 <PopoverTrigger onClick={() => setProfilePopoverOpen(!profilePopoverOpen)}>
                   <div className="flex justify-start items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-90">
                     <div className="w-6 h-6 lg:w-10 lg:h-10 rounded-full overflow-hidden">
-                      <Image src={avatar} alt="Admin Avatar" width={40} height={40} className="rounded-full w-full h-full" />
+                      <UserAvatar 
+                        avatar={user?.avatar} 
+                        size="lg" 
+                        className="border-2 border-white"
+                      />
                     </div>
                     <div className="whitespace-nowrap">
-                      <h4 className="sm:text-sm text-[13px] font-medium text-blackColor">Esther Howard</h4>
+                      <h4 className="sm:text-sm text-[13px] font-medium text-blackColor">
+                        {user?.name || 'User'}
+                      </h4>
                     </div>
                     <IoIosArrowDown size={16} className="text-grayColor1" />
                   </div>
@@ -202,7 +222,7 @@ const Header: React.FC<HeaderProps> = ({
                     <Image src="/icon/setting.svg" alt="setting" width={17} height={17} />
                     <p className="text-base font-medium text-descriptionColor">Settings</p>
                   </Link>
-                  <button onClick={() => setProfilePopoverOpen(false)} className="cursor-pointer flex items-center gap-3">
+                  <button onClick={handleLogout} className="cursor-pointer flex items-center gap-3">
                     <Image src="/icon/logout.svg" alt="logout" width={17} height={17} />
                     <p className="text-base font-medium text-descriptionColor">Log Out</p>
                   </button>

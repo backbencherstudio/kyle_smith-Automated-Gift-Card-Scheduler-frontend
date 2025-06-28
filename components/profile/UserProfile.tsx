@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
+import { BiEdit } from "react-icons/bi";
 
 interface ProfileEditProps {
     setIsEdite: (value: boolean) => void;
@@ -33,9 +34,10 @@ interface ProfileEditProps {
     };
 }
 
-export default function ProfileEdit({ setIsEdite, userData }: ProfileEditProps) {
+export default function UserProfile({ setIsEdite, userData }: ProfileEditProps) {
     const { register, handleSubmit, control } = useForm({
         defaultValues: {
+            profileImage: userData?.profileImage,
             name: userData?.name,
             email: userData?.email,
             address: userData?.location,
@@ -88,27 +90,14 @@ export default function ProfileEdit({ setIsEdite, userData }: ProfileEditProps) 
     return (
         <div className="relative">
             <form onSubmit={handleSubmit(onSubmit)}>
-                {isLoading && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                        <div className="bg-white p-6 rounded-lg flex items-center gap-3">
-                            <Loader2 className="h-6 w-6 animate-spin text-primaryColor" />
-                            <p className="text-headerColor font-medium">Updating profile...</p>
-                        </div>
-                    </div>
-                )}
+
 
                 {/* Profile Image Section */}
                 <div className="bg-whiteColor p-3 md:p-6 rounded-2xl">
                     <div className="flex justify-between items-center pb-2 mb-6">
                         <h2 className="text-headerColor text-lg lg:text-lg font-bold">Profile</h2>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="flex items-center gap-2 bg-primaryColor cursor-pointer text-headerColor px-3 py-1.5 md:px-3 md:py-3 rounded-md text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-                            Save & Changes
-                        </button>
+                        {/* edit icon  */}
+                        <BiEdit className="text-lg cursor-pointer" />
                     </div>
                     <div className="flex justify-between">
                         <div className="relative w-full">
@@ -127,13 +116,6 @@ export default function ProfileEdit({ setIsEdite, userData }: ProfileEditProps) 
                                 onChange={handleCoverChange}
                                 className="hidden"
                             />
-                            <button
-                                type="button"
-                                onClick={() => coverInputRef.current.click()}
-                                className="absolute  bottom-4 right-4 z-10 bg-[#D2D2D5]/10 text-white md:px-4 px-2 py-1.5 md:py-2 rounded-md flex items-center text-sm md:text-base gap-1 hover:scale-105 transition"
-                            >
-                                <FaCamera className="lg:w-4 lg:h-4 w-3 h-3 " /> Edit Cover
-                            </button>
                             <div className="absolute top-0 left-0 bg-blackColor/80 w-full h-full rounded-lg">
                                 <div className="flex flex-col md:flex-row h-full md:ml-15 justify-center md:justify-start md:items-center gap-3 md:gap-5 ml-6">
                                     <div className="relative w-[80px] h-[80px] md:w-[100px] md:h-[100px] lg:w-[120px] lg:h-[120px] rounded-full overflow-visible border-2 border-whiteColor">
@@ -181,8 +163,9 @@ export default function ProfileEdit({ setIsEdite, userData }: ProfileEditProps) 
 
                 {/* Contact Details */}
                 <div className="md:grid md:grid-cols-2 gap-4 mt-6 bg-white p-4 md:p-6 rounded-xl">
-                    <div className="mb-2 col-span-2">
+                    <div className="mb-2 col-span-2 flex justify-between items-center">
                         <h5 className="text-headerColor text-lg font-bold">Contact Details</h5>
+
                     </div>
                     <div className="col-span-1">
                         <label className="text-headerColor mb-1 text-[14px] block font-semibold">Name</label>
@@ -298,17 +281,7 @@ export default function ProfileEdit({ setIsEdite, userData }: ProfileEditProps) 
                     </div>
                 </div>
 
-                {/* About Section */}
-                <div className="mt-6 p-4 md:p-6 rounded-xl bg-whiteColor">
-                    <label className="text-headerColor text-lg lg:text-xl font-semibold mb-3 block">
-                        About
-                    </label>
-                    <textarea
-                        {...register("about")}
-                        className="w-full border px-3 py-3 rounded-md bg-borderColor2/35 h-36"
-                        defaultValue={userData?.aboutUs}
-                    />
-                </div>
+
 
                 {/* Email Notifications */}
                 <div className="bg-white p-6 rounded-lg mt-6 w-full">

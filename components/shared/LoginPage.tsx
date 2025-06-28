@@ -57,7 +57,11 @@ export default function LoginPage() {
                 }, 200);
 
             } else {
-                setError(response.message || 'Login failed. Please try again.');
+                // Handle nested message structure
+                const errorMessage = response.message && typeof response.message === 'object' 
+                    ? (response.message as any).message || 'Login failed. Please try again.'
+                    : response.message || 'Login failed. Please try again.';
+                setError(errorMessage);
             }
         } catch (error: any) {
             if (error.response?.data?.message?.code === 'EMAIL_NOT_VERIFIED') {
@@ -67,7 +71,11 @@ export default function LoginPage() {
                 setShowOtpModal(true);
                 CustomToast.show(error.response.data.message.message || 'Please verify your email first.');
             } else {
-                setError(error.response?.data?.message || 'Something went wrong. Please try again.');
+                // Handle nested error message structure
+                const errorMessage = error.response?.data?.message?.message 
+                    || error.response?.data?.message 
+                    || 'Something went wrong. Please try again.';
+                setError(errorMessage);
             }
         } finally {
             setIsLoading(false);

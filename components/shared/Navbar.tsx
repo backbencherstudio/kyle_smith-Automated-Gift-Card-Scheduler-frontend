@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { Menu, User, LogOut } from "lucide-react";
+import { Menu } from "lucide-react";
 import ButtonReuseable from "../reusable/ButtonReuseable";
 import { useState, useEffect } from "react";
 import ResuseableModal from "../reusable/ResuseableModal";
@@ -16,7 +16,7 @@ export default function Navbar() {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, userType, isAuthenticated, logoutUser } = useAuth();
+  const { userType, isAuthenticated, logoutUser } = useAuth();
 
   useEffect(() => {
     const registerParam = searchParams.get('register');
@@ -60,10 +60,6 @@ export default function Navbar() {
     router.push('/');
   };
 
-  const handleLogout = () => {
-    logoutUser();
-    router.push('/');
-  };
 
   const handleDashboardClick = () => {
     if (userType === 'user') {
@@ -109,11 +105,7 @@ export default function Navbar() {
                 className="border text-[#1D1F2C] border-[#1D1F2C] text-sm md:text-lg cursor-pointer px-6 hover:bg-[#FAD33E] transform duration-300 font-medium"
                 onClick={handleDashboardClick}
               />
-              <ButtonReuseable
-                title="Logout"
-                className="bg-red-500 text-white border border-red-500 hover:bg-red-600 transform duration-300 px-6 py-2 text-sm md:text-lg cursor-pointer font-medium"
-                onClick={handleLogout}
-              />
+
             </>
           )}
         </div>
@@ -159,11 +151,7 @@ export default function Navbar() {
                         className="border py-3 border-[#1D1F2C] font-semibold text-md cursor-pointer px-6 hover:bg-[#FAD33E] transform duration-300"
                         onClick={handleDashboardClick}
                       />
-                      <ButtonReuseable
-                        title="Logout"
-                        className="bg-red-500 text-white border border-red-500 hover:bg-red-600 transform duration-300 px-6 py-3 text-md cursor-pointer font-semibold"
-                        onClick={handleLogout}
-                      />
+
                     </>
                   )}
                 </div>

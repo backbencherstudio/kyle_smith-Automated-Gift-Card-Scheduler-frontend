@@ -23,7 +23,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (token: string, type: string) => void;
-  logoutUser: () => void;
+  logoutUser: (showToast?: boolean) => void;
   refreshUser: () => Promise<void>;
 }
 
@@ -48,7 +48,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (token: string, type: string) => {
     setUserType(type);
-    // Immediately fetch user data after login
     try {
       await refreshUser();
     } catch (error) {
@@ -56,12 +55,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logoutUser = () => {
+  const logoutUser = (showToast: boolean = true) => {
     logout();
     setUser(null);
     setUserType(null);
-    // Only show toast when user manually logs out, not on initialization
-    if (user) {
+    if (user && showToast) {
       CustomToast.show('Logged out successfully');
     }
   };
@@ -71,12 +69,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await getMe();
       if (response.success && response.data) {
         setUser(response.data);
-        // Also update userType from the user data
         setUserType(response.data.type);
       }
     } catch (error) {
       console.error('Failed to refresh user data:', error);
-      logoutUser();
+      logoutUser(false);  
     }
   };
 
@@ -91,7 +88,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           await refreshUser();
         } catch (error) {
           console.error('Failed to initialize auth:', error);
-          // Don't show toast on initialization failure
           logout();
           setUser(null);
           setUserType(null);
