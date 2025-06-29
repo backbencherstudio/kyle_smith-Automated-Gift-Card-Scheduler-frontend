@@ -1,5 +1,6 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 import DynamicTableTwo from '@/app/(admin)/_component/common/DynamicTableTwo'
 import { FaPlus } from 'react-icons/fa'
@@ -11,30 +12,53 @@ import { Button } from "@/components/ui/button";
 import { addContact, getContacts, updateContact, deleteContact } from '@/apis/userDashboardApis';
 import { CustomToast } from '@/lib/Toast/CustomToast';
 
+// Debounce hook
+const useDebounce = (value: string, delay: number) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+};
 
 export default function Contacts() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-    const [currentPage, setCurrentPage] = useState(1)
     const [selectedContact, setSelectedContact] = useState<any>(null)
     const [contactToDelete, setContactToDelete] = useState<any>(null)
     const [contacts, setContacts] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
     const [deleteLoading, setDeleteLoading] = useState(false)
     const [updateLoading, setUpdateLoading] = useState(false)
-    const [searchTerm, setSearchTerm] = useState('')
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '')
     const [totalContacts, setTotalContacts] = useState(0)
-    const [itemsPerPage] = useState(10) 
-    
+    const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'))
+    const [itemsPerPage] = useState(parseInt(searchParams.get('limit') || '2'))
+    const [totalPages, setTotalPages] = useState(1)
+
+    // Debounce search term
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
     const columns = [
         { label: "Name", width: "20%", accessor: "name" },
         { label: "Address", width: "20%", accessor: "address" },
         { label: "Email", width: "25%", accessor: "email" },
         { label: "Phone", width: "15%", accessor: "phone_number" },
-        { 
-            label: "Birthday Date", 
-            width: "15%", 
+        {
+            label: "Birthday Date",
+            width: "15%",
             accessor: "birthday_date",
             formatter: (value: string) => {
                 if (!value) return '-';
@@ -50,9 +74,9 @@ export default function Contacts() {
                 }
             }
         },
-        { 
-            label: "Action", 
-            width: "10%", 
+        {
+            label: "Action",
+            width: "10%",
             accessor: "action",
             formatter: (value: any, row: any) => (
                 <div className="flex items-center gap-2">
@@ -79,9 +103,48 @@ export default function Contacts() {
         },
     ];
 
+    const updateURL = useCallback((search: string, page: number, limit: number) => {
+        const params = new URLSearchParams();
+        if (search) params.set('search', search);
+        if (page > 1) params.set('page', page.toString());
+        if (limit !== 2) params.set('limit', limit.toString());
+
+        const newURL = params.toString() ? `?${params.toString()}` : '';
+        router.push(`/user-dashboard/contacts${newURL}`, { scroll: false });
+    }, [router]);
+
+    // Fetch contacts with search and pagination
+    const fetchContacts = useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await getContacts({
+                search: debouncedSearchTerm || undefined,
+                page: currentPage,
+                limit: itemsPerPage
+            });
+
+            if (response.success) {
+                setContacts(response.data || []);
+                setTotalContacts(response.total || 0);
+                setTotalPages(response.totalPages || 1);
+            } else {
+                CustomToast.show(response.message || 'Failed to fetch contacts');
+            }
+        } catch (error: any) {
+            console.error('Error fetching contacts:', error);
+            CustomToast.show(error?.response?.data?.message || 'Failed to fetch contacts');
+        } finally {
+            setLoading(false);
+        }
+    }, [debouncedSearchTerm, currentPage, itemsPerPage]);
+
     useEffect(() => {
         fetchContacts();
-    }, [currentPage]); 
+    }, [fetchContacts]);
+
+    useEffect(() => {
+        updateURL(debouncedSearchTerm, currentPage, itemsPerPage);
+    }, [debouncedSearchTerm, currentPage, itemsPerPage, updateURL]);
 
     useEffect(() => {
         const handleBeforeUnload = () => {
@@ -98,24 +161,6 @@ export default function Contacts() {
         };
     }, []);
 
-    const fetchContacts = async () => {
-        try {
-            setLoading(true);
-            const response = await getContacts();
-            if (response.success) {
-                setContacts(response.data || []);
-                setTotalContacts(response.data?.length || 0);
-            } else {
-                CustomToast.show(response.message || 'Failed to fetch contacts');
-            }
-        } catch (error: any) {
-            console.error('Error fetching contacts:', error);
-            CustomToast.show(error?.response?.data?.message || 'Failed to fetch contacts');
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleAddContact = async (contactData: any) => {
         try {
             setLoading(true);
@@ -126,11 +171,10 @@ export default function Contacts() {
                 address: contactData.address,
                 birthday_date: contactData.birthday_date,
             });
-            
+
             if (response.success) {
                 CustomToast.show('Contact added successfully');
                 setIsModalOpen(false);
-                // Reset to first page and refresh
                 setCurrentPage(1);
                 fetchContacts();
             } else {
@@ -154,7 +198,7 @@ export default function Contacts() {
                 address: contactData.address,
                 birthday_date: contactData.birthday_date,
             });
-            
+
             if (response.success) {
                 CustomToast.show('Contact updated successfully');
                 setIsUpdateModalOpen(false);
@@ -187,7 +231,7 @@ export default function Contacts() {
 
     const handleDelete = async () => {
         if (!contactToDelete) return;
-        
+
         try {
             setDeleteLoading(true);
             const response = await deleteContact(contactToDelete.id);
@@ -195,13 +239,12 @@ export default function Contacts() {
                 CustomToast.show('Contact deleted successfully');
                 setIsDeleteModalOpen(false);
                 setContactToDelete(null);
-                
-                // Check if current page will be empty after deletion
+
                 const currentPageItems = contacts.length;
                 if (currentPageItems === 1 && currentPage > 1) {
                     setCurrentPage(currentPage - 1);
                 } else {
-                    fetchContacts(); // Refresh current page
+                    fetchContacts();
                 }
             } else {
                 CustomToast.show(response.message || 'Failed to delete contact');
@@ -214,13 +257,20 @@ export default function Contacts() {
         }
     };
 
-    // Calculate total pages from backend data
-    const totalPages = Math.ceil(totalContacts / itemsPerPage);
-
     // Handle page change
     const handlePageChange = (page: number) => {
-        setCurrentPage(page);
+        if (page !== currentPage && !loading) {
+            setCurrentPage(page);
+        }
     };
+
+    // Handle search input change
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+    };
+
+
 
     return (
         <>
@@ -238,7 +288,7 @@ export default function Contacts() {
                                 placeholder="Search..."
                                 className="pl-9 w-full bg-gray-50"
                                 value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onChange={handleSearchChange}
                             />
                         </div>
                         <button
@@ -251,7 +301,7 @@ export default function Contacts() {
                         </button>
                     </div>
                 </div>
-                
+
                 {loading ? (
                     <div className="flex justify-center items-center py-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
@@ -262,13 +312,24 @@ export default function Contacts() {
                         data={contacts}
                         currentPage={currentPage}
                         itemsPerPage={itemsPerPage}
+                        totalPages={totalPages}
                         onPageChange={handlePageChange}
                     />
                 )}
 
-                {/* Show total count */}
+                {/* Show total count and pagination info */}
                 <div className="mt-4 text-sm text-gray-600">
-                    Showing {contacts.length} of {totalContacts} contacts
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                            Showing {contacts.length} of {totalContacts} contacts
+
+                        </div>
+                        {totalPages > 1 && (
+                            <div className="text-gray-500">
+                                Page {currentPage} of {totalPages}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <CustomModal
@@ -320,11 +381,11 @@ export default function Contacts() {
                                 Delete Contact
                             </h3>
                             <p className="text-sm text-gray-500">
-                                Are you sure you want to delete <strong>{contactToDelete?.name}</strong>? 
+                                Are you sure you want to delete <strong>{contactToDelete?.name}</strong>?
                                 This action cannot be undone.
                             </p>
                         </div>
-                        
+
                         <div className="flex justify-end gap-3">
                             <Button
                                 type="button"

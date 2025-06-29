@@ -2,7 +2,6 @@
 import { useForm, Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -19,16 +18,13 @@ interface AddContactsProps {
     loading?: boolean;
 }
 
-// Helper function to create a date without timezone issues
 const createDateWithoutTime = (date: Date | string | undefined): Date | undefined => {
     if (!date) return undefined;
     
     const d = new Date(date);
-    // Create a new date with year, month, day only (no time)
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 };
 
-// Helper function to format date without timezone issues
 const formatDateWithoutTime = (date: Date | string | undefined): string => {
     if (!date) return "Select birthday";
     
@@ -47,7 +43,6 @@ export default function AddContacts({ isOpen, onClose, initialData, isUpdate = f
         formState: { errors },
     } = useForm();
 
-    // Reset form when modal opens/closes or initialData changes
     useEffect(() => {
         if (isOpen && initialData) {
             reset({
@@ -69,7 +64,6 @@ export default function AddContacts({ isOpen, onClose, initialData, isUpdate = f
     }, [isOpen, initialData, reset]);
 
     const onSubmitForm = async (data: any) => {
-        // Convert the date to proper format before submission
         const formattedData = {
             ...data,
             birthday_date: data.birthday ? format(data.birthday, 'yyyy-MM-dd') : undefined

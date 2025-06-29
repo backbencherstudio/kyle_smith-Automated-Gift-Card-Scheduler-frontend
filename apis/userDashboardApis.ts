@@ -8,12 +8,25 @@ interface ApiResponse<T = any> {
 
 // Contact interface
 interface Contact {
-    id: number;
+    id: string;
     name: string;
     email: string;
-    phone_number: string;
-    address: string;
+    phone_number: string | null;
+    address: string | null;
     birthday_date?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+// Paginated response interface
+interface PaginatedApiResponse<T = any> {
+    success: boolean;
+    message: string;
+    data?: T;
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
 }
 
 // add contact
@@ -33,9 +46,26 @@ export const addContact = async (data: {
 };
 
 // get contacts
-export const getContacts = async (): Promise<ApiResponse<Contact[]>> => {
+export const getContacts = async (params?: {
+    search?: string;
+    page?: number;
+    limit?: number;
+}): Promise<PaginatedApiResponse<Contact[]>> => {
     try {
-        const response = await axiosClient.get<ApiResponse<Contact[]>>("/api/gift-recipients");
+        const queryParams = new URLSearchParams();
+        
+        if (params?.search) {
+            queryParams.append('search', params.search);
+        }
+        if (params?.page) {
+            queryParams.append('page', params.page.toString());
+        }
+        if (params?.limit) {
+            queryParams.append('limit', params.limit.toString());
+        }
+        
+        const url = `/api/gift-recipients${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+        const response = await axiosClient.get<PaginatedApiResponse<Contact[]>>(url);
         return response.data;
     } catch (error) {
         throw error;
@@ -43,7 +73,7 @@ export const getContacts = async (): Promise<ApiResponse<Contact[]>> => {
 };
 
 // update contact
-export const updateContact = async (id: number, data: {
+export const updateContact = async (id: string, data: {
     name: string;
     email: string;
     phone_number: string;
@@ -59,7 +89,7 @@ export const updateContact = async (id: number, data: {
 };
 
 // delete contact
-export const deleteContact = async (id: number): Promise<ApiResponse> => {
+export const deleteContact = async (id: string): Promise<ApiResponse> => {
     try {
         const response = await axiosClient.delete<ApiResponse>(`/api/gift-recipients/${id}`);
         return response.data;

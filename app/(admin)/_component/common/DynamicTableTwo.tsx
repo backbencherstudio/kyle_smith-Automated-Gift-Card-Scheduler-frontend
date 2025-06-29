@@ -16,6 +16,7 @@ interface DynamicTableProps {
   data: any[];
   currentPage: number;
   itemsPerPage: number;
+  totalPages?: number;
   onPageChange: (page: number) => void;
   onView?: (row: any) => void;
   onDelete?: (id: any) => void;
@@ -27,13 +28,17 @@ export default function DynamicTableTwo({
   data,
   currentPage,
   itemsPerPage,
+  totalPages: propTotalPages,
   onPageChange,
   onView,
   onDelete,
   noDataMessage = "No data found.",
 }: DynamicTableProps) {
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  const paginatedData = data.slice(
+  // Use provided totalPages or calculate from data length
+  const totalPages = propTotalPages || Math.ceil(data.length / itemsPerPage);
+  
+  // Don't slice data if totalPages is provided (data is already paginated)
+  const paginatedData = propTotalPages ? data : data.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );

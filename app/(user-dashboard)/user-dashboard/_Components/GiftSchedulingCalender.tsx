@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -31,6 +31,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { useForm, Controller } from "react-hook-form";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
 interface CalendarEvent {
     id: string;
@@ -98,6 +99,11 @@ const EVENT_TYPE_COLORS = {
     }
 };
 
+const MONTHS = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+];
+
 export default function GiftSchedulingCalender({ config = {}, events }: GiftSchedulingCalenderProps) {
     const {
         visibleWeeks = 6,
@@ -120,8 +126,10 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
     const [userListModal, setUserListModal] = useState(null);
     const [dateRange, setDateRange] = useState("");
     const [calendarApi, setCalendarApi] = useState(null);
-    // const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [currentViewDate, setCurrentViewDate] = useState(new Date());
+    const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
     const {
         control,
@@ -152,7 +160,8 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
             extendedProps: {
                 events: eventsForDate,
                 date: date,
-                isMultiple: eventsForDate.length > 1
+                isMultiple: eventsForDate.length > 1,
+                eventColor: firstEvent.extendedProps.color
             }
         };
     });
@@ -179,7 +188,7 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
     const formatDateForInput = (dateString) => {
         if (!dateString) return '';
         const date = new Date(dateString);
-        return date.toISOString().split('T')[0]; // Format as YYYY-MM-DD for date input
+        return date.toISOString().split('T')[0];
     };
 
     const handleSubmit = (e) => {
@@ -190,9 +199,6 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
     const handleDatesSet = (dateInfo) => {
         const startDate = new Date(dateInfo.start);
         const endDate = new Date(dateInfo.end);
-
-        // Update current view date for header
-        setCurrentViewDate(startDate);
 
         endDate.setDate(endDate.getDate() - 1);
 
@@ -244,10 +250,10 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
             const remainingCount = events.length - 2;
 
             return (
-                <div className="flex flex-col 2xl:flex-row space-x-1 p-1 cursor-pointer">
-                    {eventDisplay.showAvatar && (
-                        <div className="flex -space-x-1">
-                            {visibleEvents.map((event, index) => (
+                <div className="flex flex-col items-center 2xl:flex-row space-x-1 p-1 cursor-pointer">
+                    <div className="flex -space-x-1">
+                        {visibleEvents.map((event, index) => (
+                            event.extendedProps.avatar && event.extendedProps.avatar.trim() !== '' ? (
                                 <Image
                                     width={24}
                                     height={24}
@@ -257,33 +263,51 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
                                     className="w-6 h-6 rounded-full border-2 border-white"
                                     style={{ zIndex: visibleEvents.length - index }}
                                 />
-                            ))}
-                            {remainingCount > 0 && (
-                                <div className="w-6 h-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium text-gray-600">
-                                    +{remainingCount}
+                            ) : (
+                                <div
+                                    key={event.id}
+                                    className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-gray-700"
+                                    style={{ 
+                                        zIndex: visibleEvents.length - index,
+                                        backgroundColor: event.extendedProps.color || '#6b7280'
+                                    }}
+                                >
+                                    {event.extendedProps.name?.charAt(0)?.toUpperCase() || '?'}
                                 </div>
-                            )}
-                        </div>
-                    )}
+                            )
+                        ))}
+                        {remainingCount > 0 && (
+                            <div className="w-6 h-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium text-gray-600">
+                                +{remainingCount}
+                            </div>
+                        )}
+                    </div>
                     <div className="text-xs">
-                        <p className="font-medium leading-4">{events.length} Events</p>
+                        <p className="font-medium leading-4 text-gray-700">{events.length} Events</p>
                     </div>
                 </div>
             );
         }
 
         const event = events[0];
-        const { name, type, avatar } = event.extendedProps;
+        const { name, type, avatar, color } = event.extendedProps;
 
         return (
             <div className={`flex ${eventDisplay.compactView ? 'flex-row' : 'flex-col 2xl:flex-row'} items-center space-x-2 p-1 cursor-pointer`}>
-                {eventDisplay.showAvatar && (
+                {avatar && avatar.trim() !== '' ? (
                     <Image width={24} height={24} src={avatar} alt={name} className="w-6 h-6 rounded-full" />
+                ) : (
+                    <div 
+                        className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-gray-700 border-2 border-white"
+                        style={{ backgroundColor: color || '#6b7280' }}
+                    >
+                        {name?.charAt(0)?.toUpperCase() || '?'}
+                    </div>
                 )}
                 <div className="text-xs text-wrap">
-                    <p className="font-medium leading-4">{name}</p>
+                    <p className="font-bold leading-4 text-gray-700">{name}</p>
                     {eventDisplay.showEventType && (
-                        <p className="text-gray-500 leading-4">{type}</p>
+                        <p className="leading-4 text-gray-500 font-medium">{type}</p>
                     )}
                 </div>
             </div>
@@ -292,15 +316,51 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
 
     const handlePrevClick = () => {
         if (calendarApi) {
-            calendarApi.prev();
+            // Move to previous month
+            const currentDate = calendarApi.getDate();
+            const newDate = new Date(currentDate);
+            newDate.setMonth(currentDate.getMonth() - 1);
+            calendarApi.gotoDate(newDate);
         }
     };
 
     const handleNextClick = () => {
         if (calendarApi) {
-            calendarApi.next();
+            // Move to next month
+            const currentDate = calendarApi.getDate();
+            const newDate = new Date(currentDate);
+            newDate.setMonth(currentDate.getMonth() + 1);
+            calendarApi.gotoDate(newDate);
         }
     };
+
+    const handleMonthYearSelect = () => {
+        if (calendarApi) {
+            const newDate = new Date(selectedYear, selectedMonth, 1);
+            calendarApi.gotoDate(newDate);
+            setIsDatePickerOpen(false);
+        }
+    };
+
+    // Generate years (current year - 10 to current year + 10)
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 21 }, (_, i) => currentYear - 10 + i);
+
+    // Apply colors to events after calendar renders
+    useEffect(() => {
+        if (calendarEvents.length > 0) {
+            setTimeout(() => {
+                calendarEvents.forEach((event) => {
+                    const eventElement = document.querySelector(`[data-event-id="${event.id}"]`);
+                    if (eventElement) {
+                        const eventColor = event.extendedProps.eventColor || '#fef2f2';
+                        (eventElement as HTMLElement).style.backgroundColor = eventColor;
+                        (eventElement as HTMLElement).style.borderColor = eventColor;
+                    }
+                });
+            }, 100);
+        }
+    }, [calendarEvents]);
 
     return (
         <div >
@@ -311,21 +371,79 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
                         <div className="inline-flex items-center gap-4 px-4 py-2 rounded-lg">
                             <button
                                 onClick={handlePrevClick}
-                                className="text-gray-600 hover:text-gray-900"
+                                className="text-gray-600 hover:text-gray-900 border px-2 py-1 rounded-lg"
                             >
-                                ‹
+                                <FaChevronLeft className="text-lg" />
                             </button>
-                            <span className="text-sm font-medium">
-                                {currentViewDate.toLocaleDateString('en-US', { 
-                                    month: 'long', 
-                                    year: 'numeric' 
-                                })}
-                            </span>
+
+                            <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+                                <PopoverTrigger asChild>
+                                    <button className="text-sm font-medium hover:bg-gray-100 px-2 py-1 rounded cursor-pointer">
+                                        {currentViewDate.toLocaleDateString('en-US', {
+                                            month: 'long',
+                                            year: 'numeric'
+                                        })}
+                                    </button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-4" align="center">
+                                    <div className="space-y-4">
+                                        <div className="text-sm font-medium text-gray-700">Select Month & Year</div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-xs text-gray-600">Month</label>
+                                                <Select value={selectedMonth.toString()} onValueChange={(value) => setSelectedMonth(parseInt(value))}>
+                                                    <SelectTrigger className="w-full">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {MONTHS.map((month, index) => (
+                                                            <SelectItem key={index} value={index.toString()}>
+                                                                {month}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs text-gray-600">Year</label>
+                                                <Select value={selectedYear.toString()} onValueChange={(value) => setSelectedYear(parseInt(value))}>
+                                                    <SelectTrigger className="w-full">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {years.map((year) => (
+                                                            <SelectItem key={year} value={year.toString()}>
+                                                                {year}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end space-x-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setIsDatePickerOpen(false)}
+                                            >
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                onClick={handleMonthYearSelect}
+                                            >
+                                                Go
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
+
                             <button
                                 onClick={handleNextClick}
-                                className="text-gray-600 hover:text-gray-900"
+                                className="text-gray-600 hover:text-gray-900 border px-2 py-1 rounded-lg"
                             >
-                                ›
+                                <FaChevronRight className="text-lg" />
                             </button>
                         </div>
                         {dateRange && <span className="text-sm text-gray-600">{dateRange}</span>}
@@ -342,13 +460,7 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
                             }
                         }}
                         visibleRange={visibleRange}
-                        events={calendarEvents.map((event) => ({
-                            ...event,
-                            display: 'block',
-                            backgroundColor: event.extendedProps.isMultiple ? '#F3F4F6' : event.extendedProps.events[0].extendedProps.color,
-                            borderColor: event.extendedProps.isMultiple ? '#9CA3AF' : event.extendedProps.events[0].extendedProps.color,
-                            textColor: '#000',
-                        }))}
+                        events={calendarEvents}
                         eventContent={customRenderEventContent}
                         eventClick={handleEventClick}
                         height={height}
@@ -374,13 +486,22 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
                                     className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
                                     onClick={() => handleUserSelect(event.extendedProps, event)}
                                 >
-                                    <Image
-                                        width={48}
-                                        height={48}
-                                        src={event.extendedProps.avatar}
-                                        alt={event.extendedProps.name}
-                                        className="w-12 h-12 rounded-full"
-                                    />
+                                    {event.extendedProps.avatar && event.extendedProps.avatar.trim() !== '' ? (
+                                        <Image
+                                            width={48}
+                                            height={48}
+                                            src={event.extendedProps.avatar}
+                                            alt={event.extendedProps.name}
+                                            className="w-12 h-12 rounded-full"
+                                        />
+                                    ) : (
+                                        <div 
+                                            className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-gray-700 border-2 border-white"
+                                            style={{ backgroundColor: event.extendedProps.color || '#6b7280' }}
+                                        >
+                                            {event.extendedProps.name?.charAt(0)?.toUpperCase() || '?'}
+                                        </div>
+                                    )}
                                     <div>
                                         <p className="font-medium text-gray-900">{event.extendedProps.name}</p>
                                         <p className="text-sm text-gray-500">{event.extendedProps.type}</p>
@@ -693,11 +814,11 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
     color: #374151 !important;
 }
 
-.calendar-container :global(.fc-event) {
-    border-radius: 6px !important;
-    margin: 2px !important;
-    position: relative !important;
-    z-index: 1 !important;
+.calendar-container :global(.fc-event),
+.calendar-container :global(.fc-event-main),
+.calendar-container :global(.fc-event-title),
+.calendar-container :global(.fc-daygrid-event) {
+    cursor: pointer !important;
 }
 
 .calendar-container :global(.fc) {
@@ -724,6 +845,32 @@ ${Object.entries(EVENT_TYPE_COLORS).map(([day, colors]) => `
     z-index: 2 !important;
 }
 `).join('\n')}
+
+.custom-event {
+    background-color: var(--event-bg-color) !important;
+    border-color: var(--event-border-color) !important;
+    color: #000 !important;
+}
+
+.fc-event, .fc-event-main, .fc-event-main-frame, .fc-event-title {
+    background-color: #fff !important;
+}
+
+/* Apply colors to specific event classes */
+.event-color-cmchav17f0011ua4s3inlqq3r {
+    background-color: #fef2f2 !important;
+    border-color: #fef2f2 !important;
+}
+
+.event-color-cmchaun9b000zua4spuj1on6p {
+    background-color: #f0fdf4 !important;
+    border-color: #f0fdf4 !important;
+}
+
+.event-color-cmchag9it000hua4scmwadhcq {
+    background-color: #f5f3ff !important;
+    border-color: #f5f3ff !important;
+}
 `}</style>
         </div>
     );
