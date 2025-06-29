@@ -9,7 +9,7 @@ interface User {
   name: string;
   email: string;
   phone_number: string;
-  avatar: string | null;
+  avatar_url: string | null;
   address: string;
   type: string;
   gender: string | null;
@@ -68,7 +68,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await getMe();
       if (response.success && response.data) {
-        setUser(response.data);
+        // Map API response to match User interface
+        const userData = {
+          ...response.data,
+          avatar_url: (response.data as any).avatar_url || null
+        };
+        setUser(userData);
         setUserType(response.data.type);
       }
     } catch (error) {

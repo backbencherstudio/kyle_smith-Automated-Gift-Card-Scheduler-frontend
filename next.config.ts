@@ -15,6 +15,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "maps.googleapis.com",
       },
+
+      // local http://192.168.4.4:4000
+      {
+        protocol: "http",
+        hostname: "192.168.4.4",
+        port: "4000",
+        pathname: "/**",
+      },
       {
           protocol: "https",
           hostname: "i.pravatar.cc",

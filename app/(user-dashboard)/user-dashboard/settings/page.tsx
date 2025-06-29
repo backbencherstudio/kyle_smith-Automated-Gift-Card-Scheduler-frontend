@@ -1,17 +1,18 @@
 "use client"
 import React, { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext';
-import UserProfile from '@/components/profile/UserProfile';
+import ContactInfo from '@/components/profile/ContactInfo';
+import Password from '@/components/profile/Password';
+import Notifications from '@/components/profile/Notifications';
 
 interface dataTypes {
     name: string;
     email: string;
     location: string;
     phone: string;
-    profileImage: string;
+    profileImage: string | null;
     coverImage: string;
-    aboutUs: string;
-    dob: Date;
+    dob: Date | null;
     currentPassword: string;
     newPassword: string;
     confirmPassword: string;
@@ -29,10 +30,9 @@ export default function Settings() {
         email: user?.email || "user@example.com",
         location: user?.address || "Address not specified",
         phone: user?.phone_number || "Phone not specified",
-        profileImage: user?.avatar || "/image/profile.png",
+        profileImage: user?.avatar_url || "/image/profile.png",
         coverImage: "/image/profile-cover-img.jpg",
-        aboutUs: "Timely Gift was built to simplify the way we celebrate the people we care about. Forgetful moments or last-minute rushes are a thing of the past our platform ensures that thoughtful gifts are delivered on time, every time. With just a few clicks, users can add their friends' birthdays, schedule personalized Amazon gift cards, and receive smart reminders when special days are near. Once confirmed, the gift is sent instantly via email turning a simple gesture into a meaningful memory.",
-        dob: user?.date_of_birth ? new Date(user.date_of_birth) : new Date("1999-10-21"),
+        dob: user?.date_of_birth ? new Date(user.date_of_birth) : null,
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
@@ -49,8 +49,10 @@ export default function Settings() {
     }
 
     return (
-        <div >
-            <UserProfile setIsEdite={setIsEdite} userData={userData} />
+        <div className="relative">
+            <ContactInfo userData={userData} />
+            <Password />
+            <Notifications />
         </div>
     )
 }

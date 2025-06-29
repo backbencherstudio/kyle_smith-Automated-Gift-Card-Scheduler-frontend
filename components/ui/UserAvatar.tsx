@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
 
 interface UserAvatarProps {
   avatar?: string | null;
@@ -12,6 +12,8 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
   size = 'md',
   className = ''
 }) => {
+  const [imageError, setImageError] = useState(false);
+
   const sizeClasses = {
     sm: 'w-6 h-6',
     md: 'w-8 h-8',
@@ -28,17 +30,10 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
     custom: 'w-3/4 h-3/4'
   };
 
-  return (
-    <div className={`${sizeClasses[size]} rounded-full overflow-hidden ${className}`}>
-      {avatar ? (
-        <Image 
-          src={avatar} 
-          alt="User Avatar" 
-          width={48} 
-          height={48} 
-          className="w-full h-full rounded-full object-cover" 
-        />
-      ) : (
+  // Show default icon if no avatar or image failed to load
+  if (!avatar || imageError) {
+    return (
+      <div className={`${sizeClasses[size]} rounded-full overflow-hidden ${className}`}>
         <div className="w-full h-full bg-gray-300 flex items-center justify-center">
           <svg 
             className={`${iconSizes[size]} text-gray-600`}
@@ -52,7 +47,21 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
             />
           </svg>
         </div>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${sizeClasses[size]} rounded-full overflow-hidden ${className}`}>
+      <Image 
+        src={avatar} 
+        alt="User Avatar" 
+        width={48} 
+        height={48} 
+        className="w-full h-full rounded-full object-cover"
+        onError={() => setImageError(true)}
+        unoptimized={avatar.startsWith("blob:")}
+      />
     </div>
   );
 };
