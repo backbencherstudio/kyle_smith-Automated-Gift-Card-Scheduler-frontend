@@ -34,8 +34,8 @@ const navItems: NavItem[] = [
   },
   {
     icon: "/icon/servicecard.svg", // Replace this with the actual image path
-    label: "Add Service",
-    href: "/dashboard/add-service",
+    label: "Add Giftcard",
+    href: "/dashboard/add-giftcard",
   },
   {
     icon: "/icon/giftlog.svg", // Replace this with the actual image path

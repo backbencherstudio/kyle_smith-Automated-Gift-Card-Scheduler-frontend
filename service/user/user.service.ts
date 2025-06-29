@@ -42,6 +42,15 @@ addVendore: async (data, token) => {
     };
     return await Fetch.post("/admin/vendor", data, _config);
   },
+createData: async (token="",endpoint:any,data:any, ) => {
+    const _config = {
+      headers: {
+         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    };
+    return await Fetch.post(endpoint, data, _config);
+  },
 
   logout: (context = null) => {
     CookieHelper.destroy({ key: "token", context });
@@ -99,7 +108,15 @@ addVendore: async (data, token) => {
       },
     };
 
-    
+    return await Fetch.patch(endpoint, data, _config);
+  },
+ updateJsonProtectedData: async (token: string, endpoint: string,data:any) => {
+    const _config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    };
 
     return await Fetch.patch(endpoint, data, _config);
   },

@@ -56,78 +56,97 @@ export default function DynamicTableTwo({
   return (
     <div>
       {/* Table Wrapper with Border & Radius */}
-      <div className="overflow-hidden ">
+      <div className="overflow-hidden">
         <div className="overflow-x-auto">
-           <table className={`min-w-[100px] w-full text-left border border-borderColor2`}>
-                     <thead className="bg-neutral-100 ">
-                       <tr>
-                         {columns.map((col, index) => (
-                           <th
-                             key={index}
-                             style={{ width: col.width || "auto" }}
-                             className="px-4 py-3 whitespace-nowrap text-sm  border border-borderColor2 font-semibold text-blackColor "
+           <table 
+             className="w-full text-left border border-borderColor2"
+             style={{ tableLayout: 'fixed' }}
+           >
+             <thead className="bg-neutral-100">
+               <tr>
+                 {columns.map((col, index) => (
+                   <th
+                     key={index}
+                     style={{ 
+                       width: col.width || "auto",
+                       minWidth: col.width || "auto",
+                       maxWidth: col.width || "auto"
+                     }}
+                     className="px-4 py-3 whitespace-nowrap text-sm border border-borderColor2 font-semibold text-blackColor overflow-hidden text-ellipsis"
+                   >
+                     {col.label}
+                   </th>
+                 ))}
+                 {(onView || onDelete) && (
+                   <th 
+                     className="px-4 py-3 text-sm font-medium text-[#4a4c56] border-b border-borderColor2"
+                     style={{ width: "120px" }}
+                   >
+                     Action
+                   </th>
+                 )}
+               </tr>
+             </thead>
+             <tbody className="bg-white">
+               {paginatedData.length > 0 ? (
+                 paginatedData.map((row, i) => (
+                   <tr key={i} className="border-t border-borderColor2">
+                     {columns.map((col, idx) => (
+                       <td
+                         key={idx}
+                         style={{ 
+                           width: col.width || "auto",
+                           minWidth: col.width || "auto",
+                           maxWidth: col.width || "auto"
+                         }}
+                         className="px-4 py-3 text-sm text-[#4a4c56] border-b border-r border-borderColor2 overflow-hidden text-ellipsis"
+                       >
+                         <div className="truncate">
+                           {col.formatter
+                             ? col.formatter(row[col.accessor], row)
+                             : row[col.accessor]}
+                         </div>
+                       </td>
+                     ))}
+                     {(onView || onDelete) && (
+                       <td 
+                         className="px-4 py-3 flex gap-4 items-center border-b border-r border-borderColor2"
+                         style={{ width: "120px" }}
+                       >
+                         {onView && (
+                           <span
+                             className="text-xs underline text-[#4a4c56] cursor-pointer"
+                             onClick={() => onView(row)}
                            >
-                             {col.label}
-                           </th>
-                         ))}
-                         {(onView || onDelete) && (
-                           <th className="px-4 py-3 text-sm font-medium text-[#4a4c56] border-b border-borderColor2">
-                             Action
-                           </th>
+                             View details
+                           </span>
                          )}
-                       </tr>
-                     </thead>
-                     <tbody className="bg-white">
-                       {paginatedData.length > 0 ? (
-                         paginatedData.map((row, i) => (
-                           <tr key={i} className="border-t border-borderColor2">
-                             {columns.map((col, idx) => (
-                               <td
-                                 key={idx}
-                                 style={{ width: col.width || "auto" }}
-                                 className="px-4 py-3 text-sm text-[#4a4c56] border-b border-r border-borderColor2"
-                               >
-                                 {col.formatter
-                                   ? col.formatter(row[col.accessor], row)
-                                   : row[col.accessor]}
-                               </td>
-                             ))}
-                             {(onView || onDelete) && (
-                               <td className="px-4 py-3 flex gap-4 items-center border-b border-r border-borderColor2">
-                                 {onView && (
-                                   <span
-                                     className="text-xs underline text-[#4a4c56]  cursor-pointer"
-                                     onClick={() => onView(row)}
-                                   >
-                                     View details
-                                   </span>
-                                 )}
-                                 {onDelete && (
-                                   <Image
-                                     onClick={() => onDelete(row.id)}
-                                     src="/dashboard/icon/delete.svg"
-                                     alt="delete"
-                                     width={16}
-                                     height={16}
-                                     className="cursor-pointer"
-                                   />
-                                 )}
-                               </td>
-                             )}
-                           </tr>
-                         ))
-                       ) : (
-                         <tr>
-                           <td
-                             colSpan={columns.length + 1}
-                             className="px-4 py-10 text-center text-[#4a4c56] text-sm"
-                           >
-                             {noDataMessage}
-                           </td>
-                         </tr>
-                       )}
-                     </tbody>
-                   </table>
+                         {onDelete && (
+                           <Image
+                             onClick={() => onDelete(row.id)}
+                             src="/dashboard/icon/delete.svg"
+                             alt="delete"
+                             width={16}
+                             height={16}
+                             className="cursor-pointer"
+                           />
+                         )}
+                       </td>
+                     )}
+                   </tr>
+                 ))
+               ) : (
+                 <tr>
+                   <td
+                     colSpan={columns.length + 1}
+                     className="px-4 py-10 text-center text-[#4a4c56] text-sm"
+                   >
+                     {noDataMessage}
+                   </td>
+                 </tr>
+               )}
+             </tbody>
+           </table>
         </div>
       </div>
 
@@ -137,7 +156,7 @@ export default function DynamicTableTwo({
           <button
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="cursor-pointer px-2 py-1 flex justify-center  items-center border disabled:bg-grayColor1/30 disabled:cursor-not-allowed text-grayColor1 rounded disabled:opacity-40 disabled:text-grayColor1 disabled:border-0"
+            className="cursor-pointer px-2 py-1 flex justify-center items-center border disabled:bg-grayColor1/30 disabled:cursor-not-allowed text-grayColor1 rounded disabled:opacity-40 disabled:text-grayColor1 disabled:border-0"
           >
            <MdArrowBackIosNew />
           </button>
@@ -148,7 +167,7 @@ export default function DynamicTableTwo({
               disabled={page === "..."}
               className={`px-2 rounded border text-sm ${
                 page === currentPage
-                  ? "text-primaryColor border-primaryColor bg-primaryColor/10  font-medium"
+                  ? "text-primaryColor border-primaryColor bg-primaryColor/10 font-medium"
                   : "text-grayColor1"
               }`}
             >
@@ -158,7 +177,7 @@ export default function DynamicTableTwo({
           <button
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="cursor-pointer px-2 py-1 flex justify-center  items-center border disabled:bg-grayColor1/30 disabled:cursor-not-allowed text-grayColor1 rounded disabled:opacity-40 disabled:text-grayColor1 disabled:border-0"
+            className="cursor-pointer px-2 py-1 flex justify-center items-center border disabled:bg-grayColor1/30 disabled:cursor-not-allowed text-grayColor1 rounded disabled:opacity-40 disabled:text-grayColor1 disabled:border-0"
           >
            <MdArrowForwardIos />
           </button>
