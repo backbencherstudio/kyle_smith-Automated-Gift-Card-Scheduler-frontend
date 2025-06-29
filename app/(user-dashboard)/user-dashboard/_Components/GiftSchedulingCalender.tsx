@@ -41,6 +41,7 @@ interface CalendarEvent {
         type: string;
         avatar: string;
         color?: string;
+        birthday?: string;
     };
 }
 
@@ -119,7 +120,8 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
     const [userListModal, setUserListModal] = useState(null);
     const [dateRange, setDateRange] = useState("");
     const [calendarApi, setCalendarApi] = useState(null);
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+    // const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+    const [currentViewDate, setCurrentViewDate] = useState(new Date());
 
     const {
         control,
@@ -169,8 +171,15 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
         setUserListModal(null);
         setSelectedUser({
             ...user,
-            start: event.start
+            start: event.start,
+            birthday: user.birthday || event.start
         });
+    };
+
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0]; // Format as YYYY-MM-DD for date input
     };
 
     const handleSubmit = (e) => {
@@ -181,6 +190,9 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
     const handleDatesSet = (dateInfo) => {
         const startDate = new Date(dateInfo.start);
         const endDate = new Date(dateInfo.end);
+
+        // Update current view date for header
+        setCurrentViewDate(startDate);
 
         endDate.setDate(endDate.getDate() - 1);
 
@@ -303,7 +315,12 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
                             >
                                 ‹
                             </button>
-                            <span className="text-sm font-medium">May 2025</span>
+                            <span className="text-sm font-medium">
+                                {currentViewDate.toLocaleDateString('en-US', { 
+                                    month: 'long', 
+                                    year: 'numeric' 
+                                })}
+                            </span>
                             <button
                                 onClick={handleNextClick}
                                 className="text-gray-600 hover:text-gray-900"
@@ -415,7 +432,7 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
                                     <label className="text-sm text-gray-600">Birthday</label>
                                     <Input
                                         type="date"
-                                        value={selectedUser.start}
+                                        value={formatDateForInput(selectedUser.birthday || selectedUser.start)}
                                         disabled
                                         className="bg-gray-50"
                                     />

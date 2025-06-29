@@ -11,13 +11,15 @@ interface ResuseableModalProps {
     onClose: () => void;
     title: string;
     children: React.ReactNode;
+    preventOutsideClick?: boolean;
 }
 
 export default function ResuseableModal({
     isOpen,
     onClose,
     title,
-    children
+    children,
+    preventOutsideClick = false
 }: ResuseableModalProps) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => {
@@ -25,9 +27,18 @@ export default function ResuseableModal({
                 onClose();
             }
         }}>
-            <DialogContent onPointerDownOutside={(e) => {
-                e.preventDefault();
-            }}>
+            <DialogContent 
+                onPointerDownOutside={(e) => {
+                    if (preventOutsideClick) {
+                        e.preventDefault();
+                    }
+                }}
+                onEscapeKeyDown={(e) => {
+                    if (preventOutsideClick) {
+                        e.preventDefault();
+                    }
+                }}
+            >
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>

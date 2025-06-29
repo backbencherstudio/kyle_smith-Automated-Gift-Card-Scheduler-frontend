@@ -1,38 +1,40 @@
 import React from 'react'
 import GiftSchedulingCalender from './GiftSchedulingCalender';
 import { FaChevronDown } from 'react-icons/fa';
+import Link from 'next/link';
 const mockEvents = [
     {
         id: "1",
         title: "Eleanor Pena - Birthday",
-        start: "2025-05-29",
+        start: "2025-06-30",
         extendedProps: {
             name: "Eleanor Pena",
             type: "Birthday",
             avatar: "https://i.pravatar.cc/150?u=eleanor",
-            color: "#fef2f2"
+            color: "#fef2f2",
+            birthday: "2025-06-30"
         },
     },
     {
         id: "2",
         title: "Jenny Wilson - Birthday",
-        start: "2025-05-29",
+        start: "2025-06-29",
         extendedProps: {
             name: "Jenny Wilson",
             type: "Birthday",
             avatar: "https://i.pravatar.cc/150?u=jenny",
-
+            birthday: "2025-06-29"
         },
     },
     {
         id: "3",
         title: "Jenny Wilson - Birthday",
-        start: "2025-05-25",
+        start: "2025-06-29",
         extendedProps: {
             name: "John Doe",
             type: "Birthday",
             avatar: "https://i.pravatar.cc/150?u=jenny",
-
+            birthday: "2025-06-29"
         },
     },
     {
@@ -43,18 +45,18 @@ const mockEvents = [
             name: "John Doe",
             type: "Birthday",
             avatar: "https://i.pravatar.cc/150?u=jenny",
-
+            birthday: "2025-06-03"
         },
     },
     {
-        id: "3",
+        id: "5",
         title: "Jenny Wilson - Birthday",
         start: "2025-06-09",
         extendedProps: {
             name: "John Doe",
             type: "Birthday",
             avatar: "https://i.pravatar.cc/150?u=jenny",
-
+            birthday: "2025-06-09"
         },
     },
 ];
@@ -84,10 +86,9 @@ export default function GiftSchedulingDashboard() {
                     <h2 className="text-xl font-bold">Gift Scheduling</h2>
                 </div>
 
-                <button className="text-[#1E1E1E] border  px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
+                <Link href="/user-dashboard/gift-scheduling" className="text-[#1E1E1E] border  px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
                     <span>View all</span>
-                    <FaChevronDown />
-                </button>
+                </Link>
             </div>
             <GiftSchedulingCalender
                 config={calendarConfig}

@@ -1,60 +1,60 @@
 import React from 'react'
-import { FaChevronDown } from 'react-icons/fa';
 import GiftSchedulingCalender from './GiftSchedulingCalender';
 const mockEvents = [
     {
         id: "1",
         title: "Eleanor Pena - Birthday",
-        start: "2025-05-29",
+        start: "2025-06-29",
         extendedProps: {
             name: "Eleanor Pena",
             type: "Birthday",
             avatar: "https://i.pravatar.cc/150?u=eleanor",
-            color: "#fef2f2"
+            color: "#fef2f2",
+            birthday: "2025-06-29"
         },
     },
     {
         id: "2",
         title: "Jenny Wilson - Birthday",
-        start: "2025-05-29",
+        start: "2025-06-29",
         extendedProps: {
             name: "Jenny Wilson",
             type: "Birthday",
             avatar: "https://i.pravatar.cc/150?u=jenny",
-
+            birthday: "2025-06-29"
         },
     },
     {
         id: "3",
         title: "Jenny Wilson - Birthday",
-        start: "2025-05-25",
+        start: "2025-06-25",
         extendedProps: {
             name: "John Doe",
             type: "Birthday",
             avatar: "https://i.pravatar.cc/150?u=jenny",
-
+            birthday: "2025-06-25"
         },
     },
     {
         id: "4",
         title: "Jenny Wilson - Birthday",
-        start: "2025-06-03",
+        start: "2025-06-30",
         extendedProps: {
             name: "John Doe",
             type: "Birthday",
             avatar: "https://i.pravatar.cc/150?u=jenny",
-
+            birthday: "2025-06-30"
         },
     },
     {
-        id: "3",
+        id: "5",
         title: "Jenny Wilson - Birthday",
         start: "2025-06-09",
         extendedProps: {
             name: "John Doe",
             type: "Birthday",
             avatar: "https://i.pravatar.cc/150?u=jenny",
-
+            birthday: "2025-06-09"
         },
     },
 ];
