@@ -102,7 +102,7 @@ const Header: React.FC<HeaderProps> = ({
   const handleLogout = () => {
     logoutUser(true);
     setProfilePopoverOpen(false);
-    
+
     setTimeout(() => {
       router.push('/?login=true');
     }, 100);
@@ -203,12 +203,12 @@ const Header: React.FC<HeaderProps> = ({
                 <PopoverTrigger onClick={() => setProfilePopoverOpen(!profilePopoverOpen)}>
                   <div className="flex justify-start items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-90">
                     <div className="w-6 h-6 lg:w-10 lg:h-10 rounded-full overflow-hidden">
-                      <Image 
-                        src={user?.avatar_url || "/image/profile.png"} 
-                        alt="profile" 
-                        width={40} 
-                        height={40} 
-                        className="border-2 border-white"
+                      <Image
+                        src={user?.avatar_url || "/image/profile.png"}
+                        alt="profile"
+                        width={40}
+                        height={40}
+                        className="border-2 border-white object-cover rounded-full w-full h-full"
                       />
                     </div>
                     <div className="whitespace-nowrap">

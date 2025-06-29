@@ -13,8 +13,10 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { BiEdit } from "react-icons/bi";
-import UserAvatar from "../ui/UserAvatar";
 import { toast } from "react-toastify";
+import { updateProfile } from "@/apis/authApis";
+import { useAuth } from "@/contexts/AuthContext";
+import { CustomToast } from "@/lib/Toast/CustomToast";
 
 interface ContactInfoProps {
     userData?: {
@@ -29,6 +31,8 @@ interface ContactInfoProps {
 }
 
 export default function ContactInfo({ userData }: ContactInfoProps) {
+    const { refreshUser } = useAuth();
+
     const { register, handleSubmit, control } = useForm({
         defaultValues: {
             profileImage: userData?.profileImage,
@@ -78,7 +82,6 @@ export default function ContactInfo({ userData }: ContactInfoProps) {
         setProfileImg(userData?.profileImage);
         setCoverImg(userData?.coverImage || "/image/profile-cover-img.jpg");
         setImageError(false);
-        // Reset form to original values
         const form = document.querySelector('form');
         if (form) {
             form.reset();
@@ -92,15 +95,47 @@ export default function ContactInfo({ userData }: ContactInfoProps) {
     const handleSave = async (data) => {
         try {
             setIsLoading(true);
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
 
-            console.log("Contact Form Data:", { ...data, profileImg, coverImg });
-            toast.success("Profile updated successfully!");
-            setIsEditingProfile(false);
-            setIsEditingEmail(false);
+            const profileFile = profileInputRef.current?.files?.[0];
+
+            const updateData = {
+                name: data.name,
+                phone_number: data.phone,
+                address: data.address,
+                date_of_birth: data.dob ? format(data.dob, 'yyyy-MM-dd') : null,
+            };
+
+            let response;
+
+            if (profileFile) {
+                const formData = new FormData();
+                formData.append('image', profileFile);
+                formData.append('name', data.name);
+                formData.append('phone_number', data.phone);
+                formData.append('address', data.address);
+                if (data.dob) {
+                    formData.append('date_of_birth', format(data.dob, 'yyyy-MM-dd'));
+                }
+
+                response = await updateProfile(formData);
+            } else {
+                response = await updateProfile(updateData);
+            }
+
+            if (response.success) {
+                console.log("Profile updated successfully:", response);
+                CustomToast.show(response.message || 'Profile updated successfully!');
+                setIsEditingProfile(false);
+                setIsEditingEmail(false);
+
+                // Refresh user data from context
+                refreshUser();
+            } else {
+                CustomToast.show(response.message || "Failed to update profile");
+            }
         } catch (error) {
-            toast.error("Something went wrong!");
+            // console.error("Error updating profile:", error);
+            CustomToast.show(error.response.data.message.message || 'Something went wrong while updating profile!');
         } finally {
             setIsLoading(false);
         }

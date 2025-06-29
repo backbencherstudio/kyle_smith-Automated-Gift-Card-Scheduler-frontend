@@ -133,13 +133,13 @@ export const ResetPassword = async (email: string, password: string, token: stri
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
     try {
         const response = await axiosClient.post<LoginResponse>("/api/auth/login", credentials);
-        
+
         // Set localStorage if login is successful
         if (response.data.success && response.data.authorization?.token) {
             localStorage.setItem('token', response.data.authorization.token);
             localStorage.setItem('userType', response.data.type);
         }
-        
+
         return response.data;
     } catch (error) {
         throw error;
@@ -162,4 +162,18 @@ export const logout = () => {
     localStorage.removeItem('userType');
 };
 
-
+// update profile name , phone_number , address , date_of_birth  , image pass in body
+export const updateProfile = async (data: {
+    name?: string;
+    phone_number?: string;
+    address?: string;
+    date_of_birth?: string | null;
+    image?: string | null;
+} | FormData): Promise<ApiResponse> => {
+    try {
+        const response = await axiosClient.patch<ApiResponse>("/api/auth/update", data);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
