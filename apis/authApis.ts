@@ -177,3 +177,34 @@ export const updateProfile = async (data: {
         throw error;
     }
 };
+
+// send email change verification token
+export const sendEmailChangeToken = async (email: string): Promise<ApiResponse> => {
+    try {
+        const response = await axiosClient.post<ApiResponse>("/api/auth/request-email-change", { email });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// email change
+export const emailChange = async (email: string, token: string): Promise<ApiResponse> => {
+    try {
+        const response = await axiosClient.post<ApiResponse>("/api/auth/change-email", { email, token });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+// change password
+export const changePassword = async (old_password: string, new_password: string): Promise<ApiResponse> => {
+    try {
+        const response = await axiosClient.post<ApiResponse>("/api/auth/change-password", { old_password, new_password });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};

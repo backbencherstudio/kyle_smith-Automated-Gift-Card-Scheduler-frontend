@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import { BiEdit } from "react-icons/bi";
-import { toast } from "react-toastify";
+import { BiShow, BiHide } from "react-icons/bi";
+import { changePassword } from "@/apis/authApis";
+import { CustomToast } from "@/lib/Toast/CustomToast";
 
 export default function Password() {
-    const { register, handleSubmit } = useForm({
+    const { register, handleSubmit, reset } = useForm({
         defaultValues: {
             currentPassword: "",
             newPassword: "",
@@ -17,6 +19,9 @@ export default function Password() {
 
     const [isEditingPassword, setIsEditingPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handlePasswordEditClick = () => {
         setIsEditingPassword(true);
@@ -24,24 +29,33 @@ export default function Password() {
 
     const handleCancel = () => {
         setIsEditingPassword(false);
-        // Reset form to original values
-        const form = document.querySelector('form');
-        if (form) {
-            form.reset();
-        }
+        reset();
     };
 
     const handleSave = async (data) => {
+        if (data.newPassword !== data.confirmPassword) {
+            CustomToast.show("New password and confirm password do not match!");
+            return;
+        }
+        if (data.newPassword.length < 6) {
+            CustomToast.show("New password must be at least 6 characters long!");
+            return;
+        }
+
         try {
             setIsLoading(true);
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            console.log("Password Form Data:", data);
-            toast.success("Password updated successfully!");
-            setIsEditingPassword(false);
+
+            const response = await changePassword(data.currentPassword, data.newPassword);
+
+            if (response.success) {
+                CustomToast.show(response.message || "Password updated successfully!");
+                setIsEditingPassword(false);
+                reset();
+            } else {
+                CustomToast.show(response.message || "Failed to update password");
+            }
         } catch (error) {
-            toast.error("Something went wrong!");
+            CustomToast.show(error.response?.data?.message?.message || "Something went wrong!");
         } finally {
             setIsLoading(false);
         }
@@ -62,37 +76,70 @@ export default function Password() {
                     <label className="text-headerColor mb-1 text-[14px] block font-semibold">
                         Current Password
                     </label>
-                    <input
-                        {...register("currentPassword")}
-                        type="password"
-                        placeholder="Enter current password"
-                        disabled={!isEditingPassword}
-                        className={`w-full border px-3 py-3 rounded-md ${isEditingPassword ? 'bg-borderColor2/35 text-headerColor' : 'bg-gray-100 text-gray-500'}`}
-                    />
+                    <div className="relative">
+                        <input
+                            {...register("currentPassword")}
+                            type={showCurrentPassword ? "text" : "password"}
+                            placeholder="Enter current password"
+                            disabled={!isEditingPassword}
+                            className={`w-full border px-3 py-3 rounded-md pr-12 ${isEditingPassword ? 'bg-borderColor2/35 text-headerColor' : 'bg-gray-100 text-gray-500'}`}
+                        />
+                        {isEditingPassword && (
+                            <button
+                                type="button"
+                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                            >
+                                {showCurrentPassword ? <BiHide className="w-4 h-4" /> : <BiShow className="w-4 h-4" />}
+                            </button>
+                        )}
+                    </div>
                 </div>
                 <div>
                     <label className="text-headerColor mb-1 text-[14px] block font-semibold">
                         New Password
                     </label>
-                    <input
-                        {...register("newPassword")}
-                        type="password"
-                        placeholder="Enter new password"
-                        disabled={!isEditingPassword}
-                        className={`w-full border px-3 py-3 rounded-md ${isEditingPassword ? 'bg-borderColor2/35 text-headerColor' : 'bg-gray-100 text-gray-500'}`}
-                    />
+                    <div className="relative">
+                        <input
+                            {...register("newPassword")}
+                            type={showNewPassword ? "text" : "password"}
+                            placeholder="Enter new password"
+                            disabled={!isEditingPassword}
+                            className={`w-full border px-3 py-3 rounded-md pr-12 ${isEditingPassword ? 'bg-borderColor2/35 text-headerColor' : 'bg-gray-100 text-gray-500'}`}
+                        />
+                        {isEditingPassword && (
+                            <button
+                                type="button"
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                            >
+                                {showNewPassword ? <BiHide className="w-4 h-4" /> : <BiShow className="w-4 h-4" />}
+                            </button>
+                        )}
+                    </div>
                 </div>
                 <div>
                     <label className="text-headerColor mb-1 text-[14px] block font-semibold">
                         Confirm Password
                     </label>
-                    <input
-                        {...register("confirmPassword")}
-                        type="password"
-                        placeholder="Confirm new password"
-                        disabled={!isEditingPassword}
-                        className={`w-full border px-3 py-3 rounded-md ${isEditingPassword ? 'bg-borderColor2/35 text-headerColor' : 'bg-gray-100 text-gray-500'}`}
-                    />
+                    <div className="relative">
+                        <input
+                            {...register("confirmPassword")}
+                            type={showConfirmPassword ? "text" : "password"}
+                            placeholder="Confirm new password"
+                            disabled={!isEditingPassword}
+                            className={`w-full border px-3 py-3 rounded-md pr-12 ${isEditingPassword ? 'bg-borderColor2/35 text-headerColor' : 'bg-gray-100 text-gray-500'}`}
+                        />
+                        {isEditingPassword && (
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                            >
+                                {showConfirmPassword ? <BiHide className="w-4 h-4" /> : <BiShow className="w-4 h-4" />}
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -104,12 +151,13 @@ export default function Password() {
                         variant="outline"
                         onClick={handleCancel}
                         disabled={isLoading}
+                        className="cursor-pointer"
                     >
                         Cancel
                     </Button>
                     <Button
                         type="button"
-                        className="bg-[#2F54EB] hover:bg-[#2F54EB]/90 text-white"
+                        className="bg-[#2F54EB] hover:bg-[#2F54EB]/90 text-white cursor-pointer"
                         onClick={handleSubmit(handleSave)}
                         disabled={isLoading}
                     >

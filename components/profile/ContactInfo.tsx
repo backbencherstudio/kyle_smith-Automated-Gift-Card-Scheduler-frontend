@@ -13,10 +13,10 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { BiEdit } from "react-icons/bi";
-import { toast } from "react-toastify";
-import { updateProfile } from "@/apis/authApis";
+import { updateProfile, emailChange, sendEmailChangeToken } from "@/apis/authApis";
 import { useAuth } from "@/contexts/AuthContext";
 import { CustomToast } from "@/lib/Toast/CustomToast";
+import ResuseableModal from "../reusable/ResuseableModal";
 
 interface ContactInfoProps {
     userData?: {
@@ -52,6 +52,11 @@ export default function ContactInfo({ userData }: ContactInfoProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [imageError, setImageError] = useState(false);
     const [isEditingEmail, setIsEditingEmail] = useState(false);
+    const [emailModalOpen, setEmailModalOpen] = useState(false);
+    const [emailInput, setEmailInput] = useState("");
+    const [tokenInput, setTokenInput] = useState("");
+    const [emailChangeStep, setEmailChangeStep] = useState(1); // 1: enter email, 2: enter token
+    const [isSendingToken, setIsSendingToken] = useState(false);
 
     const handleProfileChange = (e) => {
         const file = e.target.files[0];
@@ -74,11 +79,11 @@ export default function ContactInfo({ userData }: ContactInfoProps) {
 
     const handleEmailEditClick = () => {
         setIsEditingEmail(true);
+        setEmailModalOpen(true);
     };
 
     const handleCancel = () => {
         setIsEditingProfile(false);
-        setIsEditingEmail(false);
         setProfileImg(userData?.profileImage);
         setCoverImg(userData?.coverImage || "/image/profile-cover-img.jpg");
         setImageError(false);
@@ -139,6 +144,54 @@ export default function ContactInfo({ userData }: ContactInfoProps) {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleEmailChange = async (e) => {
+        e.preventDefault();
+        
+        if (emailChangeStep === 1) {
+            // Step 1: Send verification token to the new email
+            try {
+                setIsSendingToken(true);
+                const response = await sendEmailChangeToken(emailInput);
+                if (response.success) {
+                    CustomToast.show(response.message || 'Verification token sent to your email!');
+                    setEmailChangeStep(2);
+                } else {
+                    CustomToast.show(response.message || "Failed to send verification token");
+                }
+            } catch (error) {
+                CustomToast.show(error.response?.data?.message?.message || 'Something went wrong while sending token!');
+            } finally {
+                setIsSendingToken(false);
+            }
+        } else {
+            // Step 2: Verify token and change email
+            try {
+                const response = await emailChange(emailInput, tokenInput);
+                if (response.success) {
+                    CustomToast.show(response.message || 'Email changed successfully!');
+                    setIsEditingEmail(false);
+                    setEmailModalOpen(false);
+                    setEmailInput("");
+                    setTokenInput("");
+                    setEmailChangeStep(1);
+                    refreshUser();
+                } else {
+                    CustomToast.show(response.message || "Failed to change email");
+                }
+            } catch (error) {
+                CustomToast.show(error.response?.data?.message?.message || 'Something went wrong while changing email!');
+            }
+        }
+    };
+
+    const handleEmailModalClose = () => {
+        setEmailModalOpen(false);
+        setIsEditingEmail(false);
+        setEmailInput("");
+        setTokenInput("");
+        setEmailChangeStep(1);
     };
 
     return (
@@ -247,13 +300,15 @@ export default function ContactInfo({ userData }: ContactInfoProps) {
                             {...register("email")}
                             defaultValue={userData?.email}
                             placeholder="Enter your Email"
-                            disabled={!isEditingEmail}
-                            className={`w-full border px-3 py-3 rounded-md pr-12 ${isEditingEmail ? 'bg-borderColor2/35 text-headerColor' : 'bg-gray-100 text-gray-500'}`}
+                            disabled={true}
+                            className="w-full border px-3 py-3 rounded-md pr-12 bg-gray-100 text-gray-500"
+                            title="Click the edit button to change email"
                         />
                         <button
                             type="button"
                             onClick={handleEmailEditClick}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                            className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                            title="Change email address"
                         >
                             <BiEdit className="w-4 h-4" />
                         </button>
@@ -319,19 +374,20 @@ export default function ContactInfo({ userData }: ContactInfoProps) {
             </div>
 
             {/* button section  */}
-            {(isEditingProfile || isEditingEmail) && (
+            {isEditingProfile && (
                 <div className="flex justify-end gap-4 mt-6">
                     <Button
                         type="button"
                         variant="outline"
                         onClick={handleCancel}
                         disabled={isLoading}
+                        className="cursor-pointer"
                     >
                         Cancel
                     </Button>
                     <Button
                         type="button"
-                        className="bg-[#2F54EB] hover:bg-[#2F54EB]/90 text-white"
+                        className="bg-[#2F54EB] hover:bg-[#2F54EB]/90 text-white cursor-pointer"
                         onClick={handleSubmit(handleSave)}
                         disabled={isLoading}
                     >
@@ -339,6 +395,91 @@ export default function ContactInfo({ userData }: ContactInfoProps) {
                     </Button>
                 </div>
             )}
+
+            {/* Email Change Modal */}
+            <ResuseableModal
+                isOpen={emailModalOpen}
+                onClose={handleEmailModalClose}
+                title={emailChangeStep === 1 ? "Change Email Address" : "Enter Verification Token"}
+            >
+                <form onSubmit={handleEmailChange} className="space-y-4">
+                    {emailChangeStep === 1 ? (
+                        // Step 1: Enter new email
+                        <div>
+                            <label className="text-headerColor mb-1 text-[14px] block font-semibold">
+                                New Email Address
+                            </label>
+                            <input
+                                type="email"
+                                value={emailInput}
+                                onChange={(e) => setEmailInput(e.target.value)}
+                                placeholder="Enter new email address"
+                                className="w-full border px-3 py-3 rounded-md bg-borderColor2/35 text-headerColor"
+                                required
+                            />
+                            <p className="text-sm text-gray-500 mt-2">
+                                A verification token will be sent to this email address.
+                            </p>
+                        </div>
+                    ) : (
+                        // Step 2: Enter verification token
+                        <>
+                            <div>
+                                <label className="text-headerColor mb-1 text-[14px] block font-semibold">
+                                    Email Address
+                                </label>
+                                <input
+                                    type="email"
+                                    value={emailInput}
+                                    disabled
+                                    className="w-full border px-3 py-3 rounded-md bg-gray-100 text-gray-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-headerColor mb-1 text-[14px] block font-semibold">
+                                    Verification Token
+                                </label>
+                                <input
+                                    type="text"
+                                    value={tokenInput}
+                                    onChange={(e) => setTokenInput(e.target.value)}
+                                    placeholder="Enter verification token from your email"
+                                    className="w-full border px-3 py-3 rounded-md bg-borderColor2/35 text-headerColor"
+                                    required
+                                />
+                                <p className="text-sm text-gray-500 mt-2">
+                                    Check your email for the verification token.
+                                </p>
+                            </div>
+                        </>
+                    )}
+                    <div className="flex justify-end gap-4 pt-4">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleEmailModalClose}
+                        >
+                            Cancel
+                        </Button>
+                        {emailChangeStep === 2 && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setEmailChangeStep(1)}
+                            >
+                                Back
+                            </Button>
+                        )}
+                        <Button
+                            type="submit"
+                            className="bg-[#2F54EB] hover:bg-[#2F54EB]/90 text-white"
+                            disabled={isSendingToken}
+                        >
+                            {isSendingToken ? "Sending..." : emailChangeStep === 1 ? "Send Token" : "Change Email"}
+                        </Button>
+                    </div>
+                </form>
+            </ResuseableModal>
         </div>
     );
 }
