@@ -8,6 +8,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { toast } from "react-toastify";
 import DynamicTableTwo from "../../_component/common/DynamicTableTwo";
 import GiftCardAddForm from "../../_component/giftcard/GiftCardAddForm";
+import GiftStatuse from "../../_component/giftcard/GiftStatuse";
 
 function page() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -51,20 +52,7 @@ function page() {
             label: "Status",
             accessor: "status",
             width: "150px",
-            formatter: (value: string) => {
-                const baseClass = "text-sm px-2 py-2 text-center font-medium rounded-md";
-                return (
-                    <div
-                        className={
-                            value === "AVAILABLE"
-                                ? `${baseClass} bg-greenColor/10 text-greenColor`
-                                : `${baseClass} bg-redColor/10 text-redColor`
-                        }
-                    >
-                        {value}
-                    </div>
-                );
-            },
+            formatter: (value: string) => <GiftStatuse value={value}/>
         },
         {
             label: "Purchase Date",
@@ -87,7 +75,7 @@ function page() {
                     <button onClick={() => handleUpdate(row)} className="cursor-pointer px-2 rounded-sm text-greenColor ">
                         <FaRegEdit size={20} />
                     </button>
-                    <button disabled={!value} onClick={() => handleDelete(row?.id)} className="cursor-pointer disabled:text-grayColor1 disabled:cursor-not-allowed px-2 rounded-sm text-redColor ">
+                    <button  onClick={() => handleDelete(row?.id)} className="cursor-pointer  px-2 rounded-sm text-redColor ">
                         <RiDeleteBin6Line size={20} />
                     </button>
                 </div>
@@ -98,7 +86,7 @@ function page() {
     const fetchGiftCards = async (page = 1, limit = itemsPerPage) => {
         setIsLoading(true);
         try {
-            const endpoint = `/admin/gift-card-inventory`;
+            const endpoint = `/admin/gift-card-inventory?page=${page}&limit=${limit}`;
             const res = await UserService.getData(token, endpoint);
             console.log(res);
             

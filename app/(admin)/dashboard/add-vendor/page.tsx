@@ -68,7 +68,7 @@ function page() {
                     <button onClick={() => handleUpdate(row)} className="cursor-pointer px-2 rounded-sm text-greenColor ">
                         <FaRegEdit size={20} />
                     </button>
-                    <button disabled={!value} onClick={() => handleDelete(row?.id)} className="cursor-pointer disabled:text-grayColor1 disabled:cursor-not-allowed px-2 rounded-sm text-redColor ">
+                    <button disabled={!row?.is_active} onClick={() => handleDelete(row?.id)} className="cursor-pointer disabled:text-grayColor1 disabled:cursor-not-allowed px-2 rounded-sm text-redColor ">
                         <RiDeleteBin6Line size={20} />
                     </button>
                 </div>
@@ -123,6 +123,7 @@ function page() {
         }
     }
 
+console.log(vendorData);
 
     return (
         <div>

@@ -92,7 +92,6 @@ export default function GiftCardAddForm({ open, onClose, initialData, onfetch }:
     try {
       let response;
       if (initialData?.id) {
-        
         const updateData = {
           vendor_id: data.vendor_id, 
           card_code: data.card_code, 
@@ -104,15 +103,9 @@ export default function GiftCardAddForm({ open, onClose, initialData, onfetch }:
           expiry_date: formatDateForBackend(data.expiry_date), 
         };
         console.log(updateData);
-        
         const endpoint = `/admin/gift-card-inventory/${initialData.id}`;
-        console.log("endpoint",endpoint);
-        
-        response = await UserService.updateJsonProtectedData(token, endpoint, updateData);
-        console.log(response);
-        
+        response = await UserService.updateJsonProtectedData(token, endpoint, updateData); 
       } else {
-        
         const createData = {
           vendor_id: data.vendor_id, 
           card_code: data.card_code, 
@@ -123,7 +116,6 @@ export default function GiftCardAddForm({ open, onClose, initialData, onfetch }:
           purchase_date: formatDateForBackend(data.purchase_date), 
           expiry_date: formatDateForBackend(data.expiry_date), 
         };
-        
         const endpoint = `/admin/gift-card-inventory`;
         response = await UserService.createData(token, endpoint, createData);
       }
