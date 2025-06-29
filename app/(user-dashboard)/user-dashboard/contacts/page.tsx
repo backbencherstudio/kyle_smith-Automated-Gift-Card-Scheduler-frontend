@@ -118,7 +118,7 @@ export default function Contacts() {
                 email: contactData.email,
                 phone_number: contactData.phone_number || '',
                 address: contactData.address,
-                birthday_date: contactData.birthday ? new Date(contactData.birthday).toISOString().split('T')[0] : undefined,
+                birthday_date: contactData.birthday_date,
             });
             
             if (response.success) {
@@ -146,7 +146,7 @@ export default function Contacts() {
                 email: contactData.email,
                 phone_number: contactData.phone_number || '',
                 address: contactData.address,
-                birthday_date: contactData.birthday ? new Date(contactData.birthday).toISOString().split('T')[0] : undefined,
+                birthday_date: contactData.birthday_date,
             });
             
             if (response.success) {

@@ -20,6 +20,25 @@ interface AddContactsProps {
     loading?: boolean;
 }
 
+// Helper function to create a date without timezone issues
+const createDateWithoutTime = (date: Date | string | undefined): Date | undefined => {
+    if (!date) return undefined;
+    
+    const d = new Date(date);
+    // Create a new date with year, month, day only (no time)
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+};
+
+// Helper function to format date without timezone issues
+const formatDateWithoutTime = (date: Date | string | undefined): string => {
+    if (!date) return "Select birthday";
+    
+    const d = createDateWithoutTime(date);
+    if (!d) return "Select birthday";
+    
+    return format(d, "PPP");
+};
+
 export default function AddContacts({ isOpen, onClose, initialData, isUpdate = false, onSubmit, loading = false }: AddContactsProps) {
     const {
         register,
@@ -37,7 +56,7 @@ export default function AddContacts({ isOpen, onClose, initialData, isUpdate = f
                 address: initialData.address,
                 email: initialData.email,
                 phone_number: initialData.phone_number || '',
-                birthday: initialData.birthday_date ? new Date(initialData.birthday_date) : undefined,
+                birthday: initialData.birthday_date ? createDateWithoutTime(initialData.birthday_date) : undefined,
             });
         } else if (isOpen && !initialData) {
             reset({
@@ -51,10 +70,16 @@ export default function AddContacts({ isOpen, onClose, initialData, isUpdate = f
     }, [isOpen, initialData, reset]);
 
     const onSubmitForm = async (data: any) => {
+        // Convert the date to proper format before submission
+        const formattedData = {
+            ...data,
+            birthday_date: data.birthday ? format(data.birthday, 'yyyy-MM-dd') : undefined
+        };
+        
         if (onSubmit) {
-            await onSubmit(data);
+            await onSubmit(formattedData);
         } else {
-            console.log(data);
+            console.log(formattedData);
             onClose();
         }
     };
@@ -168,7 +193,7 @@ export default function AddContacts({ isOpen, onClose, initialData, isUpdate = f
                                             )}
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {field.value ? format(new Date(field.value), "PPP") : "Select birthday"}
+                                            {formatDateWithoutTime(field.value)}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent
@@ -177,22 +202,18 @@ export default function AddContacts({ isOpen, onClose, initialData, isUpdate = f
                                         side="bottom"
                                         sideOffset={4}
                                     >
-                                        <div className="calendar-wrapper" onClick={(e) => e.stopPropagation()}>
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value ? new Date(field.value) : undefined}
-                                                onSelect={(date) => {
-                                                    field.onChange(date);
-                                                    if (date) {
-                                                        // Force the value update
-                                                        field.onChange(new Date(date));
-                                                    }
-                                                }}
-                                                disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                                                initialFocus
-                                                className="rounded-md border"
-                                            />
-                                        </div>
+                                        <Calendar
+                                            mode="single"
+                                            selected={field.value ? createDateWithoutTime(field.value) : undefined}
+                                            onSelect={(date) => {
+                                                // Create date without time to avoid timezone issues
+                                                const dateWithoutTime = date ? createDateWithoutTime(date) : undefined;
+                                                field.onChange(dateWithoutTime);
+                                            }}
+                                            disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                                            initialFocus
+                                            className="rounded-md border"
+                                        />
                                     </PopoverContent>
                                 </Popover>
                             )}

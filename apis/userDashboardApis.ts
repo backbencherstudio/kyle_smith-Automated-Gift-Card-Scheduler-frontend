@@ -51,7 +51,7 @@ export const updateContact = async (id: number, data: {
     birthday_date?: string;
 }): Promise<ApiResponse> => {
     try {
-        const response = await axiosClient.put<ApiResponse>(`/api/gift-recipients/${id}`, data);
+        const response = await axiosClient.patch<ApiResponse>(`/api/gift-recipients/${id}`, data);
         return response.data;
     } catch (error) {
         throw error;
