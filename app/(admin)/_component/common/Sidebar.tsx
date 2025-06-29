@@ -18,37 +18,42 @@ interface SidebarProps {
 
 const navItems: NavItem[] = [
   {
-    icon: "/icon/grid-alt.svg", // Replace this with the actual image path
+    icon: "/icon/grid-alt.svg", 
     label: "Dashboard",
     href: "/dashboard",
   },
   {
-    icon: "/icon/note.svg", // Replace this with the actual image path
+    icon: "/icon/note.svg", 
     label: "User Management",
     href: "/dashboard/user-management",
   },
   {
-    icon: "/icon/vedor.svg", // Replace this with the actual image path
+    icon: "/icon/vedor.svg", 
     label: "Vendor",
     href: "/dashboard/add-vendor",
   },
   {
-    icon: "/icon/servicecard.svg", // Replace this with the actual image path
+    icon: "/icon/servicecard.svg", 
     label: "Add Giftcard",
     href: "/dashboard/add-giftcard",
   },
   {
-    icon: "/icon/giftlog.svg", // Replace this with the actual image path
+    icon: "/icon/schedule.svg", 
+    label: "Gift Schedule",
+    href: "/dashboard/gift-schedule",
+  },
+  {
+    icon: "/icon/giftlog.svg", 
     label: "Gift Log",
     href: "/dashboard/gift-log",
   },
   {
-    icon: "/icon/payment.svg", // Replace this with the actual image path
+    icon: "/icon/payment.svg", 
     label: "Payment Settings",
     href: "/dashboard/payment-settings",
   },
   {
-    icon: "/icon/setting.svg", // Replace this with the actual image path
+    icon: "/icon/setting.svg", 
     label: "Settings",
     href: "/dashboard/my-profile",
   },

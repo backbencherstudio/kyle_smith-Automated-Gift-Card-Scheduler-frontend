@@ -27,7 +27,7 @@ function page() {
         {
             label: "Description",
             accessor: "description",
-            width: "200px",
+            width: "300px",
         },
         {
             label: "Website",
@@ -37,7 +37,7 @@ function page() {
         {
             label: "Current Card Stock",
             accessor: "gift_card_inventory",
-            width: "140px",
+            width: "200px",
             formatter: (_value, row) => row._count?.gift_card_inventory ?? 0
         },
         {
@@ -123,7 +123,6 @@ function page() {
         }
     }
 
-console.log(vendorData);
 
     return (
         <div>
@@ -132,8 +131,9 @@ console.log(vendorData);
             {isLoading ? (
                 <Loader />
             ) :
-                <div>
-                    <div className="flex justify-end mb-5">
+                <div className="bg-whiteColor p-5 rounded-md">
+                    <div className="flex justify-between mb-5">
+                       <h4 className='text-lg font-bold text-headerColor pb-5 '>Vendor</h4> 
                         <button  onClick={() => { setIsOpen(true); setUpdateData(undefined); }} className="text-base cursor-pointer shadow-sm hover:scale-105 transition-all duration-200 font-medium text-descriptionColor px-4 py-2 rounded-sm bg-primaryColor  ">Add Vendor</button>
                     </div>
 

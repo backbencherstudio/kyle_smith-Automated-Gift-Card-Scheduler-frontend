@@ -88,7 +88,6 @@ function page() {
         try {
             const endpoint = `/admin/gift-card-inventory?page=${page}&limit=${limit}`;
             const res = await UserService.getData(token, endpoint);
-            console.log(res);
             
             const result = res;
             setGiftCardData(result?.data || []);
@@ -137,8 +136,9 @@ function page() {
             {isLoading ? (
                 <Loader />
             ) :
-                <div>
-                    <div className="flex justify-end mb-5">
+                <div className="bg-whiteColor p-5 rounded-md">
+                    <div className="flex justify-between mb-5">
+                        <h4 className='text-lg font-bold text-headerColor pb-5 '>Gift Card</h4> 
                         <button onClick={() => { setIsOpen(true); setUpdateData(undefined); }} className="text-base cursor-pointer shadow-sm hover:scale-105 transition-all duration-200 font-medium text-descriptionColor px-4 py-2 rounded-sm bg-primaryColor">Add Gift Card</button>
                     </div>
 
