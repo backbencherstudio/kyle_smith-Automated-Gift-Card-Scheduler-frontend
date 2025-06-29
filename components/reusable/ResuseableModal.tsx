@@ -23,7 +23,7 @@ export default function ResuseableModal({
 }: ResuseableModalProps) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => {
-            if (!open) {
+            if (!open && !preventOutsideClick) {
                 onClose();
             }
         }}>

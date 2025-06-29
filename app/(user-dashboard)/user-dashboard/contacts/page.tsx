@@ -7,16 +7,9 @@ import CustomModal from '@/components/ui/custom-modal';
 import AddContacts from '../_Components/AddContacts';
 import { Input } from "@/components/ui/input"
 import { Search, MoreHorizontal, Edit, Trash2 } from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { addContact, getContacts, updateContact, deleteContact } from '@/apis/userDashboardApis';
 import { CustomToast } from '@/lib/Toast/CustomToast';
-import ResuseableModal from '@/components/reusable/ResuseableModal';
 
 
 export default function Contacts() {
@@ -28,6 +21,8 @@ export default function Contacts() {
     const [contactToDelete, setContactToDelete] = useState<any>(null)
     const [contacts, setContacts] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
+    const [deleteLoading, setDeleteLoading] = useState(false)
+    const [updateLoading, setUpdateLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
     const [totalContacts, setTotalContacts] = useState(0)
     const [itemsPerPage] = useState(10) 
@@ -60,37 +55,48 @@ export default function Contacts() {
             width: "10%", 
             accessor: "action",
             formatter: (value: any, row: any) => (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                            onClick={() => handleUpdate(row)}
-                            className="cursor-pointer"
-                        >
-                            <Edit className="mr-2 h-4 w-4" />
-                            <span>Update</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={() => handleDeleteClick(row)}
-                            className="cursor-pointer text-red-600 focus:text-red-600"
-                        >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            <span>Delete</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleUpdate(row)}
+                        disabled={loading || deleteLoading || updateLoading}
+                        className="h-8 w-8 p-0 hover:bg-gray-100 cursor-pointer"
+                    >
+                        <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteClick(row)}
+                        disabled={loading || deleteLoading || updateLoading}
+                        className="h-8 w-8 p-0 hover:bg-gray-100 text-red-600 hover:text-red-700 cursor-pointer"
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
             )
         },
     ];
 
     useEffect(() => {
         fetchContacts();
-    }, [currentPage]); // Refetch when page changes
+    }, [currentPage]); 
+
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            setIsModalOpen(false);
+            setIsUpdateModalOpen(false);
+            setIsDeleteModalOpen(false);
+            setSelectedContact(null);
+            setContactToDelete(null);
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
 
     const fetchContacts = async () => {
         try {
@@ -140,7 +146,7 @@ export default function Contacts() {
 
     const handleUpdateContact = async (contactData: any) => {
         try {
-            setLoading(true);
+            setUpdateLoading(true);
             const response = await updateContact(selectedContact.id, {
                 name: contactData.name,
                 email: contactData.email,
@@ -153,7 +159,7 @@ export default function Contacts() {
                 CustomToast.show('Contact updated successfully');
                 setIsUpdateModalOpen(false);
                 setSelectedContact(null);
-                fetchContacts(); // Refresh current page
+                fetchContacts();
             } else {
                 CustomToast.show(response.message || 'Failed to update contact');
             }
@@ -161,25 +167,29 @@ export default function Contacts() {
             console.error('Error updating contact:', error);
             CustomToast.show(error?.response?.data?.message || 'Failed to update contact');
         } finally {
-            setLoading(false);
+            setUpdateLoading(false);
         }
     };
 
     const handleUpdate = (contact: any) => {
-        setSelectedContact(contact);
-        setIsUpdateModalOpen(true);
+        if (!loading && !deleteLoading && !updateLoading) {
+            setSelectedContact(contact);
+            setIsUpdateModalOpen(true);
+        }
     };
 
     const handleDeleteClick = (contact: any) => {
-        setContactToDelete(contact);
-        setIsDeleteModalOpen(true);
+        if (!loading && !deleteLoading && !updateLoading) {
+            setContactToDelete(contact);
+            setIsDeleteModalOpen(true);
+        }
     };
 
     const handleDelete = async () => {
         if (!contactToDelete) return;
         
         try {
-            setLoading(true);
+            setDeleteLoading(true);
             const response = await deleteContact(contactToDelete.id);
             if (response.success) {
                 CustomToast.show('Contact deleted successfully');
@@ -200,7 +210,7 @@ export default function Contacts() {
             console.error('Error deleting contact:', error);
             CustomToast.show(error?.response?.data?.message || 'Failed to delete contact');
         } finally {
-            setLoading(false);
+            setDeleteLoading(false);
         }
     };
 
@@ -277,31 +287,29 @@ export default function Contacts() {
 
                 <CustomModal
                     isOpen={isUpdateModalOpen}
-                    onClose={() => !loading && setIsUpdateModalOpen(false)}
+                    onClose={() => !updateLoading && setIsUpdateModalOpen(false)}
                     title="Update Contact"
                 >
                     <AddContacts
                         isOpen={isUpdateModalOpen}
-                        onClose={() => !loading && setIsUpdateModalOpen(false)}
+                        onClose={() => !updateLoading && setIsUpdateModalOpen(false)}
                         initialData={selectedContact}
                         isUpdate={true}
                         onSubmit={handleUpdateContact}
-                        loading={loading}
+                        loading={updateLoading}
                     />
                 </CustomModal>
 
                 {/* Delete Confirmation Modal */}
-                <ResuseableModal
+                <CustomModal
                     isOpen={isDeleteModalOpen}
                     onClose={() => {
-                        // Only allow closing if not loading
-                        if (!loading) {
+                        if (!deleteLoading) {
                             setIsDeleteModalOpen(false);
                             setContactToDelete(null);
                         }
                     }}
                     title="Delete Contact"
-                    preventOutsideClick={loading} // Prevent outside click only when loading
                 >
                     <div className="space-y-6">
                         <div className="text-center">
@@ -322,12 +330,12 @@ export default function Contacts() {
                                 type="button"
                                 variant="outline"
                                 onClick={() => {
-                                    if (!loading) {
+                                    if (!deleteLoading) {
                                         setIsDeleteModalOpen(false);
                                         setContactToDelete(null);
                                     }
                                 }}
-                                disabled={loading}
+                                disabled={deleteLoading}
                                 className="text-gray-600 hover:text-gray-800"
                             >
                                 Cancel
@@ -335,14 +343,14 @@ export default function Contacts() {
                             <Button
                                 type="button"
                                 onClick={handleDelete}
-                                disabled={loading}
+                                disabled={deleteLoading}
                                 className="bg-red-600 hover:bg-red-700 text-white"
                             >
-                                {loading ? 'Deleting...' : 'Delete'}
+                                {deleteLoading ? 'Deleting...' : 'Delete'}
                             </Button>
                         </div>
                     </div>
-                </ResuseableModal>
+                </CustomModal>
             </div>
         </>
     )
