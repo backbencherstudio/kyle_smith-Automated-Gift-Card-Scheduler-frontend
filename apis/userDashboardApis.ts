@@ -29,6 +29,34 @@ interface PaginatedApiResponse<T = any> {
     totalPages: number;
 }
 
+// Gift card denomination interface
+interface GiftCardDenomination {
+    face_value: string;
+    available_count: number;
+    selling_price: string;
+}
+
+// Gift card interface
+interface GiftCard {
+    id: string;
+    name: string;
+    logo_url: string;
+    description: string;
+    available_denominations: GiftCardDenomination[];
+    price_range: {
+        min: string;
+        max: string;
+    };
+    total_available_cards: number;
+}
+
+// Gift cards response interface
+interface GiftCardsResponse {
+    success: boolean;
+    data?: GiftCard[];
+    total: number;
+}
+
 // Schedule user data interface
 interface ScheduleUserData {
     name: string;
@@ -124,6 +152,16 @@ export const deleteContact = async (id: string): Promise<ApiResponse> => {
 export const getSchedulesUserData = async (): Promise<PaginatedScheduleResponse> => {
     try {
         const response = await axiosClient.get<PaginatedScheduleResponse>("/api/gift-recipients/with-gifts");
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// gift recipient with gifts
+export const getGiftRecipientWithGifts = async (): Promise<GiftCardsResponse> => {
+    try {
+        const response = await axiosClient.get<GiftCardsResponse>("/api/gift-cards/browse");
         return response.data;
     } catch (error) {
         throw error;
