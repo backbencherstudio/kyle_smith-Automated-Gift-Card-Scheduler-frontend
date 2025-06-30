@@ -167,3 +167,27 @@ export const getGiftRecipientWithGifts = async (): Promise<GiftCardsResponse> =>
         throw error;
     }
 };
+
+
+// create gift recipient
+export const createGiftRecipient = async (data: {
+    vendor_id: string;
+    amount: number;
+    isNotify: boolean;
+    recipient: {
+        name: string;
+        email: string;
+        birthday: string;
+    };
+    custom_message: string;
+}): Promise<ApiResponse> => {
+    try {
+        const response = await axiosClient.post<ApiResponse>("/api/gift-scheduling", data);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+

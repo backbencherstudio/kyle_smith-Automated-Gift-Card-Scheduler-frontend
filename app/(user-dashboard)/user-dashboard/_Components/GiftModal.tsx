@@ -10,13 +10,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -50,6 +44,8 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
     const [giftCards, setGiftCards] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedSendDate, setSelectedSendDate] = useState<Date | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const cardsPerPage = 3;
 
     const {
         control,
@@ -77,6 +73,7 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
             setSelectedAmount('');
             setShowAmountOptions(false);
             setSelectedSendDate(null);
+            setCurrentPage(1);
             reset(); // Reset form data
         }
     }, [isOpen, selectedUser, reset]);
@@ -149,6 +146,16 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
         return giftCards.find(card => card.id === selectedGiftCard);
     };
 
+    // Calculate pagination
+    const totalPages = Math.ceil(giftCards.length / cardsPerPage);
+    const startIndex = (currentPage - 1) * cardsPerPage;
+    const endIndex = startIndex + cardsPerPage;
+    const currentCards = giftCards.slice(startIndex, endIndex);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
     const renderStepContent = () => {
         switch (currentStep) {
             case 1:
@@ -172,18 +179,18 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                             </div>
                         ) : !showAmountOptions ? (
                             // Gift Card Ranges
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-1 gap-4">
-                                    {giftCards.map((card) => (
+                            <div className="space-y-3 md:space-y-4">
+                                <div className="grid grid-cols-1 gap-3 md:gap-4">
+                                    {currentCards.map((card) => (
                                         <div
                                             key={card.id}
-                                            className="p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-all"
+                                            className="p-3 md:p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-all"
                                             onClick={() => handleGiftCardSelect(card.id)}
                                         >
-                                            <div className="flex items-center justify-between">
+                                            <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
                                                 <div className="flex items-center space-x-3">
                                                     {card.logo_url && (
-                                                        <div className="w-12 h-12 relative">
+                                                        <div className="w-10 h-10 md:w-12 md:h-12 relative">
                                                             <Image
                                                                 src={card.logo_url}
                                                                 alt={card.name}
@@ -193,12 +200,12 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                                                         </div>
                                                     )}
                                                     <div>
-                                                        <h4 className="font-semibold">{card.name}</h4>
-                                                        <p className="text-gray-600 text-sm">{card.description}</p>
+                                                        <h4 className="font-semibold text-sm md:text-base">{card.name}</h4>
+                                                        <p className="text-gray-600 text-xs md:text-sm">{card.description}</p>
                                                     </div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="font-bold text-lg text-blue-600">
+                                                <div className="text-left md:text-right">
+                                                    <p className="font-bold text-base md:text-lg text-blue-600">
                                                         ${card.price_range.min} - ${card.price_range.max}
                                                     </p>
                                                     <p className="text-xs text-gray-500">
@@ -209,6 +216,54 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                                         </div>
                                     ))}
                                 </div>
+
+                                {/* Pagination Controls */}
+                                {totalPages > 1 && (
+                                    <div className="flex justify-center items-center space-x-2 mt-4">
+                                        <button
+                                            onClick={() => handlePageChange(currentPage - 1)}
+                                            disabled={currentPage === 1}
+                                            className={cn(
+                                                "px-3 py-1 text-sm rounded-md transition-colors",
+                                                currentPage === 1
+                                                    ? "text-gray-400 cursor-not-allowed"
+                                                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                                            )}
+                                        >
+                                            Previous
+                                        </button>
+
+                                        <div className="flex space-x-1">
+                                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                                <button
+                                                    key={page}
+                                                    onClick={() => handlePageChange(page)}
+                                                    className={cn(
+                                                        "w-8 h-8 text-sm rounded-md transition-colors",
+                                                        currentPage === page
+                                                            ? "bg-[#FBDE6E] text-gray-900 font-semibold"
+                                                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                                                    )}
+                                                >
+                                                    {page}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <button
+                                            onClick={() => handlePageChange(currentPage + 1)}
+                                            disabled={currentPage === totalPages}
+                                            className={cn(
+                                                "px-3 py-1 text-sm rounded-md transition-colors",
+                                                currentPage === totalPages
+                                                    ? "text-gray-400 cursor-not-allowed"
+                                                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                                            )}
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             // Amount Selection
@@ -216,7 +271,7 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                                 <div className="flex items-center justify-between mb-4">
                                     <button
                                         onClick={handleBackToCards}
-                                        className="flex items-center text-blue-600 hover:text-blue-800"
+                                        className="flex cursor-pointer items-center text-blue-600 hover:text-blue-800"
                                     >
                                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -228,12 +283,12 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-3">
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
                                     {getSelectedCardInfo()?.available_denominations.map((denomination: any) => (
                                         <div
                                             key={denomination.face_value}
                                             className={cn(
-                                                "p-3 border-2 rounded-lg cursor-pointer text-center transition-all",
+                                                "p-2 md:p-3 border-2 rounded-lg cursor-pointer text-center transition-all",
                                                 selectedAmount === denomination.face_value
                                                     ? "border-blue-500 bg-blue-50 text-blue-700"
                                                     : "border-gray-200 hover:border-gray-300"
@@ -241,7 +296,7 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                                             onClick={() => handleAmountSelect(denomination.face_value)}
                                         >
                                             <div className="space-y-1">
-                                                <span className="font-semibold block">${denomination.face_value}</span>
+                                                <span className="font-semibold block text-sm md:text-base">${denomination.face_value}</span>
                                                 <span className="text-xs text-gray-500 block">
                                                     ${denomination.selling_price}
                                                 </span>
@@ -260,7 +315,7 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                             <h3 className="text-lg font-semibold mb-2">User Information & Send Date</h3>
                             <p className="text-gray-600">Review details and set delivery date</p>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                             <div className="space-y-2">
                                 <label className="text-sm text-gray-600">Name</label>
                                 <Input
@@ -308,7 +363,7 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                                                 type="button"
                                                 variant="outline"
                                                 className={cn(
-                                                    "w-full justify-start text-left font-normal",
+                                                    "w-full justify-start text-left font-normal cursor-pointer",
                                                     !field.value && "text-muted-foreground"
                                                 )}
                                             >
@@ -362,7 +417,7 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                             />
                         </div>
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="notify" />
+                            <Checkbox id="notify" className='cursor-pointer' />
                             <label
                                 htmlFor="notify"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -402,42 +457,51 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-xl">
+            <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Set Gift</DialogTitle>
                 </DialogHeader>
 
                 {/* Progress Bar */}
-                <div className="mb-6">
-                    <div className="flex items-center justify-between mb-2">
+                <div className="mb-4 md:mb-6 w-full">
+                    <div className="flex items-center justify-between mb-3 md:mb-4 w-full">
                         {steps.map((step, index) => (
                             <div key={step.id} className="flex items-center">
                                 <div className={cn(
-                                    "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
+                                    "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs md:text-sm font-bold transition-all duration-300 relative",
                                     currentStep >= step.id
-                                        ? "bg-blue-500 text-white"
-                                        : "bg-gray-200 text-gray-600"
+                                        ? "bg-[#FBDE6E] text-gray-900 shadow-lg"
+                                        : "bg-gray-100 text-gray-400 border-2 border-gray-200"
                                 )}>
-                                    {step.id}
+                                    {currentStep > step.id ? (
+                                        <svg className="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    ) : (
+                                        step.id
+                                    )}
                                 </div>
                                 {index < steps.length - 1 && (
                                     <div className={cn(
-                                        "w-16 h-1 mx-2",
-                                        currentStep > step.id ? "bg-blue-500" : "bg-gray-200"
+                                        "w-8 md:w-16 lg:w-32 h-1 mx-1 md:mx-3 rounded-full transition-all duration-300",
+                                        currentStep > step.id ? "bg-[#FBDE6E]" : "bg-gray-200"
                                     )} />
                                 )}
                             </div>
                         ))}
                     </div>
                     <div className="text-center">
-                        <p className="text-sm font-medium text-gray-700">
+                        <p className="text-xs md:text-sm font-semibold text-gray-800">
                             {steps[currentStep - 1].title}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                            Step {currentStep} of {steps.length}
                         </p>
                     </div>
                 </div>
 
                 {/* Step Content */}
-                <div className="space-y-4 border-t border-gray-200 pt-6">
+                <div className="space-y-3 md:space-y-4 border-t border-gray-200 pt-4 md:pt-6">
                     {renderStepContent()}
                 </div>
 
@@ -446,13 +510,13 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                     <Button
                         variant="outline"
                         onClick={currentStep === 1 ? onClose : handlePrev}
-                        className="cursor-pointer"
+                        className="cursor-pointer text-xs md:text-sm px-3 md:px-4"
                     >
                         {currentStep === 1 ? 'Cancel' : 'Previous'}
                     </Button>
                     <Button
                         onClick={currentStep === 3 ? handleFinalSubmit : handleNext}
-                        className="bg-[#FBDE6E] cursor-pointer text-gray-900 hover:bg-yellow-500"
+                        className="bg-[#FBDE6E] cursor-pointer text-gray-900 hover:bg-yellow-500 text-xs md:text-sm px-3 md:px-4"
                         disabled={currentStep === 1 && (!selectedGiftCard || !selectedAmount)}
                     >
                         {currentStep === 3 ? 'Set Gift' : 'Next'}
