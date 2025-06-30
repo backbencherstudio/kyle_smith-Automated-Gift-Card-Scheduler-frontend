@@ -22,7 +22,8 @@ const createDateWithoutTime = (date: Date | string | undefined): Date | undefine
     if (!date) return undefined;
     
     const d = new Date(date);
-    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    // Create date in local timezone to avoid conversion issues
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0);
 };
 
 const formatDateWithoutTime = (date: Date | string | undefined): string => {
@@ -68,6 +69,8 @@ export default function AddContacts({ isOpen, onClose, initialData, isUpdate = f
             ...data,
             birthday_date: data.birthday ? format(data.birthday, 'yyyy-MM-dd') : undefined
         };
+        
+        console.log('Form data:', formattedData);
         
         if (onSubmit) {
             await onSubmit(formattedData);
@@ -195,7 +198,7 @@ export default function AddContacts({ isOpen, onClose, initialData, isUpdate = f
                                         selected={field.value ? createDateWithoutTime(field.value) : undefined}
                                         onSelect={(date) => {
                                             // Create date without time to avoid timezone issues
-                                            const dateWithoutTime = date ? createDateWithoutTime(date) : undefined;
+                                            const dateWithoutTime = date ? new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0) : undefined;
                                             field.onChange(dateWithoutTime);
                                         }}
                                         disabled={(date) => date > new Date() || date < new Date("1900-01-01")}

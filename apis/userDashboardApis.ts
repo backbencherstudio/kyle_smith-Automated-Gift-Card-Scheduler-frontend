@@ -29,6 +29,27 @@ interface PaginatedApiResponse<T = any> {
     totalPages: number;
 }
 
+// Schedule user data interface
+interface ScheduleUserData {
+    name: string;
+    email: string;
+    birthday_display: string;
+    birthday_full: string;
+    delivery_status: string;
+    isUpcoming: boolean;
+    total_amount: string;
+}
+
+// Paginated schedule response interface
+interface PaginatedScheduleResponse {
+    success: boolean;
+    data?: ScheduleUserData[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+
 // add contact
 export const addContact = async (data: {
     name: string;
@@ -53,7 +74,7 @@ export const getContacts = async (params?: {
 }): Promise<PaginatedApiResponse<Contact[]>> => {
     try {
         const queryParams = new URLSearchParams();
-        
+
         if (params?.search) {
             queryParams.append('search', params.search);
         }
@@ -63,7 +84,7 @@ export const getContacts = async (params?: {
         if (params?.limit) {
             queryParams.append('limit', params.limit.toString());
         }
-        
+
         const url = `/api/gift-recipients${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
         const response = await axiosClient.get<PaginatedApiResponse<Contact[]>>(url);
         return response.data;
@@ -92,6 +113,16 @@ export const updateContact = async (id: string, data: {
 export const deleteContact = async (id: string): Promise<ApiResponse> => {
     try {
         const response = await axiosClient.delete<ApiResponse>(`/api/gift-recipients/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// get schedules user data 
+export const getSchedulesUserData = async (): Promise<PaginatedScheduleResponse> => {
+    try {
+        const response = await axiosClient.get<PaginatedScheduleResponse>("/api/gift-recipients/with-gifts");
         return response.data;
     } catch (error) {
         throw error;

@@ -4,16 +4,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import Image from "next/image";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
     Select,
     SelectContent,
@@ -30,8 +21,10 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import UserListModal from "./UserListModal";
+import GiftModal from "./GiftModal";
 
 interface CalendarEvent {
     id: string;
@@ -214,6 +207,9 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
 
         setDateRange(`Showing ${startFormatted} - ${endFormatted} ${year}`);
 
+        // Update currentViewDate to reflect the current calendar view
+        setCurrentViewDate(startDate);
+
         // Handle event styling
         const eventDates = Object.keys(eventsByDate);
         setTimeout(() => {
@@ -321,6 +317,7 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
             const newDate = new Date(currentDate);
             newDate.setMonth(currentDate.getMonth() - 1);
             calendarApi.gotoDate(newDate);
+            setCurrentViewDate(newDate);
         }
     };
 
@@ -331,6 +328,7 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
             const newDate = new Date(currentDate);
             newDate.setMonth(currentDate.getMonth() + 1);
             calendarApi.gotoDate(newDate);
+            setCurrentViewDate(newDate);
         }
     };
 
@@ -473,197 +471,21 @@ export default function GiftSchedulingCalender({ config = {}, events }: GiftSche
             </div>
 
             {/* User List Modal */}
-            {userListModal && (
-                <div className="fixed inset-0 bg-black/70 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                        <div className="mb-4">
-                            <h3 className="text-lg font-semibold">Select User for Gift ({new Date(userListModal.date).toLocaleDateString()})</h3>
-                        </div>
-                        <div className="space-y-3">
-                            {userListModal.events.map((event) => (
-                                <div
-                                    key={event.id}
-                                    className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
-                                    onClick={() => handleUserSelect(event.extendedProps, event)}
-                                >
-                                    {event.extendedProps.avatar && event.extendedProps.avatar.trim() !== '' ? (
-                                        <Image
-                                            width={48}
-                                            height={48}
-                                            src={event.extendedProps.avatar}
-                                            alt={event.extendedProps.name}
-                                            className="w-12 h-12 rounded-full"
-                                        />
-                                    ) : (
-                                        <div 
-                                            className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-gray-700 border-2 border-white"
-                                            style={{ backgroundColor: event.extendedProps.color || '#6b7280' }}
-                                        >
-                                            {event.extendedProps.name?.charAt(0)?.toUpperCase() || '?'}
-                                        </div>
-                                    )}
-                                    <div>
-                                        <p className="font-medium text-gray-900">{event.extendedProps.name}</p>
-                                        <p className="text-sm text-gray-500">{event.extendedProps.type}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="mt-4 flex justify-end">
-                            <button
-                                onClick={() => setUserListModal(null)}
-                                className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <UserListModal
+                isOpen={!!userListModal}
+                onClose={() => setUserListModal(null)}
+                date={userListModal?.date || ''}
+                events={userListModal?.events || []}
+                onUserSelect={handleUserSelect}
+            />
 
             {/* Gift Setting Modal */}
-            {selectedUser && (
-                <Dialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
-                    <DialogContent className="sm:max-w-xl">
-                        <DialogHeader>
-                            <DialogTitle>Set Gift</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 border-t border-gray-200 pt-6">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm text-gray-600">Name</label>
-                                    <Input
-                                        disabled
-                                        value={selectedUser.name}
-                                        className="bg-gray-50"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm text-gray-600">Address</label>
-                                    <Input placeholder="Enter address" />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm text-gray-600">Email</label>
-                                    <Input
-                                        type="email"
-                                        placeholder="Enter email"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm text-gray-600">Birthday</label>
-                                    <Input
-                                        type="date"
-                                        value={formatDateForInput(selectedUser.birthday || selectedUser.start)}
-                                        disabled
-                                        className="bg-gray-50"
-                                    />
-                                </div>
-                                <div className="space-y-2 w-full">
-                                    <label className="text-sm text-gray-600">Select Gift Card</label>
-                                    <Select>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select a gift card" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="amazon">Amazon Gift Card - $50</SelectItem>
-                                            <SelectItem value="steam">Steam Wallet - $25</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2 w-full">
-                                    <label className="text-sm font-medium">Gift Send Date</label>
-                                    <Controller
-                                        name="giftSendDate"
-                                        control={control}
-                                        rules={{ required: "Gift send date is required" }}
-                                        render={({ field }) => (
-                                            <Popover modal={true}>
-                                                <PopoverTrigger asChild>
-                                                    <Button
-                                                        type="button"
-                                                        variant="outline"
-                                                        className={cn(
-                                                            "w-full justify-start text-left font-normal",
-                                                            !field.value && "text-muted-foreground"
-                                                        )}
-                                                    >
-                                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                                        {field.value ?
-                                                            format(typeof field.value === 'string' ? new Date(field.value) : field.value, "dd/MM/yyyy")
-                                                            : "Select gift send date"}
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent
-                                                    className="w-auto p-0"
-                                                    align="start"
-                                                    side="bottom"
-                                                    sideOffset={4}
-                                                >
-                                                    <div className="calendar-wrapper" onClick={(e) => e.stopPropagation()}>
-                                                        <Calendar
-                                                            mode="single"
-                                                            selected={field.value ?
-                                                                (typeof field.value === 'string' ? new Date(field.value) : field.value)
-                                                                : undefined}
-                                                            onSelect={(date) => {
-                                                                if (date) {
-                                                                    field.onChange(date);
-                                                                }
-                                                            }}
-                                                            disabled={(date) => {
-                                                                const today = new Date();
-                                                                today.setHours(0, 0, 0, 0);
-                                                                return date < today;
-                                                            }}
-                                                            initialFocus
-                                                            className="rounded-md border"
-                                                            fromDate={new Date()}
-                                                        />
-                                                    </div>
-                                                </PopoverContent>
-                                            </Popover>
-                                        )}
-                                    />
-                                    {errors.giftSendDate && (
-                                        <p className="text-red-500 text-xs">{errors.giftSendDate.message as string}</p>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm text-gray-600">Message (Optional)</label>
-                                <Textarea
-                                    placeholder="Enter your message"
-                                    rows={3}
-                                />
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="notify" />
-                                <label
-                                    htmlFor="notify"
-                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                >
-                                    Notify me on delivery
-                                </label>
-                            </div>
-                            <div className="flex justify-between space-x-2 pt-4">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setSelectedUser(null)}
-                                    className="cursor-pointer"
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    onClick={handleSubmit}
-                                    className="bg-[#FBDE6E ] cursor-pointer text-gray-900 hover:bg-yellow-500"
-                                >
-                                    Set Gift
-                                </Button>
-                            </div>
-                        </div>
-                    </DialogContent>
-                </Dialog>
-            )}
+            <GiftModal
+                isOpen={!!selectedUser}
+                onClose={() => setSelectedUser(null)}
+                selectedUser={selectedUser}
+                onSubmit={handleSubmit}
+            />
 
             <style jsx>{`
 .calendar-container button {

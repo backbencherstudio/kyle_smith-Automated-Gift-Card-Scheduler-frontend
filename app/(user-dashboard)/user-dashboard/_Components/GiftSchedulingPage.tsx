@@ -1,17 +1,15 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import GiftSchedulingCalender from './GiftSchedulingCalender';
-import { getContacts } from '@/apis/userDashboardApis';
+import { getSchedulesUserData } from '@/apis/userDashboardApis';
 
-interface Contact {
-    id: string;
+interface ScheduleUserData {
     name: string;
+    birthday_display: string;
+    delivery_status: string;
+    isUpcoming: boolean;
     email: string;
-    phone_number: string;
-    birthday_date?: string;
-    address: string;
-    created_at: string;
-    updated_at: string;
+    birthday_full: string;
 }
 
 interface CalendarEvent {
@@ -20,10 +18,12 @@ interface CalendarEvent {
     start: string;
     extendedProps: {
         name: string;
+        email: string;
         type: string;
         avatar: string;
         color: string;
         birthday: string;
+        birthday_full: string;
     };
 }
 
@@ -32,15 +32,14 @@ export default function GiftSchedulingPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchContacts();
+        fetchScheduleData();
     }, []);
 
-    const fetchContacts = async () => {
+    const fetchScheduleData = async () => {
         try {
             setLoading(true);
-            const response = await getContacts();
+            const response = await getSchedulesUserData();
             if (response.success && response.data) {
-                const contactsWithBirthdays = response.data.filter((contact: any) => contact.birthday_date);
                 const colors = [
                     '#fef2f2', // Light red
                     '#f0fdf4', // Light green
@@ -51,29 +50,48 @@ export default function GiftSchedulingPage() {
                     '#fefce8', // Light yellow
                     '#f1f5f9', // Light gray
                 ];
-                const calendarEvents = contactsWithBirthdays.map((contact: any) => {
-                    const birthday = new Date(contact.birthday_date);
-                    const formattedDate = birthday.toISOString().split('T')[0];
-                    const colorIndex = contact.name.length % colors.length;
-                    const eventColor = colors[colorIndex];
-                    const avatar = contact.avatar || '';
-                    return {
-                        id: contact.id,
-                        title: `${contact.name} - Birthday`,
-                        start: formattedDate,
-                        extendedProps: {
-                            name: contact.name,
-                            type: "Birthday",
-                            avatar: avatar,
-                            color: eventColor,
-                            birthday: formattedDate
-                        },
-                    };
+                
+                const calendarEvents = response.data.flatMap((user: ScheduleUserData, index: number) => {
+                    // Convert birthday_display (MM-DD) to dates for all years
+                    const [monthStr, dayStr] = user.birthday_display.split('-');
+                    const month = parseInt(monthStr) - 1; // JavaScript months are 0-indexed
+                    const day = parseInt(dayStr);
+                    const currentYear = new Date().getFullYear();
+                    
+                    // Create events for past 10 years and next 10 years (total 21 years)
+                    const events = [];
+                    for (let year = currentYear - 10; year <= currentYear + 10; year++) {
+                        // Create date using local timezone to avoid conversion issues
+                        const birthdayDate = new Date(year, month, day, 12, 0, 0); // Use noon to avoid timezone issues
+                        
+                        const formattedDate = birthdayDate.toISOString().split('T')[0];
+                        const colorIndex = user.name.length % colors.length;
+                        const eventColor = colors[colorIndex];
+                        
+                        console.log(`User: ${user.name}, Birthday Display: ${user.birthday_display}, Year: ${year}, Month: ${month + 1}, Day: ${day}, Formatted Date: ${formattedDate}`);
+                        
+                        events.push({
+                            id: `schedule-${index}-${year}`,
+                            title: `${user.name} - Birthday`,
+                            start: formattedDate,
+                            extendedProps: {
+                                name: user.name,
+                                email: user.email,
+                                type: "Birthday",
+                                avatar: '',
+                                color: eventColor,
+                                birthday: formattedDate,
+                                birthday_full: user.birthday_full
+                            },
+                        });
+                    }
+                    
+                    return events;
                 });
                 setEvents(calendarEvents);
             }
         } catch (error) {
-            // Optionally handle error
+            console.error('Error fetching schedule data:', error);
         } finally {
             setLoading(false);
         }
@@ -99,7 +117,7 @@ export default function GiftSchedulingPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="text-lg">Loading contacts...</div>
+                <div className="text-lg">Loading schedule data...</div>
             </div>
         );
     }
@@ -118,7 +136,7 @@ export default function GiftSchedulingPage() {
                     />
                 ) : (
                     <div className="text-center py-8 text-gray-500">
-                        No birthday events found. Please add contacts with birthday dates.
+                        No birthday events found. Please add schedule data with birthday dates.
                     </div>
                 )}
             </div>
