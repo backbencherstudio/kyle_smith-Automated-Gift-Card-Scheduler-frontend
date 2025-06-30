@@ -302,88 +302,102 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                         ) : !showAmountOptions ? (
                             // Gift Card Ranges
                             <div className="space-y-3 md:space-y-4">
-                                <div className="grid grid-cols-1 gap-3 md:gap-4">
-                                    {paginationData.currentCards.map((card) => (
-                                        <div
-                                            key={card.id}
-                                            className="p-3 md:p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-all"
-                                            onClick={() => handleGiftCardSelect(card.id)}
-                                        >
-                                            <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
-                                                <div className="flex items-center space-x-3">
-                                                    {card.logo_url && (
-                                                        <div className="w-10 h-10 md:w-12 md:h-12 relative">
-                                                            <Image
-                                                                src={card.logo_url}
-                                                                alt={card.name}
-                                                                fill
-                                                                className="object-contain rounded"
-                                                            />
+                                {paginationData.currentCards.length > 0 ? (
+                                    <>
+                                        <div className="grid grid-cols-1 gap-3 md:gap-4">
+                                            {paginationData.currentCards.map((card) => (
+                                                <div
+                                                    key={card.id}
+                                                    className="p-3 md:p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-all"
+                                                    onClick={() => handleGiftCardSelect(card.id)}
+                                                >
+                                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
+                                                        <div className="flex items-center space-x-3">
+                                                            {card.logo_url && (
+                                                                <div className="w-10 h-10 md:w-12 md:h-12 relative">
+                                                                    <Image
+                                                                        src={card.logo_url}
+                                                                        alt={card.name}
+                                                                        fill
+                                                                        className="object-contain rounded"
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                            <div>
+                                                                <h4 className="font-semibold text-sm md:text-base">{card.name}</h4>
+                                                                <p className="text-gray-600 text-xs md:text-sm">{card.description}</p>
+                                                            </div>
                                                         </div>
-                                                    )}
-                                                    <div>
-                                                        <h4 className="font-semibold text-sm md:text-base">{card.name}</h4>
-                                                        <p className="text-gray-600 text-xs md:text-sm">{card.description}</p>
+                                                        <div className="text-left md:text-right">
+                                                            <p className="font-bold text-base md:text-lg text-blue-600">
+                                                                ${card.price_range.min} - ${card.price_range.max}
+                                                            </p>
+                                                            <p className="text-xs text-gray-500">
+                                                                {card.total_available_cards} cards available
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-left md:text-right">
-                                                    <p className="font-bold text-base md:text-lg text-blue-600">
-                                                        ${card.price_range.min} - ${card.price_range.max}
-                                                    </p>
-                                                    <p className="text-xs text-gray-500">
-                                                        {card.total_available_cards} cards available
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {/* Pagination Controls */}
-                                {paginationData.totalPages > 1 && (
-                                    <div className="flex justify-center items-center space-x-2 mt-4">
-                                        <button
-                                            onClick={() => handlePageChange(currentPage - 1)}
-                                            disabled={currentPage === 1}
-                                            className={cn(
-                                                "px-3 py-1 text-sm rounded-md transition-colors",
-                                                currentPage === 1
-                                                    ? "text-gray-400 cursor-not-allowed"
-                                                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                                            )}
-                                        >
-                                            Previous
-                                        </button>
-
-                                        <div className="flex space-x-1">
-                                            {Array.from({ length: paginationData.totalPages }, (_, i) => i + 1).map((page) => (
-                                                <button
-                                                    key={page}
-                                                    onClick={() => handlePageChange(page)}
-                                                    className={cn(
-                                                        "w-8 h-8 text-sm rounded-md transition-colors",
-                                                        currentPage === page
-                                                            ? "bg-[#FBDE6E] text-gray-900 font-semibold"
-                                                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                                                    )}
-                                                >
-                                                    {page}
-                                                </button>
                                             ))}
                                         </div>
 
-                                        <button
-                                            onClick={() => handlePageChange(currentPage + 1)}
-                                            disabled={currentPage === paginationData.totalPages}
-                                            className={cn(
-                                                "px-3 py-1 text-sm rounded-md transition-colors",
-                                                currentPage === paginationData.totalPages
-                                                    ? "text-gray-400 cursor-not-allowed"
-                                                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                                            )}
-                                        >
-                                            Next
-                                        </button>
+                                        {/* Pagination Controls */}
+                                        {paginationData.totalPages > 1 && (
+                                            <div className="flex justify-center items-center space-x-2 mt-4">
+                                                <button
+                                                    onClick={() => handlePageChange(currentPage - 1)}
+                                                    disabled={currentPage === 1}
+                                                    className={cn(
+                                                        "px-3 py-1 text-sm rounded-md transition-colors",
+                                                        currentPage === 1
+                                                            ? "text-gray-400 cursor-not-allowed"
+                                                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                                                    )}
+                                                >
+                                                    Previous
+                                                </button>
+
+                                                <div className="flex space-x-1">
+                                                    {Array.from({ length: paginationData.totalPages }, (_, i) => i + 1).map((page) => (
+                                                        <button
+                                                            key={page}
+                                                            onClick={() => handlePageChange(page)}
+                                                            className={cn(
+                                                                "w-8 h-8 text-sm rounded-md transition-colors",
+                                                                currentPage === page
+                                                                    ? "bg-[#FBDE6E] text-gray-900 font-semibold"
+                                                                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                                                            )}
+                                                        >
+                                                            {page}
+                                                        </button>
+                                                    ))}
+                                                </div>
+
+                                                <button
+                                                    onClick={() => handlePageChange(currentPage + 1)}
+                                                    disabled={currentPage === paginationData.totalPages}
+                                                    className={cn(
+                                                        "px-3 py-1 text-sm rounded-md transition-colors",
+                                                        currentPage === paginationData.totalPages
+                                                            ? "text-gray-400 cursor-not-allowed"
+                                                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                                                    )}
+                                                >
+                                                    Next
+                                                </button>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="text-center py-8">
+                                        <div className="text-gray-500 mb-4">
+                                            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="text-lg font-medium text-gray-900 mb-2">Card not found</h3>
+                                        <p className="text-gray-500">No gift cards are currently available.</p>
                                     </div>
                                 )}
                             </div>
