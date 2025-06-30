@@ -24,12 +24,8 @@ export default function UpcomingBirthday() {
     const fetchUpcomingBirthdays = async () => {
         try {
             setLoading(true);
-            console.log('UpcomingBirthday: Fetching schedules user data...');
             const response = await getSchedulesUserData();
-            console.log('UpcomingBirthday: API Response:', response);
-
             if (response.success && response.data) {
-                console.log('UpcomingBirthday: Schedules data:', response.data);
                 const schedules = response.data;
 
                 // Process the data to match the table structure
@@ -40,11 +36,8 @@ export default function UpcomingBirthday() {
                         delivery_status: schedule.delivery_status === 'none' ? 'Pending' : schedule.delivery_status
                     };
                 });
-
-                console.log('UpcomingBirthday: Processed data:', processedData);
                 setUpcomingBirthdays(processedData);
             } else {
-                console.log('UpcomingBirthday: API response not successful or no data');
             }
         } catch (error) {
             console.error('UpcomingBirthday: Error fetching schedules user data:', error);
@@ -69,7 +62,7 @@ export default function UpcomingBirthday() {
         );
     }
 
-    console.log('UpcomingBirthday: Rendering with data:', upcomingBirthdays);
+
 
     return (
         <div className="bg-white rounded-lg p-4 mt-10">

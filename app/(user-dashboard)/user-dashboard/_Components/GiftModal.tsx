@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { getGiftRecipientWithGifts } from "@/apis/userDashboardApis";
+import { getGiftRecipientWithGifts, createGiftRecipient } from "@/apis/userDashboardApis";
 import Image from "next/image";
 import { CustomToast } from '@/lib/Toast/CustomToast';
 
@@ -27,13 +27,43 @@ interface GiftModalProps {
     onSubmit: (e: any) => void;
 }
 
-const formatBirthdayDisplay = (dateString: string) => {
+// Constants
+const STEPS = [
+    { id: 1, title: "Gift Card Selection" },
+    { id: 2, title: "User Info & Send Date" },
+    { id: 3, title: "Confirmation" }
+] as const;
+
+const CARDS_PER_PAGE = 3;
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+// Utility functions
+const formatBirthdayDisplay = (dateString: string): string => {
     if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric'
-    });
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return '';
+        return date.toLocaleDateString('en-US', {
+            month: 'long',
+            day: 'numeric'
+        });
+    } catch (error) {
+        console.error('Error formatting birthday display:', error);
+        return '';
+    }
+};
+
+const parseBirthdayDate = (dateString: string): string => {
+    if (!dateString) return '';
+
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return '';
+        return format(date, 'yyyy-MM-dd');
+    } catch (error) {
+        console.error('Error parsing birthday date:', error);
+        return '';
+    }
 };
 
 export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: GiftModalProps) {
@@ -43,9 +73,9 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
     const [showAmountOptions, setShowAmountOptions] = useState(false);
     const [giftCards, setGiftCards] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
     const [selectedSendDate, setSelectedSendDate] = useState<Date | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const cardsPerPage = 3;
 
     const {
         control,
@@ -53,19 +83,37 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
         handleSubmit,
         reset,
         watch,
-    } = useForm();
-
-    // Watch the gift send date field
-    const giftSendDate = watch('giftSendDate');
-
-    // Fetch gift cards when modal opens
-    useEffect(() => {
-        if (isOpen) {
-            fetchGiftCards();
+        setValue,
+    } = useForm({
+        defaultValues: {
+            giftSendDate: null,
+            customMessage: '',
+            isNotify: false
         }
-    }, [isOpen]);
+    });
 
-    // Reset modal state when modal opens/closes or user changes
+    // Watch form fields
+    const giftSendDate = watch('giftSendDate');
+    const customMessage = watch('customMessage');
+    const isNotify = watch('isNotify');
+
+    // Memoized selected card info
+    const selectedCardInfo = useMemo(() =>
+        giftCards.find(card => card.id === selectedGiftCard),
+        [giftCards, selectedGiftCard]
+    );
+
+    // Memoized pagination calculations
+    const paginationData = useMemo(() => {
+        const totalPages = Math.ceil(giftCards.length / CARDS_PER_PAGE);
+        const startIndex = (currentPage - 1) * CARDS_PER_PAGE;
+        const endIndex = startIndex + CARDS_PER_PAGE;
+        const currentCards = giftCards.slice(startIndex, endIndex);
+
+        return { totalPages, currentCards };
+    }, [giftCards, currentPage]);
+
+    // Reset modal state when opened
     useEffect(() => {
         if (isOpen) {
             setCurrentStep(1);
@@ -74,87 +122,161 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
             setShowAmountOptions(false);
             setSelectedSendDate(null);
             setCurrentPage(1);
-            reset(); // Reset form data
+            reset();
         }
     }, [isOpen, selectedUser, reset]);
 
-    const fetchGiftCards = async () => {
+    // Fetch gift cards when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            fetchGiftCards();
+        }
+    }, [isOpen]);
+
+    const fetchGiftCards = useCallback(async () => {
         try {
             setLoading(true);
             const response = await getGiftRecipientWithGifts();
             if (response.success && response.data) {
                 setGiftCards(response.data);
+            } else {
+                CustomToast.show('Failed to load gift cards');
             }
         } catch (error) {
             console.error('Error fetching gift cards:', error);
+            CustomToast.show('Error loading gift cards');
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    if (!selectedUser) return null;
-
-    const steps = [
-        { id: 1, title: "Gift Card Selection" },
-        { id: 2, title: "User Info & Send Date" },
-        { id: 3, title: "Confirmation" }
-    ];
-
-    const handleNext = () => {
+    // Navigation handlers
+    const handleNext = useCallback(() => {
         if (currentStep < 3) {
             setCurrentStep(currentStep + 1);
         }
-    };
+    }, [currentStep]);
 
-    const handlePrev = () => {
+    const handlePrev = useCallback(() => {
         if (currentStep > 1) {
             setCurrentStep(currentStep - 1);
         }
-    };
+    }, [currentStep]);
 
-    const handleGiftCardSelect = (cardId: string) => {
+    const handleGiftCardSelect = useCallback((cardId: string) => {
         setSelectedGiftCard(cardId);
         setSelectedAmount('');
         setShowAmountOptions(true);
-    };
+    }, []);
 
-    const handleAmountSelect = (amount: string) => {
+    const handleAmountSelect = useCallback((amount: string) => {
         setSelectedAmount(amount);
-    };
+    }, []);
 
-    const handleBackToCards = () => {
+    const handleBackToCards = useCallback(() => {
         setShowAmountOptions(false);
         setSelectedGiftCard('');
         setSelectedAmount('');
-    };
+    }, []);
 
-    const handleFinalSubmit = () => {
-        if (currentStep === 3) {
-            const selectedCard = giftCards.find(card => card.id === selectedGiftCard);
-            const selectedDenomination = selectedCard?.available_denominations.find(
-                (denom: any) => denom.face_value === selectedAmount
-            );
-
-            CustomToast.show('Gift set successfully');
-
-            // Close the modal after showing demo
-            onClose();
-        }
-    };
-
-    const getSelectedCardInfo = () => {
-        return giftCards.find(card => card.id === selectedGiftCard);
-    };
-
-    // Calculate pagination
-    const totalPages = Math.ceil(giftCards.length / cardsPerPage);
-    const startIndex = (currentPage - 1) * cardsPerPage;
-    const endIndex = startIndex + cardsPerPage;
-    const currentCards = giftCards.slice(startIndex, endIndex);
-
-    const handlePageChange = (page: number) => {
+    const handlePageChange = useCallback((page: number) => {
         setCurrentPage(page);
-    };
+    }, []);
+
+    // Form submission handler
+    const handleFinalSubmit = useCallback(async () => {
+        if (currentStep !== 3) return;
+
+        try {
+            setSubmitting(true);
+
+            // Validation
+            if (!selectedCardInfo || !selectedSendDate) {
+                CustomToast.show('Please complete all required fields');
+                return;
+            }
+
+            // Parse birthday date
+            let birthdayDate = '';
+            if (selectedUser.birthday_full) {
+                birthdayDate = parseBirthdayDate(selectedUser.birthday_full);
+            } else if (selectedUser.birthday) {
+                birthdayDate = parseBirthdayDate(selectedUser.birthday);
+            } else if (selectedUser.start) {
+                birthdayDate = parseBirthdayDate(selectedUser.start);
+            }
+
+            if (!birthdayDate) {
+                console.error('Could not parse birthday date from:', {
+                    birthday_full: selectedUser.birthday_full,
+                    birthday: selectedUser.birthday,
+                    start: selectedUser.start
+                });
+                CustomToast.show('Birthday date is required');
+                return;
+            }
+
+            // Validate date format
+            if (!DATE_REGEX.test(birthdayDate)) {
+                console.error('Invalid birthday date format:', birthdayDate);
+                CustomToast.show('Invalid birthday date format');
+                return;
+            }
+
+            // Prepare gift data
+            const giftData = {
+                vendor_id: selectedGiftCard,
+                amount: parseInt(selectedAmount),
+                recipient: {
+                    name: selectedUser.name,
+                    email: selectedUser.email || '',
+                    Birthday: birthdayDate,
+                    birthday: birthdayDate
+                },
+                is_notify: isNotify,
+                send_gift_date: format(selectedSendDate, 'yyyy-MM-dd'),
+                custom_message: customMessage || ''
+            };
+
+            const response = await createGiftRecipient(giftData);
+
+            if (response.success) {
+                CustomToast.show('Gift scheduled successfully!');
+                onClose();
+            } else {
+                // Handle different message structures
+                let errorMessage = 'Failed to schedule gift';
+                if (typeof response.message === 'string') {
+                    errorMessage = response.message;
+                } else if (response.message && typeof response.message === 'object') {
+                    const messageObj = response.message as any;
+                    if (messageObj.message && Array.isArray(messageObj.message)) {
+                        errorMessage = messageObj.message.join(', ');
+                    } else if (messageObj.message && typeof messageObj.message === 'string') {
+                        errorMessage = messageObj.message;
+                    }
+                }
+                CustomToast.show(errorMessage);
+            }
+        } catch (error) {
+            console.error('Error creating gift recipient:', error);
+            CustomToast.show('Failed to schedule gift. Please try again.');
+        } finally {
+            setSubmitting(false);
+        }
+    }, [
+        currentStep,
+        selectedCardInfo,
+        selectedSendDate,
+        selectedUser,
+        selectedGiftCard,
+        selectedAmount,
+        isNotify,
+        customMessage,
+        onClose
+    ]);
+
+    if (!selectedUser) return null;
 
     const renderStepContent = () => {
         switch (currentStep) {
@@ -167,7 +289,7 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                             </h3>
                             <p className="text-gray-600">
                                 {showAmountOptions
-                                    ? `Choose amount for ${getSelectedCardInfo()?.name}`
+                                    ? `Choose amount for ${selectedCardInfo?.name}`
                                     : `Choose a gift card for ${selectedUser.name}`
                                 }
                             </p>
@@ -181,7 +303,7 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                             // Gift Card Ranges
                             <div className="space-y-3 md:space-y-4">
                                 <div className="grid grid-cols-1 gap-3 md:gap-4">
-                                    {currentCards.map((card) => (
+                                    {paginationData.currentCards.map((card) => (
                                         <div
                                             key={card.id}
                                             className="p-3 md:p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-all"
@@ -218,7 +340,7 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                                 </div>
 
                                 {/* Pagination Controls */}
-                                {totalPages > 1 && (
+                                {paginationData.totalPages > 1 && (
                                     <div className="flex justify-center items-center space-x-2 mt-4">
                                         <button
                                             onClick={() => handlePageChange(currentPage - 1)}
@@ -234,7 +356,7 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                                         </button>
 
                                         <div className="flex space-x-1">
-                                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                            {Array.from({ length: paginationData.totalPages }, (_, i) => i + 1).map((page) => (
                                                 <button
                                                     key={page}
                                                     onClick={() => handlePageChange(page)}
@@ -252,10 +374,10 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
 
                                         <button
                                             onClick={() => handlePageChange(currentPage + 1)}
-                                            disabled={currentPage === totalPages}
+                                            disabled={currentPage === paginationData.totalPages}
                                             className={cn(
                                                 "px-3 py-1 text-sm rounded-md transition-colors",
-                                                currentPage === totalPages
+                                                currentPage === paginationData.totalPages
                                                     ? "text-gray-400 cursor-not-allowed"
                                                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                                             )}
@@ -279,12 +401,12 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                                         Back to gift cards
                                     </button>
                                     <div className="text-sm text-gray-600">
-                                        {getSelectedCardInfo()?.name} - ${getSelectedCardInfo()?.price_range.min} - ${getSelectedCardInfo()?.price_range.max}
+                                        {selectedCardInfo?.name} - ${selectedCardInfo?.price_range.min} - ${selectedCardInfo?.price_range.max}
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
-                                    {getSelectedCardInfo()?.available_denominations.map((denomination: any) => (
+                                    {selectedCardInfo?.available_denominations.map((denomination: any) => (
                                         <div
                                             key={denomination.face_value}
                                             className={cn(
@@ -411,13 +533,31 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm text-gray-600">Message (Optional)</label>
-                            <Textarea
-                                placeholder="Enter your message"
-                                rows={3}
+                            <Controller
+                                name="customMessage"
+                                control={control}
+                                render={({ field }) => (
+                                    <Textarea
+                                        placeholder="Enter your message"
+                                        rows={3}
+                                        {...field}
+                                    />
+                                )}
                             />
                         </div>
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="notify" className='cursor-pointer' />
+                            <Controller
+                                name="isNotify"
+                                control={control}
+                                render={({ field }) => (
+                                    <Checkbox
+                                        id="notify"
+                                        className='cursor-pointer'
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                )}
+                            />
                             <label
                                 htmlFor="notify"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -441,11 +581,21 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                             </div>
                             <div className="flex justify-between">
                                 <span className="font-medium">Gift Card:</span>
-                                <span>{getSelectedCardInfo()?.name} - ${selectedAmount}</span>
+                                <span>{selectedCardInfo?.name} - ${selectedAmount}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="font-medium">Send Date:</span>
                                 <span>{selectedSendDate ? format(selectedSendDate, "dd/MM/yyyy") : "Selected date will appear here"}</span>
+                            </div>
+                            {customMessage && (
+                                <div className="flex justify-between">
+                                    <span className="font-medium">Message:</span>
+                                    <span className="text-sm">{customMessage}</span>
+                                </div>
+                            )}
+                            <div className="flex justify-between">
+                                <span className="font-medium">Notification:</span>
+                                <span>{isNotify ? 'Yes' : 'No'}</span>
                             </div>
                         </div>
                     </div>
@@ -465,7 +615,7 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                 {/* Progress Bar */}
                 <div className="mb-4 md:mb-6 w-full">
                     <div className="flex items-center justify-between mb-3 md:mb-4 w-full">
-                        {steps.map((step, index) => (
+                        {STEPS.map((step, index) => (
                             <div key={step.id} className="flex items-center">
                                 <div className={cn(
                                     "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs md:text-sm font-bold transition-all duration-300 relative",
@@ -481,7 +631,7 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                                         step.id
                                     )}
                                 </div>
-                                {index < steps.length - 1 && (
+                                {index < STEPS.length - 1 && (
                                     <div className={cn(
                                         "w-8 md:w-16 lg:w-32 h-1 mx-1 md:mx-3 rounded-full transition-all duration-300",
                                         currentStep > step.id ? "bg-[#FBDE6E]" : "bg-gray-200"
@@ -492,10 +642,10 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                     </div>
                     <div className="text-center">
                         <p className="text-xs md:text-sm font-semibold text-gray-800">
-                            {steps[currentStep - 1].title}
+                            {STEPS[currentStep - 1].title}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
-                            Step {currentStep} of {steps.length}
+                            Step {currentStep} of {STEPS.length}
                         </p>
                     </div>
                 </div>
@@ -511,15 +661,20 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                         variant="outline"
                         onClick={currentStep === 1 ? onClose : handlePrev}
                         className="cursor-pointer text-xs md:text-sm px-3 md:px-4"
+                        disabled={submitting}
                     >
                         {currentStep === 1 ? 'Cancel' : 'Previous'}
                     </Button>
                     <Button
                         onClick={currentStep === 3 ? handleFinalSubmit : handleNext}
                         className="bg-[#FBDE6E] cursor-pointer text-gray-900 hover:bg-yellow-500 text-xs md:text-sm px-3 md:px-4"
-                        disabled={currentStep === 1 && (!selectedGiftCard || !selectedAmount)}
+                        disabled={
+                            (currentStep === 1 && (!selectedGiftCard || !selectedAmount)) ||
+                            (currentStep === 2 && !selectedSendDate) ||
+                            submitting
+                        }
                     >
-                        {currentStep === 3 ? 'Set Gift' : 'Next'}
+                        {submitting ? 'Scheduling...' : (currentStep === 3 ? 'Set Gift' : 'Next')}
                     </Button>
                 </div>
             </DialogContent>

@@ -53,26 +53,22 @@ export default function GiftSchedulingDashboard() {
                     '#fefce8', // Light yellow
                     '#f1f5f9', // Light gray
                 ];
-                
+
                 const calendarEvents = response.data.flatMap((user: ScheduleUserData, index: number) => {
                     // Convert birthday_display (MM-DD) to dates for all years
                     const [monthStr, dayStr] = user.birthday_display.split('-');
-                    const month = parseInt(monthStr) - 1; // JavaScript months are 0-indexed
+                    const month = parseInt(monthStr) - 1;
                     const day = parseInt(dayStr);
                     const currentYear = new Date().getFullYear();
-                    
+
                     // Create events for past 10 years and next 10 years (total 21 years)
                     const events = [];
                     for (let year = currentYear - 10; year <= currentYear + 10; year++) {
                         // Create date using local timezone to avoid conversion issues
                         const birthdayDate = new Date(year, month, day, 12, 0, 0); // Use noon to avoid timezone issues
-                        
                         const formattedDate = birthdayDate.toISOString().split('T')[0];
                         const colorIndex = user.name.length % colors.length;
                         const eventColor = colors[colorIndex];
-                        
-                        console.log(`User: ${user.name}, Birthday Display: ${user.birthday_display}, Year: ${year}, Month: ${month + 1}, Day: ${day}, Formatted Date: ${formattedDate}`);
-                        
                         events.push({
                             id: `schedule-${index}-${year}`,
                             title: `${user.name} - Birthday`,
@@ -89,7 +85,7 @@ export default function GiftSchedulingDashboard() {
                             },
                         });
                     }
-                    
+
                     return events;
                 });
                 setEvents(calendarEvents);
