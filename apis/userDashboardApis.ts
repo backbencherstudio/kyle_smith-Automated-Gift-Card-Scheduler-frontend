@@ -33,6 +33,7 @@ interface PaginatedApiResponse<T = any> {
 interface ScheduleUserData {
     name: string;
     email: string;
+    address: string;
     birthday_display: string;
     birthday_full: string;
     delivery_status: string;

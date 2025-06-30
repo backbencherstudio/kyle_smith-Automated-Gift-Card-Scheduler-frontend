@@ -65,7 +65,11 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm text-gray-600">Address</label>
-                            <Input placeholder="Enter address" />
+                            <Input 
+                                value={selectedUser.address || ''}
+                                disabled
+                                className="bg-gray-50"
+                            />
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm text-gray-600">Email</label>

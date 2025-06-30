@@ -11,6 +11,7 @@ interface ScheduleUserData {
     isUpcoming: boolean;
     email: string;
     birthday_full: string;
+    address: string;
 }
 
 interface CalendarEvent {
@@ -20,6 +21,7 @@ interface CalendarEvent {
     extendedProps: {
         name: string;
         email: string;
+        address: string;
         type: string;
         avatar: string;
         color: string;
@@ -78,6 +80,7 @@ export default function GiftSchedulingDashboard() {
                             extendedProps: {
                                 name: user.name,
                                 email: user.email,
+                                address: user.address,
                                 type: "Birthday",
                                 avatar: '',
                                 color: eventColor,
