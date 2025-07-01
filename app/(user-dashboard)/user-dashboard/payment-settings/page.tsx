@@ -210,7 +210,7 @@ export default function PaymentSettings() {
                             {/* Add Card Button - First Item */}
                             <button
                                 onClick={() => setIsModalOpen(true)}
-                                className="h-[200px] border border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-500 hover:bg-gray-50"
+                                className="h-[200px] cursor-pointer border border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-500 hover:bg-gray-50"
                             >
                                 <span className="text-2xl mb-2">+</span>
                                 <span>Add Card</span>

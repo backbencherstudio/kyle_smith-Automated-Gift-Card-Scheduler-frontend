@@ -28,7 +28,7 @@ export default function AddBankCard({ setIsModalOpen, onCardAdded }: AddBankCard
 
     // CreditCardInput callbacks
     const handleCardNumberChangeFromCreditCardInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+        let value = e.target.value.replace(/\D/g, '');
 
         // Format with spaces every 4 digits
         value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
@@ -77,7 +77,7 @@ export default function AddBankCard({ setIsModalOpen, onCardAdded }: AddBankCard
     };
 
     const handleCardExpiryChangeFromCreditCardInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+        let value = e.target.value.replace(/\D/g, ''); 
 
         // Format as MM/YY
         if (value.length >= 2) {
@@ -91,7 +91,7 @@ export default function AddBankCard({ setIsModalOpen, onCardAdded }: AddBankCard
             const [month, year] = value.split('/');
             const monthNum = parseInt(month);
             const yearNum = parseInt(year);
-            const currentYear = new Date().getFullYear() % 100; // Get last 2 digits
+            const currentYear = new Date().getFullYear() % 100;
             const currentMonth = new Date().getMonth() + 1;
 
             if (monthNum < 1 || monthNum > 12) {
@@ -339,7 +339,7 @@ export default function AddBankCard({ setIsModalOpen, onCardAdded }: AddBankCard
                     variant="ghost"
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="text-gray-600 hover:text-gray-800"
+                    className="text-gray-600 hover:text-gray-800 cursor-pointer"
                     disabled={loading}
                 >
                     Cancel
@@ -347,7 +347,7 @@ export default function AddBankCard({ setIsModalOpen, onCardAdded }: AddBankCard
                 <Button
                     type="submit"
                     disabled={loading || !!(cardHolderError || cardNumberError || cardExpiryError || cardCvcError)}
-                    className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-yellow-400 cursor-pointer hover:bg-yellow-500 text-black px-6 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {loading ? (
                         <div className="flex items-center gap-2">

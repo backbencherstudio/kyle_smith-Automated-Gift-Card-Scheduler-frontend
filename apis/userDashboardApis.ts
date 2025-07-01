@@ -1,5 +1,17 @@
 import axiosClient from "@/lib/axisoClients";
 
+// Helper function to extract message from API response
+const extractMessage = (response: any): string => {
+    if (typeof response.message === 'string') {
+        return response.message;
+    }
+    if (response.message?.message) {
+        const message = response.message.message;
+        return Array.isArray(message) ? message[0] : message;
+    }
+    return 'An error occurred';
+};
+
 interface ApiResponse<T = any> {
     success: boolean;
     message: string | {
@@ -90,10 +102,14 @@ export const addContact = async (data: {
     phone_number: string;
     address: string;
     birthday_date?: string;
-}): Promise<ApiResponse> => {
+}): Promise<{ success: boolean; message: string; data?: any }> => {
     try {
         const response = await axiosClient.post<ApiResponse>("/api/gift-recipients", data);
-        return response.data;
+        return {
+            success: response.data.success,
+            message: extractMessage(response.data),
+            data: response.data.data
+        };
     } catch (error) {
         throw error;
     }
@@ -133,20 +149,28 @@ export const updateContact = async (id: string, data: {
     phone_number: string;
     address: string;
     birthday_date?: string;
-}): Promise<ApiResponse> => {
+}): Promise<{ success: boolean; message: string; data?: any }> => {
     try {
         const response = await axiosClient.patch<ApiResponse>(`/api/gift-recipients/${id}`, data);
-        return response.data;
+        return {
+            success: response.data.success,
+            message: extractMessage(response.data),
+            data: response.data.data
+        };
     } catch (error) {
         throw error;
     }
 };
 
 // delete contact
-export const deleteContact = async (id: string): Promise<ApiResponse> => {
+export const deleteContact = async (id: string): Promise<{ success: boolean; message: string; data?: any }> => {
     try {
         const response = await axiosClient.delete<ApiResponse>(`/api/gift-recipients/${id}`);
-        return response.data;
+        return {
+            success: response.data.success,
+            message: extractMessage(response.data),
+            data: response.data.data
+        };
     } catch (error) {
         throw error;
     }
@@ -195,5 +219,15 @@ export const createGiftRecipient = async (data: {
 };
 
 
+
+// get my gifts
+export const getMyGifts = async (): Promise<ApiResponse> => {
+    try {
+        const response = await axiosClient.get<ApiResponse>("/api/queue-monitoring/my-gifts");
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
 
 
