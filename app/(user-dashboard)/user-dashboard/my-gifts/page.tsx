@@ -88,44 +88,51 @@ export default function MyGifts() {
     const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
     const [gifts, setGifts] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [pageLoading, setPageLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
-    const itemsPerPage = 5;
+    const [totalItems, setTotalItems] = useState(0);
+    const itemsPerPage = 10;
 
     const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-    // Update URL when search/page changes
-    const updateURL = useCallback((search: string, page: number) => {
+    // Handle page change with loading state
+    const handlePageChange = (page: number) => {
+        setPageLoading(true);
+        setCurrentPage(page);
+        setGifts([]);
+    };
+
+    // Update URL when search or page changes
+    useEffect(() => {
+        // Update URL with debounced value
         const params = new URLSearchParams();
-        if (search) params.set('search', search);
-        if (page > 1) params.set('page', page.toString());
+        if (debouncedSearchTerm) params.set('search', debouncedSearchTerm);
+        if (currentPage > 1) params.set('page', currentPage.toString());
         const newURL = params.toString() ? `?${params.toString()}` : '';
         router.push(`/user-dashboard/my-gifts${newURL}`, { scroll: false });
-    }, [router]);
 
-    useEffect(() => {
-        updateURL(debouncedSearchTerm, currentPage);
-    }, [debouncedSearchTerm, currentPage, updateURL]);
-
-    useEffect(() => {
-        setCurrentPage(Number(searchParams.get('page')) || 1);
-        setSearchTerm(searchParams.get('search') || '');
-    }, [searchParams]);
-
-    useEffect(() => {
+        // Fetch data
         const fetchGifts = async () => {
-            setLoading(true);
             try {
+                if (!pageLoading) {
+                    setLoading(true);
+                }
                 const res = await getMyGifts(debouncedSearchTerm, itemsPerPage, currentPage);
                 setGifts(res.gifts || []);
                 const total = res.totalScheduled || 0;
+                setTotalItems(total);
                 setTotalPages(Math.max(Math.ceil(total / itemsPerPage), 1));
             } catch (error) {
                 setGifts([]);
+                setTotalItems(0);
+                setTotalPages(1);
             } finally {
                 setLoading(false);
+                setPageLoading(false);
             }
         };
         fetchGifts();
+        // eslint-disable-next-line
     }, [debouncedSearchTerm, currentPage]);
 
     const handleCopy = (code: string) => {
@@ -208,32 +215,49 @@ export default function MyGifts() {
         <>
             <h1 className='text-3xl font-bold text-[#232323] mb-5'>Gifts</h1>
             <div className="bg-white rounded-lg p-4 ">
-                <div className='flex items-center justify-between gap-4 mb-5'>
-                    <h2 className="text-xl font-bold mb-4">My Gifts</h2>
-                    <div className="w-[300px] relative">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                        <Input
-                            type="text"
-                            placeholder="Search..."
-                            className="pl-9 w-full bg-gray-50"
-                            value={searchTerm}
-                            onChange={e => {
-                                setSearchTerm(e.target.value);
-                                setCurrentPage(1);
-                            }}
-                        />
+                <div className='mb-5 flex flex-col md:flex-row items-center justify-between'>
+                    <h2 className="text-xl font-bold text-[#232323]">My Gifts</h2>
+
+                    <div className='flex items-center justify-between gap-4 mt-4'>
+                        <div className="w-[300px] relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                            <Input
+                                type="text"
+                                placeholder="Search..."
+                                className="pl-9 w-full bg-gray-50"
+                                value={searchTerm}
+                                onChange={e => {
+                                    setSearchTerm(e.target.value);
+                                    setCurrentPage(1);
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
-                <div className="rounded-lg border overflow-hidden">
-                    <DynamicTableTwo
-                        columns={columns}
-                        data={gifts}
-                        currentPage={currentPage}
-                        itemsPerPage={itemsPerPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                        noDataMessage={loading ? 'Loading...' : 'No gifts found.'}
-                    />
+                <DynamicTableTwo
+                    columns={columns}
+                    data={gifts}
+                    currentPage={currentPage}
+                    itemsPerPage={itemsPerPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                    noDataMessage={pageLoading ? `Loading page ${currentPage}...` : loading ? 'Loading...' : 'No gifts found.'}
+                    loading={pageLoading || loading}
+                    showLoading={pageLoading || loading}
+                />
+
+                {/* Show total count and pagination info */}
+                <div className="mt-4 text-sm text-gray-600">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                            Showing {gifts.length} of {totalItems} gifts
+                        </div>
+                        {totalPages > 1 && (
+                            <div className="text-gray-500">
+                                Page {currentPage} of {totalPages}
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <style jsx global>{`
         tr:hover { background: #f9fafb; }

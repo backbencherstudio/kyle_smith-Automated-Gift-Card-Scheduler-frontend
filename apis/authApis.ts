@@ -103,7 +103,7 @@ export const resendOtp = async (email: string): Promise<ResendOtpResponse> => {
         const response = await axiosClient.post<ResendOtpResponse>("/api/auth/resend-verification-email", { email });
         return response.data;
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         throw error;
     }
 };
@@ -114,7 +114,7 @@ export const forgotPassword = async (email: string): Promise<ForgotPasswordRespo
         const response = await axiosClient.post<ForgotPasswordResponse>("/api/auth/forgot-password", { email });
         return response.data;
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         throw error;
     }
 };
@@ -125,7 +125,7 @@ export const ResetPassword = async (email: string, password: string, token: stri
         const response = await axiosClient.post<ChangePasswordResponse>("/api/auth/reset-password", { email, password, token });
         return response.data;
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         throw error;
     }
 };

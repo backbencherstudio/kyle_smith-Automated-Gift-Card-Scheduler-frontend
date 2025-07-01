@@ -40,16 +40,24 @@ export default function Contacts() {
     const [contactToDelete, setContactToDelete] = useState<any>(null)
     const [contacts, setContacts] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
+    const [pageLoading, setPageLoading] = useState(false)
     const [deleteLoading, setDeleteLoading] = useState(false)
     const [updateLoading, setUpdateLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '')
     const [totalContacts, setTotalContacts] = useState(0)
     const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'))
-    const [itemsPerPage] = useState(parseInt(searchParams.get('limit') || '2'))
+    const [itemsPerPage] = useState(parseInt(searchParams.get('limit') || '10'))
     const [totalPages, setTotalPages] = useState(1)
 
     // Debounce search term
-    const debouncedSearchTerm = useDebounce(searchTerm, 500);
+    const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+    // Handle page change with loading state
+    const handlePageChange = (page: number) => {
+        setPageLoading(true);
+        setCurrentPage(page);
+        setContacts([]);
+    };
 
     const columns = [
         { label: "Name", width: "20%", accessor: "name" },
@@ -116,7 +124,9 @@ export default function Contacts() {
     // Fetch contacts with search and pagination
     const fetchContacts = useCallback(async () => {
         try {
-            setLoading(true);
+            if (!pageLoading) {
+                setLoading(true);
+            }
             const response = await getContacts({
                 search: debouncedSearchTerm || undefined,
                 page: currentPage,
@@ -135,6 +145,7 @@ export default function Contacts() {
             CustomToast.show(error?.response?.data?.message || 'Failed to fetch contacts');
         } finally {
             setLoading(false);
+            setPageLoading(false);
         }
     }, [debouncedSearchTerm, currentPage, itemsPerPage]);
 
@@ -257,12 +268,7 @@ export default function Contacts() {
         }
     };
 
-    // Handle page change
-    const handlePageChange = (page: number) => {
-        if (page !== currentPage && !loading) {
-            setCurrentPage(page);
-        }
-    };
+
 
     // Handle search input change
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -280,7 +286,7 @@ export default function Contacts() {
                 <div className='mb-5'>
                     <h1 className="text-xl font-bold text-[#232323]">Contact List</h1>
 
-                    <div className='flex items-center justify-between gap-4 mt-4'>
+                    <div className='flex flex-col md:flex-row items-center justify-between gap-4 mt-4'>
                         <div className="w-[300px] relative">
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
                             <Input
@@ -309,7 +315,9 @@ export default function Contacts() {
                     itemsPerPage={itemsPerPage}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
-                    noDataMessage={loading ? 'Loading...' : 'No contacts found.'}
+                    noDataMessage={pageLoading ? `Loading page ${currentPage}...` : loading ? 'Loading...' : 'No contacts found.'}
+                    loading={pageLoading || loading}
+                    showLoading={pageLoading || loading}
                 />
 
                 {/* Show total count and pagination info */}

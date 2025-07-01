@@ -23,10 +23,19 @@ export default function OrderHistory() {
     const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [pageLoading, setPageLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
-    const itemsPerPage = 1;
+    const [totalItems, setTotalItems] = useState(0);
+    const itemsPerPage = 10;
 
-    const debouncedSearchTerm = useDebounce(searchTerm, 500);
+    const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+    // Handle page change with loading state
+    const handlePageChange = (page: number) => {
+        setPageLoading(true);
+        setCurrentPage(page);
+        setData([]);
+    };
 
     const updateURL = useCallback((search: string, page: number) => {
         const params = new URLSearchParams();
@@ -47,15 +56,21 @@ export default function OrderHistory() {
 
     useEffect(() => {
         const fetchData = async () => {
-            setLoading(true);
             try {
+                if (!pageLoading) {
+                    setLoading(true);
+                }
                 const res = await orderHistory(debouncedSearchTerm, itemsPerPage, currentPage);
                 setData(res.data || []);
+                setTotalItems(res.total || 0);
                 setTotalPages(res.totalPages || 1);
             } catch (error) {
                 setData([]);
+                setTotalItems(0);
+                setTotalPages(1);
             } finally {
                 setLoading(false);
+                setPageLoading(false);
             }
         };
         fetchData();
@@ -84,20 +99,23 @@ export default function OrderHistory() {
         <div>
             <h1 className='text-3xl font-bold text-[#232323] mb-6'>Order History</h1>
             <div className='bg-white rounded-lg p-4'>
-                <div className='flex items-center justify-between gap-4 mb-5'>
-                    <h1 className='text-xl font-bold text-[#232323] mb-5'>Payment History</h1>
-                    <div className="w-[300px] relative">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                        <Input
-                            type="text"
-                            placeholder="Search..."
-                            className="pl-9 w-full bg-gray-50"
-                            value={searchTerm}
-                            onChange={e => {
-                                setSearchTerm(e.target.value);
-                                setCurrentPage(1);
-                            }}
-                        />
+                <div className='mb-5 flex flex-col md:flex-row items-center justify-between'>
+                    <h2 className="text-xl font-bold text-[#232323]">Payment History</h2>
+
+                    <div className='flex items-center justify-between gap-4 mt-4'>
+                        <div className="w-[300px] relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                            <Input
+                                type="text"
+                                placeholder="Search..."
+                                className="pl-9 w-full bg-gray-50"
+                                value={searchTerm}
+                                onChange={e => {
+                                    setSearchTerm(e.target.value);
+                                    setCurrentPage(1);
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
                 <DynamicTableTwo
@@ -106,9 +124,25 @@ export default function OrderHistory() {
                     currentPage={currentPage}
                     itemsPerPage={itemsPerPage}
                     totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                    noDataMessage={loading ? 'Loading...' : 'No order history found.'}
+                    onPageChange={handlePageChange}
+                    noDataMessage={pageLoading ? `Loading page ${currentPage}...` : loading ? 'Loading...' : 'No order history found.'}
+                    loading={pageLoading || loading}
+                    showLoading={pageLoading || loading}
                 />
+
+                {/* Show total count and pagination info */}
+                <div className="mt-4 text-sm text-gray-600">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                            Showing {data.length} of {totalItems} orders
+                        </div>
+                        {totalPages > 1 && (
+                            <div className="text-gray-500">
+                                Page {currentPage} of {totalPages}
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
             <style jsx global>{`
         tr:hover { background: #f9fafb; }
