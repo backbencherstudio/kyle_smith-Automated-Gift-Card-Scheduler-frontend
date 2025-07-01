@@ -6,10 +6,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import UserAvatar from "../ui/UserAvatar";
+
+import { IoGiftOutline } from "react-icons/io5";
 
 interface NavItem {
-  icon: any;
+  icon: string | React.ReactNode;
   label: string;
   href: string;
   role: string;
@@ -35,7 +36,10 @@ const navItems: NavItem[] = [
   { icon: "/icon/giftlog.svg", label: "Gift Scheduling", href: "/user-dashboard/gift-scheduling", role: "user" },
   { icon: "/icon/payment.svg", label: "Payment Settings", href: "/user-dashboard/payment-settings", role: "user" },
   { icon: "/icon/payment.svg", label: "Order History", href: "/user-dashboard/order-history", role: "user" },
+  // Send gift card
+  { icon: "gift", label: "My Gifts", href: "/user-dashboard/my-gifts", role: "user" },
   { icon: "/icon/setting.svg", label: "Settings", href: "/user-dashboard/settings", role: "user" },
+
   // { icon: "/icon/logout.svg", label: "Log Out", href: "/login", role: "user" }
 ];
 
@@ -129,8 +133,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     `}
                   >
                     <div className="flex gap-2 items-center">
-                      <div className="w-[30px] h-[30px] flex justify-center items-center flex-shrink-0 rounded-full text-descriptionColor">
-                        <Image src={item.icon} alt={item.label} width={18} height={18} />
+                      <div className={`w-[30px] h-[30px] flex justify-center items-center flex-shrink-0 rounded-full ${active ? "text-[#5A5C63]" : "text-descriptionColor"}`}>
+                        {item.icon === "gift" ? (
+                          <IoGiftOutline className="text-xl" />
+                        ) : typeof item.icon === 'string' ? (
+                          <Image src={item.icon} alt={item.label} width={18} height={18} />
+                        ) : (
+                          item.icon
+                        )}
                       </div>
                       <span className="text-base font-semibold whitespace-nowrap text-descriptionColor">
                         {item.label}
@@ -149,8 +159,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     `}
                   >
                     <div className="flex gap-2 items-center">
-                      <div className={`w-[30px] h-[30px] flex justify-center items-center flex-shrink-0 rounded-full ${active ? "text-primaryColor" : "text-descriptionColor"}`}>
-                        <Image src={item.icon} alt={item.label} width={18} height={18} />
+                      <div className={`w-[30px] h-[30px] flex justify-center items-center flex-shrink-0 rounded-full ${active ? "text-[#5A5C63]" : "text-descriptionColor"}`}>
+                        {item.icon === "gift" ? (
+                          <IoGiftOutline className="text-xl" />
+                        ) : typeof item.icon === 'string' ? (
+                          <Image src={item.icon} alt={item.label} width={18} height={18} />
+                        ) : (
+                          item.icon
+                        )}
                       </div>
                       <span className="text-base font-semibold whitespace-nowrap text-descriptionColor">
                         {item.label}

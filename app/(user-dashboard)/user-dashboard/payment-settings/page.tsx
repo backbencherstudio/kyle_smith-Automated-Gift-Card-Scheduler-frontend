@@ -108,7 +108,7 @@ export default function PaymentSettings() {
                 // Create a sample card number with the last4 digits
                 const sampleCardNumber = '000000000000' + last4;
                 const cardTypes = creditCardType(sampleCardNumber);
-                
+
                 if (cardTypes.length > 0) {
                     const detectedBrand = cardTypes[0].type;
                     switch (detectedBrand.toLowerCase()) {
@@ -135,7 +135,7 @@ export default function PaymentSettings() {
                 console.log('Error detecting card type:', error);
             }
         }
-        
+
         // Fallback to the original brand detection
         switch (brand.toLowerCase()) {
             case 'mastercard':
@@ -294,7 +294,6 @@ export default function PaymentSettings() {
                 </div>
             </div>
 
-            <PaymentHistory />
 
             {/* Add Card Modal */}
             <CustomModal
