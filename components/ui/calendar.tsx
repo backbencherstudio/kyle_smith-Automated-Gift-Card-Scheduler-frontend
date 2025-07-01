@@ -1,11 +1,86 @@
 "use client"
 
 import * as React from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker } from "react-day-picker"
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react"
+import { DayPicker, CaptionProps, useNavigation } from "react-day-picker"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+
+// Custom Caption component with dropdown functionality
+function CustomCaption(props: CaptionProps) {
+  const { displayMonth } = props
+  const { goToMonth } = useNavigation()
+  const [isYearOpen, setIsYearOpen] = React.useState(false)
+  const [isMonthOpen, setIsMonthOpen] = React.useState(false)
+
+  const currentYear = displayMonth.getFullYear()
+  const currentMonth = displayMonth.getMonth()
+
+  // Generate years (from 1900 to current year + 10)
+  const years = Array.from({ length: new Date().getFullYear() - 1899 + 10 }, (_, i) => 1900 + i)
+  
+  // Generate months
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ]
+
+  return (
+    <div className="flex justify-center pt-1 relative items-center w-full">
+      <div className="flex items-center gap-2">
+        {/* Month Dropdown */}
+        <Select
+          open={isMonthOpen}
+          onOpenChange={setIsMonthOpen}
+          value={currentMonth.toString()}
+          onValueChange={(value) => {
+            const newMonth = new Date(displayMonth)
+            newMonth.setMonth(parseInt(value))
+            goToMonth(newMonth)
+            setIsMonthOpen(false)
+          }}
+        >
+          <SelectTrigger className="w-[100px] h-8 text-sm font-medium border-none bg-transparent hover:bg-gray-100 px-2">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {months.map((month, index) => (
+              <SelectItem key={index} value={index.toString()}>
+                {month}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Year Dropdown */}
+        <Select
+          open={isYearOpen}
+          onOpenChange={setIsYearOpen}
+          value={currentYear.toString()}
+          onValueChange={(value) => {
+            const newYear = new Date(displayMonth)
+            newYear.setFullYear(parseInt(value))
+            goToMonth(newYear)
+            setIsYearOpen(false)
+          }}
+        >
+          <SelectTrigger className="w-[80px] h-8 text-sm font-medium border-none bg-transparent hover:bg-gray-100 px-2">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="max-h-[200px]">
+            {years.map((year) => (
+              <SelectItem key={year} value={year.toString()}>
+                {year}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  )
+}
 
 function Calendar({
   className,
@@ -66,6 +141,7 @@ function Calendar({
         IconRight: ({ className, ...props }) => (
           <ChevronRight className={cn("size-4", className)} {...props} />
         ),
+        Caption: CustomCaption,
       }}
       {...props}
     />

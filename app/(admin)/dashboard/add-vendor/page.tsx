@@ -1,7 +1,7 @@
 "use client"
 import Loader from "@/components/reusable/Loader";
 import { useToken } from "@/hooks/useToken";
-import { UserService } from "@/service/user/user.service";
+import { UserService } from "@/service/user.service";
 import { useEffect, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";

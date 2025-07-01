@@ -1,16 +1,16 @@
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToken } from "@/hooks/useToken";
-import { UserService } from "@/service/user/user.service";
 
 import { Switch } from "@/components/ui/switch";
+import { UserService } from "@/service/user.service";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -18,7 +18,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 
-export default function VenderAddForm({ open, onClose, initialData,onfetch }: { open: boolean; onClose: any; initialData?: any,onfetch?:any }) {
+export default function VenderAddForm({ open, onClose, initialData, onfetch }: { open: boolean; onClose: any; initialData?: any, onfetch?: any }) {
   const {
     register,
     handleSubmit,
@@ -72,7 +72,12 @@ export default function VenderAddForm({ open, onClose, initialData,onfetch }: { 
         const endpoint = `/admin/vendor/${initialData.id}`;
         response = await UserService.updateProtectedData(token, endpoint, formData);
       } else {
+
         response = await UserService.addVendore(formData, token);
+        console.log(token);
+
+        console.log(response);
+
       }
       if (response?.data?.success == true) {
         toast.success(initialData?.id ? "Vendor updated successfully" : "Successfully Add New Vendor");

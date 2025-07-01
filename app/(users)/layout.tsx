@@ -1,10 +1,10 @@
 import Footer from '@/components/shared/Footer';
 import Navbar from '@/components/shared/Navbar';
 import React from 'react';
-interface AdminLayoutProps {
+interface UserLayoutProps {
   children: React.ReactNode;
 }
-const FrotEndlayout: React.FC<AdminLayoutProps> = ({ children }) => {
+const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
   return (
     <div>
       <Navbar />
@@ -14,4 +14,4 @@ const FrotEndlayout: React.FC<AdminLayoutProps> = ({ children }) => {
   )
 }
 
-export default FrotEndlayout 
+export default UserLayout 

@@ -1,5 +1,6 @@
-import { CookieHelper } from "../../helper/cookie.helper";
-import { Fetch } from "../../lib/Fetch";
+import { CookieHelper } from "@/helper/cookie.helper";
+import { Fetch } from "@/lib/Fetch";
+
 
 const config = {
   headers: {
@@ -33,7 +34,7 @@ export const UserService = {
     return await Fetch.post("/auth/register", data, config);
   },
 
-addVendore: async (data, token) => {
+  addVendore: async (data, token) => {
     const _config = {
       headers: {
         "Content-Type": "multipart/form-data;",
@@ -42,10 +43,10 @@ addVendore: async (data, token) => {
     };
     return await Fetch.post("/admin/vendor", data, _config);
   },
-createData: async (token="",endpoint:any,data:any, ) => {
+  createData: async (token = "", endpoint: any, data: any) => {
     const _config = {
       headers: {
-         "Content-Type": "application/json",
+        "Content-Type": "application/json",
         Authorization: "Bearer " + token,
       },
     };
@@ -66,51 +67,54 @@ createData: async (token="",endpoint:any,data:any, ) => {
     };
     return await Fetch.get(`/admin/vendor`, _config);
   },
-// Create a common function for making GET requests
- getData : async (token: string, endpoint: string) => {
-  const _config = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  try {
-    const response = await Fetch.get(endpoint, _config);
-    return response?.data; 
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    throw error; 
-  }
-},
 
-// common delete data==============
- deletePotectedData : async (token: string, endpoint: string) => {
-  const _config = {
-    headers: {
-      "Content-Type": "multipart/form-data;",
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  try {
-    const response = await Fetch.delete(endpoint, _config);
-    return response?.data; 
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    throw error; 
-  }
-},
-
- updateProtectedData: async (token: string, endpoint: string,data:any) => {
+  getData: async (token: string, endpoint: string) => {
     const _config = {
       headers: {
-         "Content-Type": "multipart/form-data;",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      const response = await Fetch.get(endpoint, _config);
+      return response?.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
+  },
+
+  deletePotectedData: async (token: string, endpoint: string) => {
+    const _config = {
+      headers: {
+        "Content-Type": "multipart/form-data;",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      const response = await Fetch.delete(endpoint, _config);
+      return response?.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
+  },
+
+  updateProtectedData: async (token: string, endpoint: string, data: any) => {
+    const _config = {
+      headers: {
+        "Content-Type": "multipart/form-data;",
         Authorization: "Bearer " + token,
       },
     };
 
     return await Fetch.patch(endpoint, data, _config);
   },
- updateJsonProtectedData: async (token: string, endpoint: string,data:any) => {
+  updateJsonProtectedData: async (
+    token: string,
+    endpoint: string,
+    data: any
+  ) => {
     const _config = {
       headers: {
         "Content-Type": "application/json",
@@ -120,7 +124,6 @@ createData: async (token="",endpoint:any,data:any, ) => {
 
     return await Fetch.patch(endpoint, data, _config);
   },
-
 
   getUserDetails: async ({ token = "", context = null }) => {
     // const userToken = CookieHelper.get({ key: "token", context });

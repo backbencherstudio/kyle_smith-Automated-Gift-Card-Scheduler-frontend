@@ -2,7 +2,7 @@
 import DynamicTable from "@/app/(admin)/_component/common/DynamicTable";
 import Loader from "@/components/reusable/Loader";
 import { useToken } from "@/hooks/useToken";
-import { UserService } from "@/service/user/user.service";
+import { UserService } from "@/service/user.service";
 import { useEffect, useState } from 'react';
 import { toast } from "react-toastify";
 

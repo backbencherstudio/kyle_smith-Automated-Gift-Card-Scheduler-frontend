@@ -1,7 +1,7 @@
 "use client"
 import Loader from "@/components/reusable/Loader";
 import { useToken } from "@/hooks/useToken";
-import { UserService } from "@/service/user/user.service";
+import { UserService } from "@/service/user.service";
 import { useEffect, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -52,7 +52,7 @@ function page() {
             label: "Status",
             accessor: "status",
             width: "150px",
-            formatter: (value: string) => <GiftStatuse value={value}/>
+            formatter: (value: string) => <GiftStatuse value={value} />
         },
         {
             label: "Purchase Date",
@@ -75,7 +75,7 @@ function page() {
                     <button onClick={() => handleUpdate(row)} className="cursor-pointer px-2 rounded-sm text-greenColor ">
                         <FaRegEdit size={20} />
                     </button>
-                    <button  onClick={() => handleDelete(row?.id)} className="cursor-pointer  px-2 rounded-sm text-redColor ">
+                    <button onClick={() => handleDelete(row?.id)} className="cursor-pointer  px-2 rounded-sm text-redColor ">
                         <RiDeleteBin6Line size={20} />
                     </button>
                 </div>
@@ -88,7 +88,7 @@ function page() {
         try {
             const endpoint = `/admin/gift-card-inventory?page=${page}&limit=${limit}`;
             const res = await UserService.getData(token, endpoint);
-            
+
             const result = res;
             setGiftCardData(result?.data || []);
             setCurrentPage(result?.page || 1);
@@ -138,7 +138,7 @@ function page() {
             ) :
                 <div className="bg-whiteColor p-5 rounded-md">
                     <div className="flex justify-between mb-5">
-                        <h4 className='text-lg font-bold text-headerColor pb-5 '>Gift Card</h4> 
+                        <h4 className='text-lg font-bold text-headerColor pb-5 '>Gift Card</h4>
                         <button onClick={() => { setIsOpen(true); setUpdateData(undefined); }} className="text-base cursor-pointer shadow-sm hover:scale-105 transition-all duration-200 font-medium text-descriptionColor px-4 py-2 rounded-sm bg-primaryColor">Add Gift Card</button>
                     </div>
 

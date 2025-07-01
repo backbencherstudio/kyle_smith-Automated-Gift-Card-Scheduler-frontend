@@ -39,7 +39,7 @@ export default function UpcomingGift({ giftData }: any) {
     if (filterOption === "all") {
       return true;
     }
-    return true; // Default case
+    return true;
   });
 
   return (

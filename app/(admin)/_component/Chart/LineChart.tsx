@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToken } from "@/hooks/useToken";
-import { UserService } from "@/service/user/user.service";
+import { UserService } from "@/service/user.service";
 import { useEffect, useState } from "react";
 import {
   CartesianGrid,

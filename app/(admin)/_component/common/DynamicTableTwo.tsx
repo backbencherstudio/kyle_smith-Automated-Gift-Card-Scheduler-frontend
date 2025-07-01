@@ -16,6 +16,7 @@ interface DynamicTableProps {
   data: any[];
   currentPage: number;
   itemsPerPage: number;
+  totalPages?: number;
   onPageChange: (page: number) => void;
   onView?: (row: any) => void;
   onDelete?: (id: any) => void;
@@ -28,6 +29,7 @@ export default function DynamicTableTwo({
   data,
   currentPage,
   itemsPerPage,
+  totalPages: propTotalPages,
   onPageChange,
   onView,
   onDelete,
@@ -165,7 +167,7 @@ export default function DynamicTableTwo({
               key={i}
               onClick={() => typeof page === "number" && onPageChange(page)}
               disabled={page === "..."}
-              className={`px-2 rounded border text-sm ${
+              className={`px-2 rounded border text-sm cursor-pointer ${
                 page === currentPage
                   ? "text-primaryColor border-primaryColor bg-primaryColor/10 font-medium"
                   : "text-grayColor1"
