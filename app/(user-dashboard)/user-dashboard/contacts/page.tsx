@@ -302,20 +302,15 @@ export default function Contacts() {
                     </div>
                 </div>
 
-                {loading ? (
-                    <div className="flex justify-center items-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                    </div>
-                ) : (
-                    <DynamicTableTwo
-                        columns={columns}
-                        data={contacts}
-                        currentPage={currentPage}
-                        itemsPerPage={itemsPerPage}
-                        totalPages={totalPages}
-                        onPageChange={handlePageChange}
-                    />
-                )}
+                <DynamicTableTwo
+                    columns={columns}
+                    data={contacts}
+                    currentPage={currentPage}
+                    itemsPerPage={itemsPerPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                    noDataMessage={loading ? 'Loading...' : 'No contacts found.'}
+                />
 
                 {/* Show total count and pagination info */}
                 <div className="mt-4 text-sm text-gray-600">

@@ -218,12 +218,16 @@ export const createGiftRecipient = async (data: {
     }
 };
 
-
-
-// get my gifts
-export const getMyGifts = async (): Promise<ApiResponse> => {
+// get my gifts /api/queue-monitoring/my-gifts?limit=1&page=1&query=hamid
+export const getMyGifts = async (query: string, limit: number, page: number): Promise<{
+    success: boolean;
+    gifts: any[];
+    summary: any;
+    totalScheduled: number;
+    lastUpdated: string;
+}> => {
     try {
-        const response = await axiosClient.get<ApiResponse>("/api/queue-monitoring/my-gifts");
+        const response = await axiosClient.get(`/api/queue-monitoring/my-gifts?limit=${limit}&page=${page}&query=${query}`);
         return response.data;
     } catch (error) {
         throw error;

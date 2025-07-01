@@ -51,3 +51,13 @@ export const deleteCard = async (cardId: string) => {
         throw error;
     }
 };
+
+// payment history
+export const orderHistory = async (query: string, limit: number, page: number): Promise<any> => {
+    try {
+        const response = await axiosClient.get<any>(`/api/order-history?limit=${limit}&page=${page}&query=${query}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};

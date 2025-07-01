@@ -1,114 +1,244 @@
-
-"use client";
-
-import DynamicTableTwo from '@/app/(admin)/_component/common/DynamicTableTwo'
-import React, { useEffect, useState } from 'react'
-
-import { getSchedulesUserData } from '@/apis/userDashboardApis';
+'use client'
+import React, { useEffect, useState, useCallback } from 'react';
+import { getMyGifts } from '@/apis/userDashboardApis';
+import DynamicTableTwo from '@/app/(admin)/_component/common/DynamicTableTwo';
+import { CustomToast } from '@/lib/Toast/CustomToast';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-// Function to format birthday date from MM-DD to "D Month" format
-const formatBirthdayDate = (dateString: string) => {
-    const months = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ];
+function StatusBadge({ status, type }: { status: string, type?: 'delivery' | 'queue' }) {
+    let color = 'bg-gray-100 text-gray-700';
+    if (type === 'queue') {
+        color =
+            status === 'completed'
+                ? 'bg-blue-100 text-blue-700'
+                : status === 'scheduled'
+                    ? 'bg-yellow-100 text-yellow-700'
+                    : status === 'processing'
+                        ? 'bg-purple-100 text-purple-700'
+                        : status === 'failed'
+                            ? 'bg-red-100 text-red-700'
+                            : 'bg-gray-100 text-gray-700';
+    } else {
+        color =
+            status === 'SENT'
+                ? 'bg-green-100 text-green-700 '
+                : status === 'PENDING'
+                    ? 'bg-yellow-100 text-yellow-700'
+                    : status === 'FAILED'
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-gray-100 text-gray-700';
+    }
+    const displayStatus = status
+        ? status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+        : '-';
+    return (
+        <span
+            className={`px-2 py-1 rounded text-xs capitalize font-semibold ${color}`}
+            style={{ display: 'inline-block', minWidth: 70, textAlign: 'center' }}
+        >
+            {displayStatus}
+        </span>
+    );
+}
 
-    const [month, day] = dateString.split('-');
-    const monthIndex = parseInt(month) - 1;
-    const dayNumber = parseInt(day);
+function truncateCode(code: string, len = 8) {
+    if (!code) return '-';
+    if (code.length <= len * 2) return code;
+    return `${code.slice(0, len)}...${code.slice(-len)}`;
+}
 
-    return `${dayNumber} ${months[monthIndex]}`;
+function formatCurrency(amount: number) {
+    return amount ? `$${amount.toLocaleString()}` : '-';
+}
+
+function formatDateTime(dateStr: string) {
+    if (!dateStr) return { date: '-', time: '' };
+    const date = new Date(dateStr);
+    return {
+        date: date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        }),
+        time: date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        }),
+    };
+}
+
+// Debounce hook
+const useDebounce = (value: string, delay: number) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    useEffect(() => {
+        const handler = setTimeout(() => setDebouncedValue(value), delay);
+        return () => clearTimeout(handler);
+    }, [value, delay]);
+    return debouncedValue;
 };
 
 export default function MyGifts() {
-    const [upcomingBirthdays, setUpcomingBirthdays] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
-    const columns = [
-        { label: "Name", width: "25%", accessor: "name" },
-        { label: "Email", width: "30%", accessor: "email" },
-        { label: "Birthday Date", width: "25%", accessor: "birthdayDate" },
-        { label: "Status", width: "20%", accessor: "delivery_status" },
-    ];
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+    const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
+    const [gifts, setGifts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
+    const itemsPerPage = 5;
+
+    const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+    // Update URL when search/page changes
+    const updateURL = useCallback((search: string, page: number) => {
+        const params = new URLSearchParams();
+        if (search) params.set('search', search);
+        if (page > 1) params.set('page', page.toString());
+        const newURL = params.toString() ? `?${params.toString()}` : '';
+        router.push(`/user-dashboard/my-gifts${newURL}`, { scroll: false });
+    }, [router]);
 
     useEffect(() => {
-        fetchUpcomingBirthdays();
-    }, []);
+        updateURL(debouncedSearchTerm, currentPage);
+    }, [debouncedSearchTerm, currentPage, updateURL]);
 
-    const fetchUpcomingBirthdays = async () => {
-        try {
+    useEffect(() => {
+        setCurrentPage(Number(searchParams.get('page')) || 1);
+        setSearchTerm(searchParams.get('search') || '');
+    }, [searchParams]);
+
+    useEffect(() => {
+        const fetchGifts = async () => {
             setLoading(true);
-            const response = await getSchedulesUserData();
-            if (response.success && response.data) {
-                const schedules = response.data;
-                const processedData = schedules
-                    .filter((schedule: any) => schedule.isUpcoming === true)
-                    .map((schedule: any) => {
-                        return {
-                            ...schedule,
-                            birthdayDate: formatBirthdayDate(schedule.birthday_display),
-                            delivery_status: schedule.delivery_status === 'none' ? 'Upcoming' : schedule.delivery_status
-                        };
-                    })
-                    .slice(0, 5);
-                setUpcomingBirthdays(processedData);
-            } else {
+            try {
+                const res = await getMyGifts(debouncedSearchTerm, itemsPerPage, currentPage);
+                setGifts(res.gifts || []);
+                const total = res.totalScheduled || 0;
+                setTotalPages(Math.max(Math.ceil(total / itemsPerPage), 1));
+            } catch (error) {
+                setGifts([]);
+            } finally {
+                setLoading(false);
             }
-        } catch (error) {
-            console.error('UpcomingBirthday: Error fetching schedules user data:', error);
-        } finally {
-            setLoading(false);
-        }
+        };
+        fetchGifts();
+    }, [debouncedSearchTerm, currentPage]);
+
+    const handleCopy = (code: string) => {
+        if (!code) return;
+        navigator.clipboard.writeText(code);
+        CustomToast.show('Gift code copied!');
     };
 
-    if (loading) {
-        return (
-            <div className="bg-white rounded-lg p-4 mt-10">
-                <div className="flex justify-between items-center mb-4">
-                    <h1 className="text-xl font-bold text-[#232323]">Upcoming Birthday</h1>
-                    <button className="text-[#1E1E1E] border px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
-                        <span>View all</span>
-                    </button>
-                </div>
-                <div className="flex items-center justify-center h-32">
-                    <div className="text-lg">Loading upcoming birthdays...</div>
-                </div>
-            </div>
-        );
-    }
-
-
+    const columns = [
+        { label: 'Gift ID', width: '8%', accessor: 'id' },
+        { label: 'Recipient Name', width: '14%', accessor: 'recipient', formatter: (_: any, row: any) => row.recipient?.name || '-' },
+        { label: 'Recipient Email', width: '14%', accessor: 'recipient', formatter: (_: any, row: any) => row.recipient?.email || '-' },
+        { label: 'Vendor', width: '10%', accessor: 'giftCard', formatter: (_: any, row: any) => row.giftCard?.vendor || '-' },
+        { label: 'Amount', width: '8%', accessor: 'giftCard', formatter: (_: any, row: any) => formatCurrency(row.giftCard?.amount) },
+        {
+            label: 'Gift Code',
+            width: '10%',
+            accessor: 'giftCard',
+            formatter: (_: any, row: any) => (
+                <span className="flex items-center gap-2">
+                    <span title={row.giftCard?.code}>{truncateCode(row.giftCard?.code)}</span>
+                    {row.giftCard?.code && (
+                        <button
+                            className="text-xs cursor-pointer px-1 py-0.5 rounded bg-gray-200 hover:bg-gray-300 border border-gray-300"
+                            onClick={() => handleCopy(row.giftCard.code)}
+                            type="button"
+                        >
+                            Copy
+                        </button>
+                    )}
+                </span>
+            ),
+        },
+        {
+            label: 'Scheduled Date',
+            width: '12%',
+            accessor: 'scheduling',
+            formatter: (_: any, row: any) => {
+                const { date, time } = formatDateTime(row.scheduling?.scheduledDate);
+                return (
+                    <span className="flex flex-col leading-tight">
+                        <span>{date}</span>
+                        <span className="text-xs text-gray-500">{time}</span>
+                    </span>
+                );
+            },
+        },
+        {
+            label: 'Delivery Status',
+            width: '10%',
+            accessor: 'status',
+            formatter: (_: any, row: any) => <StatusBadge status={row.status?.deliveryStatus || '-'} />,
+        },
+        {
+            label: 'Sent At',
+            width: '12%',
+            accessor: 'status',
+            formatter: (_: any, row: any) => {
+                const { date, time } = formatDateTime(row.status?.sentAt);
+                return (
+                    <span className="flex flex-col leading-tight">
+                        <span>{date}</span>
+                        <span className="text-xs text-gray-500">{time}</span>
+                    </span>
+                );
+            },
+        },
+        {
+            label: 'Queue Status',
+            width: '10%',
+            accessor: 'status',
+            formatter: (_: any, row: any) => (
+                <StatusBadge status={row.status?.queueStatus || '-'} type="queue" />
+            ),
+        },
+        { label: 'Custom Message', width: '14%', accessor: 'scheduling', formatter: (_: any, row: any) => row.scheduling?.customMessage || '-' },
+    ];
 
     return (
-        <div className="bg-white rounded-lg p-4 mt-10">
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-xl font-bold text-[#232323]">My Gifts</h1>
-                <div className="w-[300px] relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                    <Input
-                        type="text"
-                        placeholder="Search..."
-                        className="pl-9 w-full bg-gray-50"
-                    // value={searchTerm}
-                    // onChange={handleSearchChange}
+        <>
+            <h1 className='text-3xl font-bold text-[#232323] mb-5'>Gifts</h1>
+            <div className="bg-white rounded-lg p-4 ">
+                <div className='flex items-center justify-between gap-4 mb-5'>
+                    <h2 className="text-xl font-bold mb-4">My Gifts</h2>
+                    <div className="w-[300px] relative">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                        <Input
+                            type="text"
+                            placeholder="Search..."
+                            className="pl-9 w-full bg-gray-50"
+                            value={searchTerm}
+                            onChange={e => {
+                                setSearchTerm(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                        />
+                    </div>
+                </div>
+                <div className="rounded-lg border overflow-hidden">
+                    <DynamicTableTwo
+                        columns={columns}
+                        data={gifts}
+                        currentPage={currentPage}
+                        itemsPerPage={itemsPerPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        noDataMessage={loading ? 'Loading...' : 'No gifts found.'}
                     />
                 </div>
+                <style jsx global>{`
+        tr:hover { background: #f9fafb; }
+      `}</style>
             </div>
-            {upcomingBirthdays.length > 0 ? (
-                <DynamicTableTwo
-                    columns={columns}
-                    data={upcomingBirthdays}
-                    currentPage={1}
-                    itemsPerPage={5}
-                    onPageChange={(page) => console.log(page)}
-                />
-            ) : (
-                <div className="text-center py-8 text-gray-500">
-                    No upcoming birthdays found
-                </div>
-            )}
-        </div>
-    )
+        </>
+    );
 }
