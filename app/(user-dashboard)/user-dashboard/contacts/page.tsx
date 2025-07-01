@@ -7,7 +7,7 @@ import { FaPlus } from 'react-icons/fa'
 import CustomModal from '@/components/ui/custom-modal';
 import AddContacts from '../_Components/AddContacts';
 import { Input } from "@/components/ui/input"
-import { Search, MoreHorizontal, Edit, Trash2 } from 'lucide-react'
+import { Search,  Edit, Trash2 } from 'lucide-react'
 import { Button } from "@/components/ui/button";
 import { addContact, getContacts, updateContact, deleteContact } from '@/apis/userDashboardApis';
 import { CustomToast } from '@/lib/Toast/CustomToast';
