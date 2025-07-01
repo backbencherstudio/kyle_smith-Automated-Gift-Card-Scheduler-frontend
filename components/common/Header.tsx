@@ -124,10 +124,10 @@ const Header: React.FC<HeaderProps> = ({
         {/* Notification and Profile */}
         <div className="flex items-center gap-2 lg:gap-5">
           {/* Search */}
-          <div className="relative w-[140px] md:w-[221px]">
+          {/* <div className="relative w-[140px] md:w-[221px]">
             <input type="text" className="w-full py-1.5 text-sm sm:text-base focus-visible:border-0 md:py-2.5 border md:rounded-[12px] rounded-md pl-7 pr-2" placeholder="Search" />
             <IoSearch className="text-borderColor text-base absolute left-2 top-1/2 -translate-y-1/2" />
-          </div>
+          </div> */}
 
           {/* Notification Popover */}
           <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
@@ -136,12 +136,12 @@ const Header: React.FC<HeaderProps> = ({
               style={{ boxShadow: "2px 2px 7px 2px rgba(0, 0, 0, 0.08)" }}
               onClick={() => setPopoverOpen(!popoverOpen)}
             >
-              {notifications.length > 0 && (
+              {/* {notifications.length > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 flex justify-center items-center text-sm w-6 h-6 text-whiteColor rounded-full bg-redColor" >
                   {notifications.length}
                 </span>
 
-              )}
+              )} */}
               <Image src="/icon/notification.svg" alt="notification" width={18} height={18} />
             </PopoverTrigger>
 
@@ -157,7 +157,7 @@ const Header: React.FC<HeaderProps> = ({
               </div>
 
               {/* Scrollable Notification Body */}
-              <div className="overflow-y-auto px-4 py-3 flex-1">
+              {/* <div className="overflow-y-auto px-4 py-3 flex-1">
                 {notifications.length > 0 ? (
                   <div className="flex flex-col space-y-6">
                     {displayedNotifications.map((notification) => (
@@ -178,7 +178,7 @@ const Header: React.FC<HeaderProps> = ({
                 ) : (
                   <p className="text-center text-sm text-gray-500 py-6">No notifications available</p>
                 )}
-              </div>
+              </div> */}
 
               {/* Sticky Footer */}
               {notifications.length > 5 && !showAllNotifications && (
