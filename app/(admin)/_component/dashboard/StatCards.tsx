@@ -1,38 +1,38 @@
 import Link from "next/link";
 
 
-export default function StatCards() {
+export default function StatCards({ sateData }: any) {
   const statCards = [
     {
       title: "Total Users",
-      value: 1250,
+      value: sateData?.total_users,
       percentage: "+6%",
       icon: "/path/to/users-icon.svg", // Replace with actual image path
       timeFrame: "Last Month",
     },
     {
       title: "Total Gift used",
-      value: 230,
+      value: sateData?.total_gift_sent,
       percentage: "+4%",
       icon: "/path/to/gift-icon.svg", // Replace with actual image path
       timeFrame: "Last Month",
     },
     {
-      title: "Active Subscription",
-      value: 120,
+      title: "Total Revenue",
+      value: sateData?.total_revenue,
       percentage: "+8%",
       icon: "/path/to/active-subscription-icon.svg", // Replace with actual image path
       timeFrame: "Last Month",
     },
     {
       title: "Total Transactions",
-      value: 20,
+      value: sateData?.failed_transactions,
       percentage: "+2%",
       icon: "/path/to/transactions-icon.svg", // Replace with actual image path
       timeFrame: "Last Month",
     },
   ];
-    
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {statCards.map((card, idx) => (
@@ -45,10 +45,10 @@ export default function StatCards() {
             <h4 className="text-sm  font-medium text-descriptionColor">{card.title}</h4>
           </div>
 
-          
+
           <div className="">
-          <div className="text-2xl  font-bold text-black">{card.value}</div>
-           
+            <div className="text-2xl  font-bold text-black">{card.value}</div>
+
           </div>
         </Link>
       ))}
