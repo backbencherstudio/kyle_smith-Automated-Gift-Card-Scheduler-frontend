@@ -1,34 +1,34 @@
 "use client";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { giftData } from "@/demoData/giftData";
+
 import { useState } from "react";
 import DynamicTable from "../common/DynamicTable";
 
-export default function UpcomingGift() {
+export default function UpcomingGift({ giftData }: any) {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterOption, setFilterOption] = useState("");
 
   const columns = [
     {
       label: "Name",
-      accessor: "senderName",
+      accessor: "name",
       width: "164px",
     },
     {
       label: "Email",
-      accessor: "recipientEmail",
+      accessor: "email",
       width: "164px",
     },
     {
       label: "Birthday",
-      accessor: "giftSendDate",
+      accessor: "birthday",
       width: "164px",
     },
   ];
 
   const isWeekend = (date: string) => {
-    const day = new Date(date).getDay(); 
+    const day = new Date(date).getDay();
     return day === 0 || day === 6;
   };
 
@@ -39,7 +39,7 @@ export default function UpcomingGift() {
     if (filterOption === "all") {
       return true;
     }
-    return true; // Default case
+    return true;
   });
 
   return (
@@ -49,7 +49,7 @@ export default function UpcomingGift() {
         <div>
           <Select onValueChange={setFilterOption} value={filterOption}>
             <SelectTrigger className="cursor-pointer  focus-visible:right-0 !text-headerColor border font-medium rounded-md text-sm px-[14px] py-2">
-              <SelectValue placeholder="weekly" className="!text-blackColor"/>
+              <SelectValue placeholder="weekly" className="!text-blackColor" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">weekly</SelectItem>
