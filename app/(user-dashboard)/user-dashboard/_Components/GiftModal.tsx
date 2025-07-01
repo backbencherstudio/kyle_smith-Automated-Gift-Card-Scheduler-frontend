@@ -283,23 +283,41 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
             case 1:
                 return (
                     <div className="space-y-6">
-                        <div className="text-center">
-                            <h3 className="text-lg font-semibold mb-2">
-                                {showAmountOptions ? 'Select Amount' : 'Select Gift Card'}
-                            </h3>
-                            <p className="text-gray-600">
-                                {showAmountOptions
-                                    ? `Choose amount for ${selectedCardInfo?.name}`
-                                    : `Choose a gift card for ${selectedUser.name}`
-                                }
-                            </p>
-                        </div>
-
                         {loading ? (
                             <div className="text-center py-8">
                                 <div className="text-gray-600">Loading gift cards...</div>
                             </div>
                         ) : !showAmountOptions ? (
+                            <>
+                                {paginationData.currentCards.length > 0 ? (
+                                    <div className="text-center">
+                                        <h3 className="text-lg font-semibold mb-2">
+                                            {showAmountOptions ? 'Select Amount' : 'Select Gift Card'}
+                                        </h3>
+                                        <p className="text-gray-600">
+                                            {showAmountOptions
+                                                ? `Choose amount for ${selectedCardInfo?.name}`
+                                                : `Choose a gift card for ${selectedUser.name}`
+                                            }
+                                        </p>
+                                    </div>
+                                ) : null}
+                            </>
+                        ) : (
+                            <div className="text-center">
+                                <h3 className="text-lg font-semibold mb-2">
+                                    {showAmountOptions ? 'Select Amount' : 'Select Gift Card'}
+                                </h3>
+                                <p className="text-gray-600">
+                                    {showAmountOptions
+                                        ? `Choose amount for ${selectedCardInfo?.name}`
+                                        : `Choose a gift card for ${selectedUser.name}`
+                                    }
+                                </p>
+                            </div>
+                        )}
+
+                        {!loading && !showAmountOptions ? (
                             // Gift Card Ranges
                             <div className="space-y-3 md:space-y-4">
                                 {paginationData.currentCards.length > 0 ? (
@@ -426,16 +444,17 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                                             className={cn(
                                                 "p-2 md:p-3 border-2 rounded-lg cursor-pointer text-center transition-all",
                                                 selectedAmount === denomination.face_value
-                                                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                                                    ? "border-[#FBDE6E] text-gray-900"
                                                     : "border-gray-200 hover:border-gray-300"
                                             )}
                                             onClick={() => handleAmountSelect(denomination.face_value)}
                                         >
                                             <div className="space-y-1">
                                                 <span className="font-semibold block text-sm md:text-base">${denomination.face_value}</span>
-                                                <span className="text-xs text-gray-500 block">
-                                                    ${denomination.selling_price}
-                                                </span>
+                                                <div className="text-xs">
+                                                    <span className="text-gray-500">You pay: </span>
+                                                    <span className="font-semibold text-green-600">${denomination.selling_price}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
@@ -596,6 +615,13 @@ export default function GiftModal({ isOpen, onClose, selectedUser, onSubmit }: G
                             <div className="flex justify-between">
                                 <span className="font-medium">Gift Card:</span>
                                 <span>{selectedCardInfo?.name} - ${selectedAmount}</span>
+                            </div>
+                           
+                            <div className="flex justify-between">
+                                <span className="font-medium">You Pay:</span>
+                                <span className="font-bold text-green-600">
+                                    ${selectedCardInfo?.available_denominations?.find((d: any) => d.face_value === selectedAmount)?.selling_price || selectedAmount}
+                                </span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="font-medium">Send Date:</span>

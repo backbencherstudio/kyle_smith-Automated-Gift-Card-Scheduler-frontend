@@ -2,19 +2,32 @@
 
 import DynamicTableTwo from '@/app/(admin)/_component/common/DynamicTableTwo'
 import React, { useEffect, useState } from 'react'
-import { FaChevronDown } from 'react-icons/fa';
+
 import { getSchedulesUserData } from '@/apis/userDashboardApis';
+
+// Function to format birthday date from MM-DD to "D Month" format
+const formatBirthdayDate = (dateString: string) => {
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    const [month, day] = dateString.split('-');
+    const monthIndex = parseInt(month) - 1;
+    const dayNumber = parseInt(day);
+
+    return `${dayNumber} ${months[monthIndex]}`;
+};
 
 export default function UpcomingBirthday() {
     const [upcomingBirthdays, setUpcomingBirthdays] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const columns = [
-        { label: "Name", width: "20%", accessor: "name" },
-        { label: "Email", width: "25%", accessor: "email" },
-        { label: "Birthday Date", width: "20%", accessor: "birthdayDate" },
-        { label: "Amount", width: "15%", accessor: "total_amount" },
-        { label: "Delivery Status", width: "20%", accessor: "delivery_status" },
+        { label: "Name", width: "25%", accessor: "name" },
+        { label: "Email", width: "30%", accessor: "email" },
+        { label: "Birthday Date", width: "25%", accessor: "birthdayDate" },
+        { label: "Status", width: "20%", accessor: "delivery_status" },
     ];
 
     useEffect(() => {
@@ -27,15 +40,16 @@ export default function UpcomingBirthday() {
             const response = await getSchedulesUserData();
             if (response.success && response.data) {
                 const schedules = response.data;
-
-                // Process the data to match the table structure
-                const processedData = schedules.map((schedule: any) => {
-                    return {
-                        ...schedule,
-                        birthdayDate: schedule.birthday_full || schedule.birthday_display,
-                        delivery_status: schedule.delivery_status === 'none' ? 'Pending' : schedule.delivery_status
-                    };
-                });
+                const processedData = schedules
+                    .filter((schedule: any) => schedule.isUpcoming === true)
+                    .map((schedule: any) => {
+                        return {
+                            ...schedule,
+                            birthdayDate: formatBirthdayDate(schedule.birthday_display),
+                            delivery_status: schedule.delivery_status === 'none' ? 'Upcoming' : schedule.delivery_status
+                        };
+                    })
+                    .slice(0, 5);
                 setUpcomingBirthdays(processedData);
             } else {
             }
@@ -77,7 +91,7 @@ export default function UpcomingBirthday() {
                     columns={columns}
                     data={upcomingBirthdays}
                     currentPage={1}
-                    itemsPerPage={10}
+                    itemsPerPage={5}
                     onPageChange={(page) => console.log(page)}
                 />
             ) : (
