@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { giftInfoData } from "@/demoData/giftInfoData";
 import { useToken } from "@/hooks/useToken";
 import { UserService } from "@/service/user.service";
 import dayjs from "dayjs";
@@ -22,10 +21,11 @@ function ViewALlInformation() {
   const [userData, setUserData] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const params = useParams()
+  const [data, setData] = useState(null);
   const [itemsPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState("all");
-  console.log(params);
+  const [selectedMonth, setSelectedMonth] = useState("");
+
 
   const columns = [
     {
@@ -75,18 +75,16 @@ function ViewALlInformation() {
     },
   ];
 
-  const filteredData = giftInfoData.filter((item) => {
-    if (selectedMonth === "all") return true;
-    const month = new Date(item.giftSendDate).toLocaleString("en-US", { month: "long" }).toLowerCase();
-    return month === selectedMonth.toLowerCase();
-  });
+
 
   const fetcUserData = async () => {
     setIsLoading(true);
     try {
-      const endpoint = `/admin/user-management/${params?.id}?page=${currentPage}&limit=${itemsPerPage}`;
+      const endpoint = `/admin/user-management/${params?.id}?page=${currentPage}&limit=${itemsPerPage}&month=${selectedMonth}`;
       const res = await UserService.getData(token, endpoint);
       const result = res;
+
+      setData(result)
       setUserData(result?.gifts || []);
       setCurrentPage(result?.page || 1);
       setTotalPages(result?.totalPages || 1);
@@ -98,8 +96,8 @@ function ViewALlInformation() {
   };
   useEffect(() => {
     fetcUserData()
-  }, [currentPage])
-  console.log(userData);
+  }, [currentPage, selectedMonth])
+
 
   return (
     <section>
@@ -113,18 +111,18 @@ function ViewALlInformation() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Month</SelectItem>
-                <SelectItem value="january">January</SelectItem>
-                <SelectItem value="february">February</SelectItem>
-                <SelectItem value="march">March</SelectItem>
-                <SelectItem value="april">April</SelectItem>
-                <SelectItem value="may">May</SelectItem>
-                <SelectItem value="june">June</SelectItem>
-                <SelectItem value="july">July</SelectItem>
-                <SelectItem value="august">August</SelectItem>
-                <SelectItem value="september">September</SelectItem>
-                <SelectItem value="october">October</SelectItem>
-                <SelectItem value="november">November</SelectItem>
-                <SelectItem value="december">December</SelectItem>
+                <SelectItem value="1">January</SelectItem>
+                <SelectItem value="2">February</SelectItem>
+                <SelectItem value="3">March</SelectItem>
+                <SelectItem value="4">April</SelectItem>
+                <SelectItem value="5">May</SelectItem>
+                <SelectItem value="6">June</SelectItem>
+                <SelectItem value="7">July</SelectItem>
+                <SelectItem value="8">August</SelectItem>
+                <SelectItem value="9">September</SelectItem>
+                <SelectItem value="10">October</SelectItem>
+                <SelectItem value="12">November</SelectItem>
+                <SelectItem value="13">December</SelectItem>
               </SelectContent>
             </Select>
 
@@ -139,8 +137,8 @@ function ViewALlInformation() {
                 />
               </div>
               <div className="whitespace-nowrap">
-                <h4 className="sm:text-sm text-[13px] font-medium text-blackColor">Ali Eyad</h4>
-                <p className="text-grayColor1 font-normal">eleanor@gmail.com</p>
+                <h4 className="sm:text-sm text-[13px] font-medium text-blackColor">{data?.sender_name ?? "Sender Name"}</h4>
+                <p className="text-grayColor1 font-normal">{data?.sender_email ?? "Sender Email"}</p>
               </div>
             </div>
           </div>
