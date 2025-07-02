@@ -213,7 +213,7 @@ export const changePassword = async (old_password: string, new_password: string)
 // login with google - initiates OAuth flow
 export const googleLogin = async (): Promise<void> => {
     try {
-        // Redirect to backend OAuth URL
+
         const baseURL = process.env.NEXT_PUBLIC_API_ENDPOINT || 'http://127.0.0.1:4000';
         window.location.href = `${baseURL}/api/auth/google`;
     } catch (error) {

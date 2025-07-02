@@ -261,21 +261,21 @@ export default function RegisterForm({ onLoginClick }: { onLoginClick?: () => vo
                         <button
                             type="button"
                             onClick={handleGoogleLogin}
-                            className="flex w-1/2 md:w-auto justify-center items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                            className="flex w-1/2 cursor-pointer md:w-auto justify-center items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
                             disabled={isLoading}
                         >
                             <FcGoogle className="text-xl" />
-                            <span className="text-sm font-medium text-gray-700 hidden sm:block">Sign up with Google</span>
+                            <span className="text-sm font-medium text-gray-700 hidden sm:block">Sign in with Google</span>
                         </button>
 
                         <button
                             type="button"
                             onClick={() => console.log('Sign up with Facebook')}
-                            className="flex w-1/2 md:w-auto justify-center items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                            className="flex w-1/2 cursor-pointer md:w-auto justify-center items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
                             disabled={isLoading}
                         >
                             <FaFacebook className="text-blue-600 text-xl" />
-                            <span className="text-sm font-medium text-gray-700 hidden sm:block">Sign up with Facebook</span>
+                            <span className="text-sm font-medium text-gray-700 hidden sm:block">Sign in with Facebook</span>
                         </button>
                     </div>
 

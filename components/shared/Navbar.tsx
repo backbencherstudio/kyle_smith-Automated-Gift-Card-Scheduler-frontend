@@ -16,7 +16,7 @@ export default function Navbar() {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { userType, isAuthenticated, logoutUser } = useAuth();
+  const { userType, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const registerParam = searchParams.get('register');

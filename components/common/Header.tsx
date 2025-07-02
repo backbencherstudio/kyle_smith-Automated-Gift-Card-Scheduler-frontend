@@ -143,23 +143,23 @@ const Header: React.FC<HeaderProps> = ({
           </div> */}
 
           {/* Notification Popover */}
-          <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+          {/* <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
             <PopoverTrigger
               className="cursor-pointer relative flex justify-center items-center lg:p-3 p-2 rounded-full"
               style={{ boxShadow: "2px 2px 7px 2px rgba(0, 0, 0, 0.08)" }}
               onClick={() => setPopoverOpen(!popoverOpen)}
             >
-              {/* {notifications.length > 0 && (
+              {notifications.length > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 flex justify-center items-center text-sm w-6 h-6 text-whiteColor rounded-full bg-redColor" >
                   {notifications.length}
                 </span>
 
-              )} */}
+              )}
               <Image src="/icon/notification.svg" alt="notification" width={18} height={18} />
             </PopoverTrigger>
 
             <PopoverContent className="w-80 md:w-[467px] mt-4 p-0 max-h-[550px] flex flex-col">
-              {/* Header */}
+
               <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
                 <h4 className="text-base font-bold md:text-lg text-headerColor">Notifications</h4>
                 {notifications.length > 0 && (
@@ -169,8 +169,8 @@ const Header: React.FC<HeaderProps> = ({
                 )}
               </div>
 
-              {/* Scrollable Notification Body */}
-              {/* <div className="overflow-y-auto px-4 py-3 flex-1">
+    
+              <div className="overflow-y-auto px-4 py-3 flex-1">
                 {notifications.length > 0 ? (
                   <div className="flex flex-col space-y-6">
                     {displayedNotifications.map((notification) => (
@@ -191,9 +191,8 @@ const Header: React.FC<HeaderProps> = ({
                 ) : (
                   <p className="text-center text-sm text-gray-500 py-6">No notifications available</p>
                 )}
-              </div> */}
+              </div>
 
-              {/* Sticky Footer */}
               {notifications.length > 5 && !showAllNotifications && (
                 <div className="border-t p-4 sticky bottom-0 bg-white z-10">
                   <button
@@ -207,7 +206,7 @@ const Header: React.FC<HeaderProps> = ({
             </PopoverContent>
 
 
-          </Popover>
+          </Popover> */}
 
           {/* Profile Popover */}
           <div className="relative sm:ml-0">

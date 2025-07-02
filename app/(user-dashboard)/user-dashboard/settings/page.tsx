@@ -3,7 +3,7 @@ import React from 'react'
 import { useAuth } from '@/contexts/AuthContext';
 import ContactInfo from '@/components/profile/ContactInfo';
 import Password from '@/components/profile/Password';
-import Notifications from '@/components/profile/Notifications';
+// import Notifications from '@/components/profile/Notifications';
 import Loader from '@/components/reusable/Loader';
 
 interface dataTypes {
@@ -52,7 +52,7 @@ export default function Settings() {
         <div className="relative">
             <ContactInfo userData={userData} />
             <Password />
-            <Notifications />
+            {/* <Notifications /> */}
         </div>
     )
 }
