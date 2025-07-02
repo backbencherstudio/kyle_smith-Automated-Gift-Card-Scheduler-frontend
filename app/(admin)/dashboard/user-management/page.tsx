@@ -1,12 +1,15 @@
 "use client"
 
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToken } from "@/hooks/useToken";
 import { UserService } from "@/service/user.service";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FiEye } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { toast } from "react-toastify";
 import DynamicTableTwo from "../../_component/common/DynamicTableTwo";
+
 function Booking() {
   const [currentPage, setCurrentPage] = useState(1);
   const { token } = useToken()
@@ -14,6 +17,7 @@ function Booking() {
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
+  const [openPopoverId, setOpenPopoverId] = useState(null);
   const columns = [
     {
       label: "User Name",
@@ -49,13 +53,76 @@ function Booking() {
           <Link href={`/dashboard/user-management/${row?.id}`}>
             <FiEye className="text-[17px] hover:text-primaryColor transition-all" />
           </Link>
-          <button title="Delete" className=" cursor-pointer">
-            <RiDeleteBin6Line className="text-[17px] hover:text-redColor transition-all" />
-          </button>
+          <Popover open={openPopoverId === row?.id} onOpenChange={(open) => setOpenPopoverId(open ? row?.id : null)}>
+            <PopoverTrigger asChild>
+              <button title="Delete" className="cursor-pointer">
+                <RiDeleteBin6Line className="text-[17px] hover:text-redColor transition-all" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-4 flex  gap-2" align="end">
+              {row?.isActive ? ( 
+                <button
+                  className="px-4 py-2 cursor-pointer rounded bg-green-200 text-green-700 hover:bg-green-300 transition-all"
+                  onClick={async () => {
+                    await handleDisable(row?.id, false);
+                    setOpenPopoverId(null);
+                  }}
+                >
+                  Disable
+                </button>
+              ) : (
+                <button
+                  className="px-4 py-2 cursor-pointer rounded bg-green-200 text-green-700 hover:bg-green-300 transition-all"
+                  onClick={async () => {
+                    await handleDisable(row?.id, true);
+                    setOpenPopoverId(null);
+                  }}
+                >
+                  Active
+                </button>
+              )}
+              <button
+                className="px-4 py-2 cursor-pointer rounded bg-red-500 text-white hover:bg-red-600 transition-all"
+                onClick={async () => {
+                  await handleDelete(row?.id);
+                  setOpenPopoverId(null);
+                }}
+              >
+                Delete
+              </button>
+            </PopoverContent>
+          </Popover>
         </div>
       ),
     },
   ];
+
+    const handleDisable = async (id, isActive) => {
+    try {
+      const endpoint = `/admin/user-management/${id}/status`;
+      const res = await UserService.updateJsonProtectedData(token, endpoint, { isActive: isActive });
+      if (res?.data?.success === true) {
+       isActive ? toast.success("User disabled successfully") : toast.success("User activated successfully");
+        fetcUserData()
+      }
+    } catch (error) {
+      console.log("Error deleting user:", error);
+    }
+  }
+
+  const handleDelete = async (id) => {
+    try {
+      const endpoint = `/admin/user-management/${id}`;
+      const res = await UserService.deletePotectedData(token, endpoint);
+      if (res?.success === true) {
+        toast.success("User deleted successfully");
+        fetcUserData()
+      }
+    } catch (error) {
+      console.log("Error deleting user:", error);
+    }
+  }
+
   const fetcUserData = async () => {
     setIsLoading(true);
     try {
