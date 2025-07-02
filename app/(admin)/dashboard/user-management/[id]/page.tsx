@@ -109,7 +109,7 @@ function ViewALlInformation() {
                 <SelectValue placeholder="Month" className="!text-blackColor" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Month</SelectItem>
+                <SelectItem value="0">Month</SelectItem>
                 <SelectItem value="1">January</SelectItem>
                 <SelectItem value="2">February</SelectItem>
                 <SelectItem value="3">March</SelectItem>
