@@ -2,19 +2,30 @@
 
 import DynamicTableTwo from "@/app/(admin)/_component/common/DynamicTableTwo";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { giftInfoData } from "@/demoData/giftInfoData";
+import { useToken } from "@/hooks/useToken";
+import { UserService } from "@/service/user.service";
+import dayjs from "dayjs";
 import Image from "next/image";
-import { useState } from "react";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 function ViewALlInformation() {
   const [currentPage, setCurrentPage] = useState(1);
+  const { token } = useToken()
+  const [userData, setUserData] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const params = useParams()
+  const [itemsPerPage] = useState(10);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState("all");
+  console.log(params);
 
   const columns = [
     {
@@ -31,6 +42,7 @@ function ViewALlInformation() {
       label: "Gift Send Date",
       accessor: "giftSendDate",
       width: "140px",
+      formatter: (value) => <div className="">{dayjs(value).format("DD MMM YYYY")}</div>
     },
     {
       label: "Additional Message",
@@ -46,6 +58,7 @@ function ViewALlInformation() {
       label: "Event Date",
       accessor: "eventDate",
       width: "140px",
+      formatter: (value) => <div className="">{dayjs(value).format("DD MMM YYYY")}</div>
     },
     {
       label: "Status",
@@ -62,13 +75,31 @@ function ViewALlInformation() {
     },
   ];
 
-  // ✅ Month-wise filtered data
   const filteredData = giftInfoData.filter((item) => {
     if (selectedMonth === "all") return true;
-
     const month = new Date(item.giftSendDate).toLocaleString("en-US", { month: "long" }).toLowerCase();
     return month === selectedMonth.toLowerCase();
   });
+
+  const fetcUserData = async () => {
+    setIsLoading(true);
+    try {
+      const endpoint = `/admin/user-management/${params?.id}?page=${currentPage}&limit=${itemsPerPage}`;
+      const res = await UserService.getData(token, endpoint);
+      const result = res;
+      setUserData(result?.gifts || []);
+      setCurrentPage(result?.page || 1);
+      setTotalPages(result?.totalPages || 1);
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Error fetching gift card data:", error);
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetcUserData()
+  }, [currentPage])
+  console.log(userData);
 
   return (
     <section>
@@ -114,12 +145,12 @@ function ViewALlInformation() {
             </div>
           </div>
         </div>
-
         <DynamicTableTwo
           columns={columns}
-          data={filteredData}
+          data={userData}
           currentPage={currentPage}
           itemsPerPage={10}
+          totalPages={totalPages}
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>

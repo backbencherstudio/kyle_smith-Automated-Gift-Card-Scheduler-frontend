@@ -46,7 +46,7 @@ function Booking() {
       width: "120px",
       formatter: (_value, row) => (
         <div className="flex gap-4  items-center">
-          <Link href="/dashboard/user-management/view-all-information">
+          <Link href={`/dashboard/user-management/${row?.id}`}>
             <FiEye className="text-[17px] hover:text-primaryColor transition-all" />
           </Link>
           <button title="Delete" className=" cursor-pointer">
@@ -60,13 +60,8 @@ function Booking() {
     setIsLoading(true);
     try {
       const endpoint = `/admin/user-management?page=${currentPage}&limit=${itemsPerPage}`;
-
-
       const res = await UserService.getData(token, endpoint);
-
       const result = res;
-
-
       setUserData(result?.users || []);
       setCurrentPage(result?.page || 1);
       setTotalPages(result?.totalPages || 1);
@@ -81,8 +76,7 @@ function Booking() {
     fetcUserData()
   }, [currentPage])
 
-  console.log(userData);
-  console.log(currentPage);
+
   return (
     <section>
       <div className='bg-whiteColor p-5 rounded-md'>
@@ -93,6 +87,7 @@ function Booking() {
           currentPage={currentPage}
           totalPages={totalPages}
           itemsPerPage={10}
+          loading={isLoading}
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
