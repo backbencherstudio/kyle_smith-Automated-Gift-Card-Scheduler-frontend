@@ -1,6 +1,5 @@
 "use client"
 import React from 'react'
-import GiftSchedulingDashboard from '../_Components/GiftSchedulingDashboard'
 import GiftSchedulingPage from '../_Components/GiftSchedulingPage'
 
 

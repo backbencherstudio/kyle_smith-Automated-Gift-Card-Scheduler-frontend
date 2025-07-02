@@ -143,16 +143,12 @@ export default function GiftSchedulingDashboard() {
                     <span>View all</span>
                 </Link>
             </div>
-            {events.length > 0 ? (
+   
                 <GiftSchedulingCalender
                     config={calendarConfig}
                     events={events}
                 />
-            ) : (
-                <div className="text-center py-8 text-gray-500">
-                    No birthday events found. Please add schedule data with birthday dates.
-                </div>
-            )}
+           
         </div>
     )
 }

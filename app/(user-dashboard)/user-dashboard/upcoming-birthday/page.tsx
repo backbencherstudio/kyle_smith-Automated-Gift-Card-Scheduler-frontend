@@ -86,7 +86,7 @@ export default function UpcomingBirthday() {
                     <span>View all</span>
                 </button>
             </div>
-            {upcomingBirthdays.length > 0 ? (
+          
                 <DynamicTableTwo
                     columns={columns}
                     data={upcomingBirthdays}
@@ -94,11 +94,7 @@ export default function UpcomingBirthday() {
                     itemsPerPage={5}
                     onPageChange={(page) => console.log(page)}
                 />
-            ) : (
-                <div className="text-center py-8 text-gray-500">
-                    No upcoming birthdays found
-                </div>
-            )}
+          
         </div>
     )
 }

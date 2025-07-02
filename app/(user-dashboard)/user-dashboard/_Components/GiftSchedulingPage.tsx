@@ -58,21 +58,20 @@ const CALENDAR_CONFIG = {
     useCustomRange: true
 } as const;
 
-const YEARS_RANGE = 10; // Past and future years to generate
+const YEARS_RANGE = 10; 
 
 export default function GiftSchedulingPage() {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Memoized function to generate calendar events
     const generateCalendarEvents = useCallback((users: ScheduleUserData[]): CalendarEvent[] => {
         const currentYear = new Date().getFullYear();
         
         return users.flatMap((user, index) => {
             // Parse birthday display (MM-DD format)
             const [monthStr, dayStr] = user.birthday_display.split('-');
-            const month = parseInt(monthStr) - 1; // JavaScript months are 0-indexed
+            const month = parseInt(monthStr) - 1; 
             const day = parseInt(dayStr);
             
             if (isNaN(month) || isNaN(day)) {
@@ -87,10 +86,8 @@ export default function GiftSchedulingPage() {
             // Generate events for past and future years
             for (let year = currentYear - YEARS_RANGE; year <= currentYear + YEARS_RANGE; year++) {
                 try {
-                    // Create date using local timezone to avoid conversion issues
                     const birthdayDate = new Date(year, month, day, 12, 0, 0);
                     
-                    // Validate the date
                     if (isNaN(birthdayDate.getTime())) {
                         console.warn(`Invalid date generated for ${user.name}: ${year}-${month + 1}-${day}`);
                         continue;
@@ -188,16 +185,12 @@ export default function GiftSchedulingPage() {
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold">Gift Scheduling</h2>
                 </div>
-                {events.length > 0 ? (
+                
                     <GiftSchedulingCalender
                         config={calendarConfig}
                         events={events}
                     />
-                ) : (
-                    <div className="text-center py-8 text-gray-500">
-                        No birthday events found. Please add schedule data with birthday dates.
-                    </div>
-                )}
+              
             </div>
         </>
     )
