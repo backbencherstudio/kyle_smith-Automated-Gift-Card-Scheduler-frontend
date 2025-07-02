@@ -24,8 +24,7 @@ function ViewALlInformation() {
   const [data, setData] = useState(null);
   const [itemsPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState("");
-
+  const [selectedMonth, setSelectedMonth] = useState("0");
 
   const columns = [
     {
