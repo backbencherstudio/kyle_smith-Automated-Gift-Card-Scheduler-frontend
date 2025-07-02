@@ -4,12 +4,12 @@ import { Inter, Nunito } from "next/font/google";
 import "./globals.css";
 import CustomToastContainer from "@/components/CustomToast/CustomToastContainer";
 import { AuthProvider } from "@/contexts/AuthContext";
- 
+
 const nunito = Nunito({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700', '800'],
   style: ['normal'],
-  variable: '--font-nunito', 
+  variable: '--font-nunito',
 });
 
 const inter = Inter({
@@ -30,6 +30,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/image/logo/mainLogo.png" />
+      </head>
       <body className={` ${inter.variable} ${nunito.variable} `}>
         <AuthProvider>
           {children}

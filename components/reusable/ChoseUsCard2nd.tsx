@@ -27,12 +27,12 @@ export default function ChoseUsCard2nd({
             <div className="w-full md:w-1/2 space-y-4">
                 <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
                 <p className="text-sm text-gray-600">{description}</p>
-                <button
+                {/* <button
                     onClick={onClick}
                     className="bg-[#FAD33E] cursor-pointer hover:bg-[#fad43ec9] text-black px-7 py-2 rounded font-medium transition"
                 >
                     {buttonText}
-                </button>
+                </button> */}
             </div>
             <div className="relative w-full md:w-1/2 ">
                 <Image

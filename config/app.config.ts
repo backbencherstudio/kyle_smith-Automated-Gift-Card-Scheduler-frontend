@@ -5,11 +5,11 @@ export const AppConfig = () => ({
   app: {
     // server endpoint
     url: URL,
-    name: "app",
-    slogan: "app",
+    name: "Timely Gifts",
+    slogan: "Timely Gifts",
     meta: {
-      description: "app",
-      keywords: "app",
+      description: "Timely Gifts",
+      keywords: "Timely Gifts",
     },
 
     // api endpoint
