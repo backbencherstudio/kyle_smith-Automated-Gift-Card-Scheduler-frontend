@@ -31,7 +31,6 @@ export default function LoginPage() {
     setIsDisable(true);
     try {
       const response = await UserService.login(data);
-      console.log("===========", response);
 
       if (response.data?.success === true) {
         const tokenNumber = response.data.authorization.token;
