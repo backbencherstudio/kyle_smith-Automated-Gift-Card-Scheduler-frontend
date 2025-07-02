@@ -1,9 +1,10 @@
 "use client"
-import React, { useState } from 'react'
+import React from 'react'
 import { useAuth } from '@/contexts/AuthContext';
 import ContactInfo from '@/components/profile/ContactInfo';
 import Password from '@/components/profile/Password';
 import Notifications from '@/components/profile/Notifications';
+import Loader from '@/components/reusable/Loader';
 
 interface dataTypes {
     name: string;
@@ -21,8 +22,15 @@ interface dataTypes {
 }
 
 export default function Settings() {
-    const [isEdite, setIsEdite] = useState<boolean>(false);
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
+
+    if (isLoading || !user) {
+        return (
+            <div className='flex justify-center items-center h-screen'>
+                <Loader />
+            </div>
+        );
+    }
 
     // Create user data from auth context
     const userData: dataTypes = {
@@ -39,14 +47,6 @@ export default function Settings() {
         accountType: user?.type || "User",
         memberSince: user?.created_at ? new Date(user.created_at).toLocaleDateString() : undefined
     };
-
-    if (!user) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#FAD33E]"></div>
-            </div>
-        );
-    }
 
     return (
         <div className="relative">

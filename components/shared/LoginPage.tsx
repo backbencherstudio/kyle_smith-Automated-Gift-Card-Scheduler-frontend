@@ -7,7 +7,7 @@ import { Input } from '../ui/input';
 import ButtonReuseable from '../reusable/ButtonReuseable';
 import ResuseableModal from '../reusable/ResuseableModal';
 import OtpVerification from './OtpVerification';
-import { login } from '@/apis/authApis';
+import { login, googleLogin } from '@/apis/authApis';
 import { CustomToast } from '@/lib/Toast/CustomToast';
 import { useRouter } from 'next/navigation';
 import ForgotPassword from './ForgotPassword';
@@ -15,6 +15,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
     const [error, setError] = useState<string>('');
     const [showPassword, setShowPassword] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
@@ -100,6 +101,21 @@ export default function LoginPage() {
     const handleOtpBack = () => {
         setShowOtpModal(false);
         setUnverifiedEmail('');
+    };
+
+    const handleGoogleLogin = async () => {
+        if (isGoogleLoading) return; // Prevent multiple clicks
+        
+        try {
+            setIsGoogleLoading(true);
+            await googleLogin();
+            // No need to handle response or error here since it's a redirect
+        } catch (error: any) {
+            const errorMessage = 'Google login failed. Please try again.';
+            setError(errorMessage);
+            CustomToast.show(errorMessage);
+            setIsGoogleLoading(false);
+        }
     };
 
     return (
@@ -191,12 +207,14 @@ export default function LoginPage() {
                     <div className="flex justify-center gap-3">
                         <button
                             type="button"
-                            onClick={() => console.log('Login with Google')}
-                            className="flex w-1/2 md:w-auto justify-center items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition cursor-pointer"
-                            disabled={isLoading}
+                            onClick={handleGoogleLogin}
+                            className="flex w-1/2 md:w-auto justify-center items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={isGoogleLoading || isLoading}
                         >
                             <FcGoogle className="text-xl" />
-                            <span className="text-sm  font-medium text-gray-700 hidden sm:block">Login with Google</span>
+                            <span className="text-sm font-medium text-gray-700 hidden sm:block">
+                                {isGoogleLoading ? 'Redirecting...' : 'Login with Google'}
+                            </span>
                         </button>
 
                         <button

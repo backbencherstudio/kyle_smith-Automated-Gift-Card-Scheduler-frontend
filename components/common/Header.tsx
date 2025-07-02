@@ -6,11 +6,10 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { IoIosArrowDown } from "react-icons/io";
-import { IoSearch } from "react-icons/io5";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import UserAvatar from "../ui/UserAvatar";
+
 
 interface HeaderProps {
   onNotificationClick?: () => void;
@@ -19,13 +18,22 @@ interface HeaderProps {
   onMenuClick: () => void;
 }
 
+// Helper to normalize avatar URL for next/image
+function getAvatarUrl(avatarUrl: string | null | undefined): string {
+  if (!avatarUrl) return "/image/profile.png";
+  if (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://")) return avatarUrl;
+  if (avatarUrl.startsWith("/")) return avatarUrl;
+  // Otherwise, treat as a file in /image/profile/
+  return `/image/profile/${avatarUrl}`;
+}
+
 const Header: React.FC<HeaderProps> = ({
   onMenuClick,
 }: HeaderProps) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [profilePopoverOpen, setProfilePopoverOpen] = useState(false);
   const [showAllNotifications, setShowAllNotifications] = useState(false);
-  const { user, logoutUser } = useAuth();
+  const { user, logoutUser, isLoading } = useAuth();
   const router = useRouter();
 
   const [notifications, setNotifications] = useState([
@@ -107,6 +115,11 @@ const Header: React.FC<HeaderProps> = ({
       router.push('/?login=true');
     }, 100);
   };
+
+  if (isLoading) {
+    // Prevent hydration mismatch by not rendering until auth state is loaded
+    return null;
+  }
 
   return (
     <nav className="text-blackColor shadow !w-full py-3">
@@ -204,7 +217,7 @@ const Header: React.FC<HeaderProps> = ({
                   <div className="flex justify-start items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-90">
                     <div className="w-6 h-6 lg:w-10 lg:h-10 rounded-full overflow-hidden">
                       <Image
-                        src={user?.avatar_url || "/image/profile.png"}
+                        src={getAvatarUrl(user?.avatar_url)}
                         alt="profile"
                         width={40}
                         height={40}

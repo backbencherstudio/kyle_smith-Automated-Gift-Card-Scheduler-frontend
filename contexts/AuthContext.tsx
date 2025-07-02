@@ -22,9 +22,10 @@ interface AuthContextType {
   userType: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (token: string, type: string) => void;
+  login: (token: string, type: string, userData?: User) => void;
   logoutUser: (showToast?: boolean) => void;
   refreshUser: () => Promise<void>;
+  setUserData: (userData: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,12 +47,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [userType, setUserType] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const login = async (token: string, type: string) => {
+  const login = async (token: string, type: string, userData?: User) => {
+    console.log('AuthContext login called with:', { token, type, userData });
     setUserType(type);
-    try {
-      await refreshUser();
-    } catch (error) {
-      console.error('Failed to fetch user data after login:', error);
+
+    if (userData) {
+      setUser(userData);
+    } else {
+      try {
+        await refreshUser();
+      } catch (error) {
+        // console.error('Failed to fetch user data after login:', error);
+
+      }
     }
   };
 
@@ -68,7 +76,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await getMe();
       if (response.success && response.data) {
-        // Map API response to match User interface
         const userData = {
           ...response.data,
           avatar_url: (response.data as any).avatar_url || null
@@ -77,8 +84,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUserType(response.data.type);
       }
     } catch (error) {
-      console.error('Failed to refresh user data:', error);
-      logoutUser(false);  
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as any;
+        if (axiosError.response?.status === 401) {
+          logoutUser(false);
+        }
+      }
     }
   };
 
@@ -92,10 +103,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
           await refreshUser();
         } catch (error) {
-          console.error('Failed to initialize auth:', error);
-          logout();
-          setUser(null);
-          setUserType(null);
         }
       }
       setIsLoading(false);
@@ -103,6 +110,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     initializeAuth();
   }, []);
+
+  const setUserData = (userData: User) => {
+    setUser(userData);
+    setUserType(userData.type);
+    localStorage.setItem('userType', userData.type);
+  };
 
   const value: AuthContextType = {
     user,
@@ -112,6 +125,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     logoutUser,
     refreshUser,
+    setUserData,
   };
 
   return (

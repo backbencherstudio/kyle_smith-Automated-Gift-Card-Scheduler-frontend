@@ -7,7 +7,7 @@ import { Input } from '../ui/input';
 import { Checkbox } from '../ui/checkbox';
 import ButtonReuseable from '../reusable/ButtonReuseable';
 import ResuseableModal from '../reusable/ResuseableModal';
-import { register as registerUser } from '@/apis/authApis';
+import { register as registerUser, googleLogin } from '@/apis/authApis';
 import { CustomToast } from '@/lib/Toast/CustomToast';
 import OtpVerification from './OtpVerification';
 import { useRouter } from 'next/navigation';
@@ -89,6 +89,19 @@ export default function RegisterForm({ onLoginClick }: { onLoginClick?: () => vo
 
     const handleLoginClick = () => {
         onLoginClick?.();
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+            setIsLoading(true);
+            await googleLogin();
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'Google login failed. Please try again.';
+            setError(errorMessage);
+            CustomToast.show(errorMessage);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -247,7 +260,7 @@ export default function RegisterForm({ onLoginClick }: { onLoginClick?: () => vo
                     <div className="flex justify-center gap-3">
                         <button
                             type="button"
-                            onClick={() => console.log('Sign up with Google')}
+                            onClick={handleGoogleLogin}
                             className="flex w-1/2 md:w-auto justify-center items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
                             disabled={isLoading}
                         >

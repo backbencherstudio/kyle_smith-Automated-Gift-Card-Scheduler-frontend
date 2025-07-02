@@ -30,6 +30,15 @@ interface ContactInfoProps {
     };
 }
 
+// Helper to normalize avatar URL for next/image
+function getAvatarUrl(avatarUrl: string | null | undefined): string {
+    if (!avatarUrl) return "/image/profile.png";
+    if (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://")) return avatarUrl;
+    if (avatarUrl.startsWith("/")) return avatarUrl;
+    // Otherwise, treat as a file in /image/profile/
+    return `/image/profile/${avatarUrl}`;
+}
+
 export default function ContactInfo({ userData }: ContactInfoProps) {
     const { refreshUser } = useAuth();
 
@@ -226,7 +235,7 @@ export default function ContactInfo({ userData }: ContactInfoProps) {
                             <div className="relative w-[80px] h-[80px] md:w-[100px] md:h-[100px] lg:w-[120px] lg:h-[120px] rounded-full overflow-visible border-2 border-whiteColor">
                                 {profileImg && !imageError ? (
                                     <Image
-                                        src={profileImg}
+                                        src={getAvatarUrl(profileImg)}
                                         alt="Profile"
                                         fill
                                         unoptimized={profileImg.startsWith("blob:")}
@@ -235,7 +244,7 @@ export default function ContactInfo({ userData }: ContactInfoProps) {
                                     />
                                 ) : (
                                     <Image
-                                        src={userData?.profileImage || "/image/profile.png"}
+                                        src={getAvatarUrl(userData?.profileImage)}
                                         alt="Profile"
                                         fill
                                         unoptimized={userData?.profileImage?.startsWith("blob:")}
