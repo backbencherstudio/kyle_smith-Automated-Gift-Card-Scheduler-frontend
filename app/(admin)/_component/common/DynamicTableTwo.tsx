@@ -1,8 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import React from "react";
-import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 import {
   Table,
   TableBody,
@@ -11,6 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Image from "next/image";
+import React from "react";
+import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 
 interface ColumnConfig {
   label: React.ReactNode;
@@ -38,7 +38,6 @@ export default function DynamicTableTwo({
   data,
   currentPage,
   itemsPerPage,
-  totalPages: propTotalPages,
   onPageChange,
   onView,
   onDelete,
@@ -48,8 +47,8 @@ export default function DynamicTableTwo({
   showLoading = false,
 }: DynamicTableProps) {
   const totalPages = totalPagesProp || Math.ceil(data.length / itemsPerPage);
-  const paginatedData = data; 
-  
+  const paginatedData = data;
+
   const getPagination = () => {
     let pages: (number | string)[] = [];
     if (totalPages <= 4) {
@@ -76,7 +75,7 @@ export default function DynamicTableTwo({
               {columns.map((col, index) => (
                 <TableHead
                   key={index}
-                  style={{ 
+                  style={{
                     width: col.width || "auto",
                     minWidth: col.width || "auto",
                     maxWidth: col.width || "auto"
@@ -87,7 +86,7 @@ export default function DynamicTableTwo({
                 </TableHead>
               ))}
               {(onView || onDelete) && (
-                <TableHead 
+                <TableHead
                   className="px-4 py-3 text-sm font-medium text-[#4a4c56] border-r border-b border-borderColor2 bg-neutral-100"
                   style={{ width: "120px" }}
                 >
@@ -103,7 +102,7 @@ export default function DynamicTableTwo({
                   {columns.map((col, idx) => (
                     <TableCell
                       key={idx}
-                      style={{ 
+                      style={{
                         width: col.width || "auto",
                         minWidth: col.width || "auto",
                         maxWidth: col.width || "auto"
@@ -118,7 +117,7 @@ export default function DynamicTableTwo({
                     </TableCell>
                   ))}
                   {(onView || onDelete) && (
-                    <TableCell 
+                    <TableCell
                       className="px-4 py-3 flex gap-4 items-center border-b border-r border-borderColor2"
                       style={{ width: "120px" }}
                     >
@@ -173,18 +172,17 @@ export default function DynamicTableTwo({
             disabled={currentPage === 1 || loading}
             className="cursor-pointer px-2 py-1 flex justify-center items-center border disabled:bg-grayColor1/30 disabled:cursor-not-allowed text-grayColor1 rounded disabled:opacity-40 disabled:text-grayColor1 disabled:border-0"
           >
-           <MdArrowBackIosNew />
+            <MdArrowBackIosNew />
           </button>
           {getPagination().map((page, i) => (
             <button
               key={i}
               onClick={() => typeof page === "number" && onPageChange(page)}
               disabled={page === "..." || loading}
-              className={`px-2 rounded border text-sm cursor-pointer ${
-                page === currentPage
-                  ? "text-primaryColor border-primaryColor bg-primaryColor/10 font-medium"
-                  : "text-grayColor1"
-              } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-2 rounded border text-sm cursor-pointer ${page === currentPage
+                ? "text-primaryColor border-primaryColor bg-primaryColor/10 font-medium"
+                : "text-grayColor1"
+                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {page}
             </button>
@@ -194,7 +192,7 @@ export default function DynamicTableTwo({
             disabled={currentPage === totalPages || loading}
             className="cursor-pointer px-2 py-1 flex justify-center items-center border disabled:bg-grayColor1/30 disabled:cursor-not-allowed text-grayColor1 rounded disabled:opacity-40 disabled:text-grayColor1 disabled:border-0"
           >
-           <MdArrowForwardIos />
+            <MdArrowForwardIos />
           </button>
         </div>
       )}

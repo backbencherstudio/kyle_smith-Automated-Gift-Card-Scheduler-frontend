@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CookieHelper } from "@/helper/cookie.helper";
-import { UserService } from "@/service/user/user.service";
+import { UserService } from "@/service/user.service";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -31,8 +31,7 @@ export default function LoginPage() {
     setIsDisable(true);
     try {
       const response = await UserService.login(data);
-      console.log("===========",response);
-      
+
       if (response.data?.success === true) {
         const tokenNumber = response.data.authorization.token;
         CookieHelper.set({
@@ -53,7 +52,7 @@ export default function LoginPage() {
   return (
     <div className="flex justify-center items-center min-h-screen">
       <div className="w-full max-w-md p-6 space-y-6 bg-white rounded-lg " style={{
-        boxShadow: "2px 2px 7px 2px rgba(0, 0, 0, 0.1)", 
+        boxShadow: "2px 2px 7px 2px rgba(0, 0, 0, 0.1)",
       }}>
         <h2 className="text-2xl font-bold text-center text-headerColor">Login</h2>
 
