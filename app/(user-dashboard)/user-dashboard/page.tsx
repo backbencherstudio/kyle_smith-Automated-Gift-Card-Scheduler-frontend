@@ -5,55 +5,66 @@ import ContactList from "./_Components/ContactList";
 import GiftSchedulingDashboard from "./_Components/GiftSchedulingDashboard";
 import UpcomingBirthday from "./upcoming-birthday/page";
 import { useAuth } from "@/contexts/AuthContext";
-import { getContacts } from "@/apis/userDashboardApis";
+import { getDashboardData } from "@/apis/userDashboardApis";
 
-interface StatItem {
-    title: string;
-    value: number;
+interface DashboardData {
+    totalContacts: number;
+    totalUpcomingEvents: number;
+    totalGiftCardsSent: number;
 }
 
-export default function Dashboard() {
-    const { user } = useAuth();
-    const [stats, setStats] = useState<StatItem[]>([
-        { title: "Total contact", value: 0 },
-        { title: "Upcoming Event", value: 0 },
-        { title: "Gift card Send", value: 0 },
-    ]);
+// Custom hook for dashboard data
+const useDashboardData = () => {
+    const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        fetchDashboardData();
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const response = await getDashboardData();
+
+                if (response?.data) {
+                    setData(response.data);
+                } else if (response?.success === false) {
+                    const errorMessage = typeof response.message === 'string'
+                        ? response.message
+                        : 'Failed to fetch dashboard data';
+                    setError(errorMessage);
+                } else {
+                    setData(response as unknown as DashboardData);
+                }
+            } catch (err: any) {
+                setError(err?.message || 'Failed to load dashboard data');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, []);
 
-    const fetchDashboardData = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            
-            const response = await getContacts();
-            
-            if (response.success && response.data) {
-                const contacts = response.data;
-                const totalContacts = contacts.length;
-                
-                // Count contacts with birthdays as upcoming events
-                const upcomingEvents = contacts.filter((contact: any) => contact.birthday_date).length;
+    return { data, loading, error };
+};
 
-                setStats([
-                    { title: "Total contact", value: totalContacts },
-                    { title: "Upcoming Event", value: upcomingEvents },
-                    { title: "Gift card Send", value: 0 },
-                ]);
-            } else {
-                setError("Failed to fetch dashboard data");
-            }
-        } catch (error) {
-            setError("An error occurred while loading dashboard data");
-        } finally {
-            setLoading(false);
-        }
-    };
+// Stat card component
+const StatCard = ({ title, value, loading }: { title: string; value: number; loading: boolean }) => (
+    <div className="bg-white py-8 rounded-lg px-6 flex flex-col gap-2">
+        <p className="text-[#4A4C56] text-base font-medium">{title}</p>
+        {loading ? (
+            <div className="h-8 bg-gray-200 animate-pulse rounded"></div>
+        ) : (
+            <h1 className="text-2xl font-bold text-[#1D1F2C]">{value}</h1>
+        )}
+    </div>
+);
+
+export default function Dashboard() {
+    const { user } = useAuth();
+    const { data: dashboardData, loading, error } = useDashboardData();
 
     return (
         <>
@@ -65,23 +76,25 @@ export default function Dashboard() {
                     </p>
                 )}
             </div>
-            
+
             <div className="flex flex-col lg:flex-row gap-6">
                 <div className="flex-1 min-w-0 flex flex-col gap-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {stats.map((item, index) => (
-                            <div
-                                key={index}
-                                className="bg-white py-8 rounded-lg px-4"
-                            >
-                                <p className="text-[#4A4C56] text-sm font-medium">{item.title}</p>
-                                {loading ? (
-                                    <div className="h-8 bg-gray-200 animate-pulse rounded mt-1"></div>
-                                ) : (
-                                    <p className="text-2xl text-[#1D1F2C] font-bold mt-1">{item.value}</p>
-                                )}
-                            </div>
-                        ))}
+                        <StatCard
+                            title="Total contact"
+                            value={dashboardData?.totalContacts || 0}
+                            loading={loading}
+                        />
+                        <StatCard
+                            title="Upcoming Event"
+                            value={dashboardData?.totalUpcomingEvents || 0}
+                            loading={loading}
+                        />
+                        <StatCard
+                            title="Gift card Send"
+                            value={dashboardData?.totalGiftCardsSent || 0}
+                            loading={loading}
+                        />
                     </div>
 
                     {error && (
@@ -92,7 +105,7 @@ export default function Dashboard() {
 
                     <GiftSchedulingDashboard />
                 </div>
-                <ContactList /> 
+                <ContactList />
             </div>
             <UpcomingBirthday />
         </>

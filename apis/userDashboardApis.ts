@@ -235,3 +235,13 @@ export const getMyGifts = async (query: string, limit: number, page: number): Pr
 };
 
 
+
+// dashboard data
+export const getDashboardData = async () => {
+    try {
+        const response = await axiosClient.get<ApiResponse>("/api/gift-cards/summary");
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}

@@ -58,7 +58,7 @@ const CALENDAR_CONFIG = {
     useCustomRange: true
 } as const;
 
-const YEARS_RANGE = 10; 
+const YEARS_RANGE = 10;
 
 export default function GiftSchedulingPage() {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -67,34 +67,34 @@ export default function GiftSchedulingPage() {
 
     const generateCalendarEvents = useCallback((users: ScheduleUserData[]): CalendarEvent[] => {
         const currentYear = new Date().getFullYear();
-        
+
         return users.flatMap((user, index) => {
             // Parse birthday display (MM-DD format)
             const [monthStr, dayStr] = user.birthday_display.split('-');
-            const month = parseInt(monthStr) - 1; 
+            const month = parseInt(monthStr) - 1;
             const day = parseInt(dayStr);
-            
+
             if (isNaN(month) || isNaN(day)) {
                 console.warn(`Invalid birthday format for user ${user.name}: ${user.birthday_display}`);
                 return [];
             }
-            
+
             const events: CalendarEvent[] = [];
             const colorIndex = user.name.length % EVENT_COLORS.length;
             const eventColor = EVENT_COLORS[colorIndex];
-            
+
             // Generate events for past and future years
             for (let year = currentYear - YEARS_RANGE; year <= currentYear + YEARS_RANGE; year++) {
                 try {
                     const birthdayDate = new Date(year, month, day, 12, 0, 0);
-                    
+
                     if (isNaN(birthdayDate.getTime())) {
                         console.warn(`Invalid date generated for ${user.name}: ${year}-${month + 1}-${day}`);
                         continue;
                     }
-                    
+
                     const formattedDate = birthdayDate.toISOString().split('T')[0];
-                    
+
                     events.push({
                         id: `schedule-${index}-${year}`,
                         title: `${user.name} - Birthday`,
@@ -114,7 +114,7 @@ export default function GiftSchedulingPage() {
                     console.error(`Error generating event for ${user.name} in year ${year}:`, error);
                 }
             }
-            
+
             return events;
         });
     }, []);
@@ -126,9 +126,9 @@ export default function GiftSchedulingPage() {
         try {
             setLoading(true);
             setError(null);
-            
+
             const response = await getSchedulesUserData();
-            
+
             if (response.success && response.data) {
                 const calendarEvents = generateCalendarEvents(response.data);
                 setEvents(calendarEvents);
@@ -149,14 +149,7 @@ export default function GiftSchedulingPage() {
         fetchScheduleData();
     }, [fetchScheduleData]);
 
-    // Loading state
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-lg">Loading schedule data...</div>
-            </div>
-        );
-    }
+
 
     // Error state
     if (error) {
@@ -166,7 +159,7 @@ export default function GiftSchedulingPage() {
                 <div className="bg-white rounded-lg p-4 mt-5">
                     <div className="text-center py-8">
                         <div className="text-red-500 mb-4">{error}</div>
-                        <button 
+                        <button
                             onClick={fetchScheduleData}
                             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
                         >
@@ -185,12 +178,12 @@ export default function GiftSchedulingPage() {
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold">Gift Scheduling</h2>
                 </div>
-                
-                    <GiftSchedulingCalender
-                        config={calendarConfig}
-                        events={events}
-                    />
-              
+
+                <GiftSchedulingCalender
+                    config={calendarConfig}
+                    events={events}
+                />
+
             </div>
         </>
     )
