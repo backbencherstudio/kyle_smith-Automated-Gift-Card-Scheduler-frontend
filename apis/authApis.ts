@@ -134,7 +134,17 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
     try {
         const response = await axiosClient.post<LoginResponse>("/api/auth/login", credentials);
 
-        // Set localStorage if login is successful
+        // If user type is admin, block login and return a custom error-like object
+        if (response.data.success && response.data.type === 'admin') {
+            return {
+                success: false,
+                message: 'Admin users cannot login through this interface.',
+                authorization: { token: '', type: '' },
+                type: 'admin',
+            };
+        }
+
+        // Set localStorage if login is successful and user type is not admin
         if (response.data.success && response.data.authorization?.token) {
             localStorage.setItem('token', response.data.authorization.token);
             localStorage.setItem('userType', response.data.type);

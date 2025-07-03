@@ -25,7 +25,7 @@ export default function LoginPage() {
     const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
     const router = useRouter();
     const { login: authLogin } = useAuth();
-    
+
     const {
         register,
         handleSubmit,
@@ -50,16 +50,14 @@ export default function LoginPage() {
                 setTimeout(() => {
                     if (response.type === 'user') {
                         router.push('/user-dashboard');
-                    } else if (response.type === 'admin') {
-                        router.push('/admin/dashboard');
-                    } else {
-                        router.push('/user-dashboard');
                     }
                 }, 200);
 
+            } else if (response.type === 'admin' && response.message === 'Admin users cannot login through this interface.') {
+                setError('Admin users cannot login through this interface. Please use the admin login page.');
             } else {
                 // Handle nested message structure
-                const errorMessage = response.message && typeof response.message === 'object' 
+                const errorMessage = response.message && typeof response.message === 'object'
                     ? (response.message as any).message || 'Login failed. Please try again.'
                     : response.message || 'Login failed. Please try again.';
                 setError(errorMessage);
@@ -73,8 +71,8 @@ export default function LoginPage() {
                 CustomToast.show(error.response.data.message.message || 'Please verify your email first.');
             } else {
                 // Handle nested error message structure
-                const errorMessage = error.response?.data?.message?.message 
-                    || error.response?.data?.message 
+                const errorMessage = error.response?.data?.message?.message
+                    || error.response?.data?.message
                     || 'Something went wrong. Please try again.';
                 setError(errorMessage);
             }
@@ -105,7 +103,7 @@ export default function LoginPage() {
 
     const handleGoogleLogin = async () => {
         if (isGoogleLoading) return; // Prevent multiple clicks
-        
+
         try {
             setIsGoogleLoading(true);
             await googleLogin();

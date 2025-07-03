@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const login = async (token: string, type: string, userData?: User) => {
-    console.log('AuthContext login called with:', { token, type, userData });
+    // console.log('AuthContext login called with:', { token, type, userData });
     setUserType(type);
 
     if (userData) {

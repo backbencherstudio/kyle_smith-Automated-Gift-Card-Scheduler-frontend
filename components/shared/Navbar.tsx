@@ -64,8 +64,6 @@ export default function Navbar() {
   const handleDashboardClick = () => {
     if (userType === 'user') {
       router.push('/user-dashboard');
-    } else if (userType === 'admin') {
-      router.push('/admin/dashboard');
     }
   };
 
@@ -99,14 +97,13 @@ export default function Navbar() {
               />
             </>
           ) : (
-            <>
+            userType === 'user' && (
               <ButtonReuseable
                 title="Dashboard"
                 className="border text-[#1D1F2C] border-[#1D1F2C] text-sm md:text-lg cursor-pointer px-6 hover:bg-[#FAD33E] transform duration-300 font-medium"
                 onClick={handleDashboardClick}
               />
-
-            </>
+            )
           )}
         </div>
 
@@ -145,14 +142,13 @@ export default function Navbar() {
                       />
                     </>
                   ) : (
-                    <>
+                    userType === 'user' && (
                       <ButtonReuseable
                         title="Dashboard"
                         className="border py-3 border-[#1D1F2C] font-semibold text-md cursor-pointer px-6 hover:bg-[#FAD33E] transform duration-300"
                         onClick={handleDashboardClick}
                       />
-
-                    </>
+                    )
                   )}
                 </div>
               </div>

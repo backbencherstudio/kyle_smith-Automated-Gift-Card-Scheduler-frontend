@@ -25,7 +25,7 @@ axiosClient.interceptors.response.use(
         if (error.response?.status === 401) {
             localStorage.removeItem('token');
             localStorage.removeItem('userType');
-            console.log('Session expired. Please login again.');
+            // console.log('Session expired. Please login again.');
         }
 
         if (error.response?.status === 422) {
