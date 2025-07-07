@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
       // local http://192.168.4.4:4000
       {
         protocol: "http",
-        hostname: "192.168.4.4",
+        hostname: "localhost",
         port: "4000",
         pathname: "/**",
       },
