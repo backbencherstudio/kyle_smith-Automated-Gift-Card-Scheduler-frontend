@@ -30,20 +30,24 @@ export default function NewUserChart() {
   const { token } = useToken()
   const fetchData = async () => {
     try {
+      if (!token) return;
       const endpoint = `/admin-dashboard/overview?range=${selectedRange}`
       const response = await UserService?.getData(token, endpoint)
-      setChartData(response?.new_user_chart)
+      setChartData(response?.new_user_chart || [])
     } catch (error) {
-      console.log(error?.message);
-
+      console.log("Error fetching chart data:", error?.message);
+      setChartData([]); // Set empty array as fallback
     }
   }
 
   useEffect(() => {
-    fetchData()
+    if (token) {
+      
+      fetchData()
+    }
   }, [selectedRange]);
 
-  const maxUser = Math.max(...chartData.map((d) => d.users));
+  const maxUser = chartData.length > 0 ? Math.max(...chartData.map((d) => d.users)) : 0;
   const dynamicMax = Math.ceil(maxUser / 25) * 25;
   const ticks = Array.from({ length: dynamicMax / 25 + 1 }, (_, i) => i * 25);
 

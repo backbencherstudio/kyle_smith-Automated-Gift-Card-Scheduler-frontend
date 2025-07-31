@@ -30,7 +30,7 @@ export default function MyProfile() {
     email: user?.email || "user@example.com",
     location: user?.address || "Address not specified",
     phone: user?.phone_number || "Phone not specified",
-    profileImage: user?.avatar_url || "/image/profile.png",
+            profileImage: user?.avatar_url || "/profile.png",
     coverImage: "/image/profile-cover-img.jpg",
     dob: user?.date_of_birth ? new Date(user.date_of_birth) : null,
     currentPassword: "",

@@ -1,21 +1,20 @@
 "use client";
-import avatar from "@/public/profile.png";
-import { Menu, X } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import React, { useState } from "react";
-import { FaArrowRightLong } from "react-icons/fa6";
-import { IoIosArrowDown } from "react-icons/io";
-import { IoSearch } from "react-icons/io5";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import NotificationManager from "@/lib/NotificationManager/NotificationManager";
-import { useToken } from "@/hooks/useToken";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToken } from "@/hooks/useToken";
+import NotificationManager from "@/lib/NotificationManager/NotificationManager";
+import { UserService } from "@/service/user.service";
+import { Menu } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { IoIosArrowDown } from "react-icons/io";
+import { IoSearch } from "react-icons/io5";
 
 interface HeaderProps {
   onNotificationClick?: () => void;
@@ -26,7 +25,7 @@ interface HeaderProps {
 
 // Helper to normalize avatar URL for next/image
 function getAvatarUrl(avatarUrl: string | null | undefined): string {
-  if (!avatarUrl) return "/image/profile.png";
+  if (!avatarUrl) return "/profile.png";
   if (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://"))
     return avatarUrl;
   if (avatarUrl.startsWith("/")) return avatarUrl;
@@ -45,9 +44,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }: HeaderProps) => {
   const handleLogout = () => {
     logoutUser(true);
     setProfilePopoverOpen(false);
-
+    UserService.logout()
     setTimeout(() => {
-      router.push("/?login=true");
+      router.push("/admin/login?login=true");
     }, 100);
   };
 

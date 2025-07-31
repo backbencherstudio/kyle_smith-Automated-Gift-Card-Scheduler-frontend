@@ -1,8 +1,7 @@
 "use client"
-import React from 'react'
-import { useAuth } from '@/contexts/AuthContext';
 import ContactInfo from '@/components/profile/ContactInfo';
 import Password from '@/components/profile/Password';
+import { useAuth } from '@/contexts/AuthContext';
 // import Notifications from '@/components/profile/Notifications';
 import Loader from '@/components/reusable/Loader';
 
@@ -38,7 +37,7 @@ export default function Settings() {
         email: user?.email || "user@example.com",
         location: user?.address || "Address not specified",
         phone: user?.phone_number || "Phone not specified",
-        profileImage: user?.avatar_url || "/image/profile.png",
+        profileImage: user?.avatar_url || "/profile.png",
         coverImage: "/image/profile-cover-img.jpg",
         dob: user?.date_of_birth ? new Date(user.date_of_birth) : null,
         currentPassword: "",
