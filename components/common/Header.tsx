@@ -1,16 +1,14 @@
 "use client";
-import avatar from "@/public/profile.png";
-import { Menu, X } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import NotificationManager from "@/lib/NotificationManager/NotificationManager";
+import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
-import { FaArrowRightLong } from "react-icons/fa6";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
-import NotificationManager from "@/lib/NotificationManager/NotificationManager";
 
 interface HeaderProps {
   onNotificationClick?: () => void;
@@ -21,7 +19,7 @@ interface HeaderProps {
 
 // Helper to normalize avatar URL for next/image
 function getAvatarUrl(avatarUrl: string | null | undefined): string {
-  if (!avatarUrl) return "/image/profile.png";
+  if (!avatarUrl) return "/profile.png";
   if (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://"))
     return avatarUrl;
   if (avatarUrl.startsWith("/")) return avatarUrl;

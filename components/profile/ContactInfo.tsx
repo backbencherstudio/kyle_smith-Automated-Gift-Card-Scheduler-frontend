@@ -1,22 +1,22 @@
 "use client";
 
+import { emailChange, sendEmailChangeToken, updateProfile } from "@/apis/authApis";
+import { useAuth } from "@/contexts/AuthContext";
+import { CustomToast } from "@/lib/Toast/CustomToast";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { BiEdit } from "react-icons/bi";
 import { FaCamera } from "react-icons/fa";
 import { GrLocation } from "react-icons/gr";
 import { IoMailOutline } from "react-icons/io5";
+import ResuseableModal from "../reusable/ResuseableModal";
+import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Button } from "../ui/button";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
-import { BiEdit } from "react-icons/bi";
-import { updateProfile, emailChange, sendEmailChangeToken } from "@/apis/authApis";
-import { useAuth } from "@/contexts/AuthContext";
-import { CustomToast } from "@/lib/Toast/CustomToast";
-import ResuseableModal from "../reusable/ResuseableModal";
 
 interface ContactInfoProps {
     userData?: {
@@ -32,7 +32,7 @@ interface ContactInfoProps {
 
 // Helper to normalize avatar URL for next/image
 function getAvatarUrl(avatarUrl: string | null | undefined): string {
-    if (!avatarUrl) return "/image/profile.png";
+    if (!avatarUrl) return "/profile.png";
     if (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://")) return avatarUrl;
     if (avatarUrl.startsWith("/")) return avatarUrl;
     // Otherwise, treat as a file in /image/profile/
