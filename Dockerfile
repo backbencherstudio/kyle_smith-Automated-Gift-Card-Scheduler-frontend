@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN yarn install
 
 # Copy the rest of the application code
 COPY . .
@@ -17,10 +17,10 @@ COPY . .
 COPY .env ./
 
 # Build the Next.js application
-RUN npm run build
+RUN yarn build
 
 # Expose the port on which Next.js runs
 EXPOSE 3000
 
 # Start the Next.js application
-CMD ["npm", "start"]
+CMD ["yarn", "start"]
