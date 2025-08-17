@@ -36,10 +36,10 @@ function Banner() {
       style={{ backgroundImage: `url(${bannerImg.src})` }}
     >
       <div className='container mx-auto px-4 relative z-10 h-full'>
-        <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between  min-h-[680px]  lg:gap-8">
+        <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between  min-h-[680px] xl:gap-20">
 
           {/* Left side - Image */}
-          <div className="w-full mt-12 lg:mt-[200px] xl:mt-[72px] xl:w-6/12 flex justify-center lg:justify-start order-2 lg:order-1">
+          <div className="w-full mt-12 lg:mt-[200px] xl:mt-[100px] xl:w-6/12 flex justify-center lg:justify-start order-2 lg:order-1">
             <div className="relative w-full flex items-center justify-center">
               <Image
                 src={leftImg}
